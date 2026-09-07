@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Registro - Vital Up</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* 🌑 Fondo oscuro elegante integrado */
+body {
+    margin: 0;  
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Poppins', sans-serif;
+    background-color: #050811;
+}
+
+/* ⚡ Luces decorativas oficiales */
+body::before {
+    content: "";
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(45, 212, 191, 0.15) 0%, rgba(0,0,0,0) 70%);
+    top: -150px;
+    left: -150px;
+    pointer-events: none;
+}
+
+body::after {
+    content: "";
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255, 87, 34, 0.12) 0%, rgba(0,0,0,0) 70%);
+    bottom: -150px;
+    right: -150px;
+    pointer-events: none;
+}
+
+/* 🧊 Glassmorphism Premium */
+.glass {
+    background: rgba(10, 16, 30, 0.7);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), 0 0 40px rgba(45, 212, 191, 0.02);
+}
+
+/* ✨ Inputs adaptados */
+.input {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: white;
+}
+
+.input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.input:focus {
+    border-color: #2dd4bf;
+    box-shadow: 0 0 0 2px rgba(45, 212, 191, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* 🔥 Botón principal de rendimiento */
+.btn-main {
+    background: #ff5722;
+    box-shadow: 0 4px 20px rgba(255, 87, 34, 0.2);
+}
+
+.btn-main:hover {
+    background: #e64a19;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(255, 87, 34, 0.35);
+}
+
+/* 🔗 Enlace de retorno */
+.link-cyan {
+    color: #2dd4bf;
+    transition: color 0.3s ease;
+}
+
+.link-cyan:hover {
+    color: #22b8a3;
+    text-decoration: underline;
+}
+
+/* Estilos tipográficos del logo oficial */
+.font-vital { font-family: sans-serif; font-weight: bold; font-style: italic; fill: #2dd4bf; }
+.font-up { font-family: sans-serif; font-weight: bold; font-style: italic; fill: #ffffff; }
+
+/* Animación entrada */
+.fade-in {
+    animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+</head>
+
+<body class="flex items-center justify-center relative">
+    
+<!-- CARD -->
+<div class="glass p-10 w-[420px] fade-in text-white z-10 mx-4">
+
+    <!-- Logo Corporativo SVG Reemplazando texto plano -->
+    <div class="w-48 h-12 mx-auto mb-4 flex items-center justify-center cursor-pointer" onclick="window.location.href='index.html'">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 90" width="100%" height="100%">
+          <g id="Texto-Logo">
+            <text x="10" y="62" font-size="58" class="font-vital" letter-spacing="-1">Vital</text>
+            <text x="145" y="62" font-size="58" class="font-up" letter-spacing="-1">Up</text>
+          </g>
+          <g id="Icono-Corazon" transform="translate(228, 12)">
+            <path d="M32,58 L29,55.2 C18.5,45.6 11.5,39.2 11.5,31.2 C11.5,24.7 16.6,19.6 23,19.6 C26.6,19.6 30.1,21.3 32,24 C33.9,21.3 37.4,19.6 41,19.6 C47.4,19.6 52.5,24.7 52.5,31.2 C52.5,39.2 45.5,45.6 35,55.2 L32,58 Z" fill="#ff5722" />
+            <path d="M12,36 L22,36 L25,27 L29,45 L33,32 L36,36 L52,36" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+          </g>
+        </svg>
+    </div>
+
+    <p class="text-center text-gray-400 mb-8 text-xs font-light tracking-wide">
+     "Tu mejor versión comienza aquí.x
+    </p>
+
+    <div class="space-y-5">
+
+        <!-- NOMBRE -->
+        <div>
+            <label class="text-xs font-semibold tracking-wider text-gray-400 uppercase block mb-2">Nombre Completo</label>
+            <input id="nombre" type="text" placeholder="Tu nombre"
+                class="input w-full p-3.5 rounded-xl outline-none text-sm transition-all">
+        </div>
+
+        <!-- EMAIL -->
+        <div>
+            <label class="text-xs font-semibold tracking-wider text-gray-400 uppercase block mb-2">Correo Electrónico</label>
+            <input id="email" type="email" placeholder="correo@ejemplo.com"
+                class="input w-full p-3.5 rounded-xl outline-none text-sm transition-all">
+        </div>
+
+        <!-- PASSWORD -->
+        <div>
+            <label class="text-xs font-semibold tracking-wider text-gray-400 uppercase block mb-2">Contraseña</label>
+            <input id="password" type="password" placeholder="••••••••"
+                class="input w-full p-3.5 rounded-xl outline-none text-sm transition-all">
+        </div>
+
+        <!-- BTN -->
+        <button onclick="register()"
+            class="btn-main w-full text-white text-xs font-bold uppercase tracking-wider py-4 rounded-xl transition-all mt-3">
+            Registrarse
+        </button>
+
+        <!-- LOGIN LINK -->
+        <div class="text-center pt-2">
+            <a href="login.html" class="link-cyan text-xs font-medium tracking-wide">
+                ¿Ya tienes cuenta? Inicia sesión
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+const SUPABASE_URL = "https://hkqljtcnbnlvcqqmbcdv.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhrcWxqdGNuYm5sdmNxcW1iY2R2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyMTk4NjgsImV4cCI6MjA5Mjc5NTg2OH0.GWL0JQOAiLornI_r2nQgKfsEr3NMTacVcODLWXE2-gg";
+
+const { createClient } = supabase;
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+async function register() {
+    const nombre = document.getElementById("nombre").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    if (!nombre || !email || !password) {
+        Swal.fire("Atención", "Todos los campos son obligatorios", "warning");
+        return;
+    }
+
+    Swal.fire({
+        title: 'Registrando...',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+    });
+
+    try {
+        const { data, error } = await supabaseClient.auth.signUp({
+            email,
+            password
+        });
+
+        if (error) throw error;
+
+        const user = data.user;
+
+        const { data: rol } = await supabaseClient
+            .from("rol")
+            .select("id")
+            .eq("nombre", "usuario")
+            .single();
+
+        const { data: estado } = await supabaseClient
+            .from("estado")
+            .select("id")
+            .eq("nombre", "Activo")
+            .single();
+
+        const { error: errorInsert } = await supabaseClient
+            .from("usuario")
+            .insert([{
+                auth_id: user.id,
+                nombre: nombre,
+                email: email,
+                rol_id: rol.id,
+                estado_id: estado.id
+            }]);
+
+        if (errorInsert) throw errorInsert;
+
+        Swal.fire({
+            title: "¡Éxito!",
+            text: "Usuario registrado correctamente",
+            icon: "success"
+        }).then(() => {
+            window.location.href = "login.html";
+        });
+
+    } catch (error) {
+        Swal.fire("Error", error.message, "error");
+    }
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vital Up - Elite Fitness Platform</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@700;800&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #050811;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        
+        .font-display {
+            font-family: 'Syne', sans-serif;
+        }
+
+        .font-tech {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* Ambient Glow Effects */
+        .glow-cyan {
+            background: radial-gradient(circle, rgba(45, 212, 191, 0.15) 0%, rgba(0,0,0,0) 70%);
+        }
+        
+        .glow-orange {
+            background: radial-gradient(circle, rgba(255, 87, 34, 0.12) 0%, rgba(0,0,0,0) 70%);
+        }
+
+        /* Glassmorphism Evolution */
+        .glass-card {
+            background: rgba(10, 16, 30, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(45, 212, 191, 0.3);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), 0 0 40px rgba(45, 212, 191, 0.05);
+            transform: translateY(-4px);
+        }
+
+        /* Slider de Pantalla Completa para el Panel */
+        .slider-bg {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 1.2s ease-in-out;
+            z-index: 0;
+        }
+
+        .slider-bg.active {
+            opacity: 0.25;
+        }
+
+        /* Estilos tipográficos del logo corporativo */
+        .font-vital { font-family: sans-serif; font-weight: bold; font-style: italic; fill: #2dd4bf; }
+        .font-up { font-family: sans-serif; font-weight: bold; font-style: italic; fill: #ffffff; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- Luces de fondo decorativas -->
+    <div class="absolute top-0 right-0 w-[600px] h-[600px] glow-cyan pointer-events-none z-0"></div>
+    <div class="absolute bottom-1/4 left-[-100px] w-[500px] h-[500px] glow-orange pointer-events-none z-0"></div>
+
+    <!-- HEADER / NAV -->
+    <header class="w-full max-w-7xl mx-auto px-6 py-6 flex items-center justify-between relative z-50">
+        <!-- Logo Oficial -->
+        <div class="w-44 h-12 flex items-center ">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 90" width="100%" height="100%">
+              <g id="Texto-Logo">
+                <text x="10" y="62" font-size="58" class="font-vital" letter-spacing="-1">Vital</text>
+                <text x="145" y="62" font-size="58" class="font-up" letter-spacing="-1">Up</text>
+              </g>
+              <g id="Icono-Corazon" transform="translate(228, 12)">
+                <path d="M32,58 L29,55.2 C18.5,45.6 11.5,39.2 11.5,31.2 C11.5,24.7 16.6,19.6 23,19.6 C26.6,19.6 30.1,21.3 32,24 C33.9,21.3 37.4,19.6 41,19.6 C47.4,19.6 52.5,24.7 52.5,31.2 C52.5,39.2 45.5,45.6 35,55.2 L32,58 Z" fill="#ff5722" />
+                <path d="M12,36 L22,36 L25,27 L29,45 L33,32 L36,36 L52,36" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+              </g>
+            </svg>
+        </div>
+
+        <!-- Acceso de usuarios -->
+        <div class="flex items-center gap-4 font-tech">
+            <button class="text-sm font-medium text-gray-400 hover:text-white transition px-4 py-2" onclick="login()">
+                Iniciar Sesión
+            </button>
+            <button class="bg-[#2dd4bf] text-slate-950 text-xs font-bold tracking-wider uppercase px-5 py-3 rounded-xl hover:bg-teal-400 transition duration-300 shadow-lg shadow-teal-500/10" onclick="register()">
+                Registrarse
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN HERO & EXPERIENCE -->
+    <main class="w-full max-w-7xl mx-auto px-6 flex-1 flex flex-col justify-center py-4 relative z-10">
+        
+        <!-- SECCIÓN SUPERIOR: Título Masivo -->
+        <div class="max-w-5xl mt-2 mb-12">
+            <h1 class="text-5xl sm:text-8xl font-display font-extrabold uppercase tracking-tighter leading-[0.9] text-white">
+                CONSTRUYE TU <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#2dd4bf] to-[#ff5722]">FÍSICO <br>IDEAL</span>
+            </h1>
+            
+            <p class="text-gray-400 text-sm sm:text-lg max-w-2xl mt-5 font-normal leading-relaxed">
+                Vital Up es un ecosistema tecnológico diseñado para optimizar tu rendimiento corporal. Sin rodeos: análisis biométrico preciso, nutrición estricta y entrenamiento inteligente.
+            </p>
+        </div>
+
+        <!-- SECCIÓN INTERMEDIA: El Panel Principal con el Slider -->
+        <div class="w-full h-[320px] sm:h-[420px] rounded-3xl overflow-hidden relative border border-white/5 flex flex-col justify-end p-8 sm:p-12 shadow-2xl">
+            
+            <div class="slider-bg active bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1400&auto=format&fit=crop');"></div>
+            <div class="slider-bg bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?q=80&w=1400&auto=format&fit=crop');"></div>
+            <div class="slider-bg bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=1400&auto=format&fit=crop');"></div>
+
+            <div class="absolute inset-0 bg-gradient-to-t from-[#050811] via-[#050811]/60 to-transparent z-10"></div>
+
+            <div class="relative z-20 max-w-xl space-y-4">
+                <span class="text-[#ff5722] font-tech text-xs font-bold uppercase tracking-widest block">Herramienta Destacada</span>
+                <h2 class="text-2xl sm:text-4xl font-display font-black uppercase text-white tracking-tight">¿Conoces tu estado actual?</h2>
+                <p class="text-gray-300 text-xs sm:text-sm">Nuestro algoritmo evalúa tu índice biométrico considerando tu tipo de contextura biológica real.</p>
+                
+                <div class="pt-2">
+                    <button onclick="window.location.href='registro.html'" class="bg-[#ff5722] hover:bg-orange-600 text-white font-bold text-xs uppercase tracking-wider px-6 py-3.5 rounded-xl transition flex items-center gap-2 group shadow-xl shadow-orange-600/10">
+                        <span>Lanzar Analizador IMC</span>
+                        <span class="group-hover:translate-x-1 transition-transform">&rarr;</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN INTERMEDIA 2: Pilares Resumidos -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+            <div class="glass-card p-8 rounded-2xl space-y-4">
+                <div class="text-xs font-bold font-tech text-[#2dd4bf]">01 / ANTROPOMETRÍA</div>
+                <h3 class="text-lg font-bold uppercase text-white tracking-wide">Diagnósticos de IMC</h3>
+                <p class="text-gray-400 text-xs leading-relaxed">Mapeo físico adaptado a somatotipos (Ectomorfo, Mesomorfo, Endomorfo) para eliminar estimaciones erróneas.</p>
+            </div>
+
+            <div class="glass-card p-8 rounded-2xl space-y-4">
+                <div class="text-xs font-bold font-tech text-[#ff5722]">02 / COMBUSTIBLE</div>
+                <h3 class="text-lg font-bold uppercase text-white tracking-wide">Planes Nutricionales</h3>
+                <p class="text-gray-400 text-xs leading-relaxed">Estructura calórica limpia con enfoques específicos hacia superávit controlado o déficit agresivo saludable.</p>
+            </div>
+
+            <div class="glass-card p-8 rounded-2xl space-y-4">
+                <div class="text-xs font-bold font-tech text-purple-400">03 / ESTÍMULO</div>
+                <h3 class="text-lg font-bold uppercase text-white tracking-wide">Rutinas de Carga</h3>
+                <p class="text-gray-400 text-xs leading-relaxed">Planificación inteligente de fuerza y acondicionamiento metabólico adaptado a tu disponibilidad de tiempo.</p>
+            </div>
+        </div>
+
+        <!-- NUEVA SECCIÓN INFERIOR: Cajas de Contenido y Recursos -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+            <div class="glass-card p-6 rounded-2xl flex items-center justify-between group border-l-2 border-l-[#2dd4bf]">
+                <div>
+                    <div class="text-2xl font-black font-display text-white tracking-tight group-hover:text-[#2dd4bf] transition-colors">+50 PLANES</div>
+                    <div class="text-[10px] font-bold font-tech text-gray-400 uppercase tracking-wider mt-1">De entrenamiento élite</div>
+                </div>
+                <div class="text-gray-600 group-hover:text-[#2dd4bf] transition-colors text-xl font-tech">&plus;</div>
+            </div>
+
+            <div class="glass-card p-6 rounded-2xl flex items-center justify-between group border-l-2 border-l-[#ff5722]">
+                <div>
+                    <div class="text-2xl font-black font-display text-white tracking-tight group-hover:text-[#ff5722] transition-colors">GALERÍA</div>
+                    <div class="text-[10px] font-bold font-tech text-gray-400 uppercase tracking-wider mt-1">De comidas y macronutrientes</div>
+                </div>
+                <div class="text-gray-600 group-hover:text-[#ff5722] transition-colors text-xl font-tech">&plus;</div>
+            </div>
+
+            <div class="glass-card p-6 rounded-2xl flex items-center justify-between group border-l-2 border-l-purple-500">
+                <div>
+                    <div class="text-2xl font-black font-display text-white tracking-tight group-hover:text-purple-400 transition-colors">EJERCICIOS</div>
+                    <div class="text-[10px] font-bold font-tech text-gray-400 uppercase tracking-wider mt-1">Guía técnica de movimientos</div>
+                </div>
+                <div class="text-gray-600 group-hover:text-purple-400 transition-colors text-xl font-tech">&plus;</div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="w-full py-6 border-t border-white/5 px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] text-gray-500 tracking-widest uppercase bg-[#060913] mt-12 relative z-50">
+        <div>&copy; 2026 Vital Up. Todos los derechos reservados.</div>
+        <div class="flex gap-6">
+            <a href="#" class="hover:text-white transition">Privacidad</a>
+            <a href="#" class="hover:text-white transition">Términos de Uso</a>
+        </div>
+    </footer>
+
+    <!-- LOGICA DEL SLIDER -->
+    <script>
+        function register(){
+            window.location.href="registro.html";
+        }
+
+        function login(){
+            window.location.href="login.html";
+        }
+
+        const backgrounds = document.querySelectorAll(".slider-bg");
+        let currentBgIndex = 0;
+
+        function rotateBackgrounds() {
+            backgrounds[currentBgIndex].classList.remove("active");
+            currentBgIndex = (currentBgIndex + 1) % backgrounds.length;
+            backgrounds[currentBgIndex].classList.add("active");
+        }
+
+        setInterval(rotateBackgrounds, 4000);
+    </script>
+
+</body>
+</html>
