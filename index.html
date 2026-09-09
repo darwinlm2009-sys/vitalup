@@ -64,16 +64,24 @@
         .font-vital { font-family: sans-serif; font-weight: bold; font-style: italic; fill: #2dd4bf; }
         .font-up { font-family: sans-serif; font-weight: bold; font-style: italic; fill: #ffffff; }
         /* Ajuste del título para celulares */
+        /* Ajuste del título SOLO para celulares */
 @media (max-width: 600px) {
     h1 {
-        font-size: 13vw !important;
-        line-height: 0.85 !important;
+        font-size: 9vw !important;
+        line-height: 0.98 !important;
         max-width: 100% !important;
         width: 100% !important;
-        overflow-wrap: break-word !important;
+
+        /* Evita que las palabras se corten */
         word-break: normal !important;
+        overflow-wrap: normal !important;
+        white-space: normal !important;
+
+        /* Ajuste para que ocupe mejor el ancho */
+        letter-spacing: -0.02em !important;
     }
 }
+        
    </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between">
