@@ -65,20 +65,34 @@
         .font-up { font-family: sans-serif; font-weight: bold; font-style: italic; fill: #ffffff; }
         /* Ajuste del título para celulares */
         /* Ajuste del título SOLO para celulares */
-@media (max-width: 600px) {
-    h1 {
-        font-size: 9vw !important;
-        line-height: 0.98 !important;
-        max-width: 100% !important;
-        width: 100% !important;
+            /* ============================= */
+/* TÍTULO RESPONSIVE PARA CELULAR */
+/* ============================= */
 
-        /* Evita que las palabras se corten */
+@media (max-width: 600px) {
+
+    .titulo-responsive {
+        font-size: 10vw !important;
+        line-height: 0.95 !important;
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        /* Mantiene las palabras completas */
         word-break: normal !important;
         overflow-wrap: normal !important;
         white-space: normal !important;
 
-        /* Ajuste para que ocupe mejor el ancho */
-        letter-spacing: -0.02em !important;
+        /* Hace que el texto ocupe mejor el ancho */
+        letter-spacing: -0.045em !important;
+
+        /* Evita que se salga horizontalmente */
+        overflow: visible !important;
+    }
+
+    /* Espacio debajo del título */
+    .titulo-responsive + p {
+        margin-top: 20px !important;
     }
 }
         
