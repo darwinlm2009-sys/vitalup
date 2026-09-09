@@ -68,34 +68,26 @@
             /* ============================= */
 /* TÍTULO RESPONSIVE PARA CELULAR */
 /* ============================= */
-
+        /* Ajuste del título SOLO para celulares */
 @media (max-width: 600px) {
-
-    .titulo-responsive {
-        font-size: 10vw !important;
+    h1 {
+        font-size: 7.5vw !important;
         line-height: 0.95 !important;
-
-        width: 100% !important;
         max-width: 100% !important;
+        width: 100% !important;
 
         /* Mantiene las palabras completas */
-        word-break: normal !important;
+        word-break: keep-all !important;
         overflow-wrap: normal !important;
+
+        /* Evita que CONSTRUYE se corte */
         white-space: normal !important;
 
-        /* Hace que el texto ocupe mejor el ancho */
-        letter-spacing: -0.045em !important;
-
-        /* Evita que se salga horizontalmente */
-        overflow: visible !important;
-    }
-
-    /* Espacio debajo del título */
-    .titulo-responsive + p {
-        margin-top: 20px !important;
+        /* Más espacio disponible para las letras */
+        letter-spacing: -0.05em !important;
     }
 }
-        
+
    </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between">
