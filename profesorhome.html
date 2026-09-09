@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vital Up - Panel</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* ================= RESET & BASE ================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            width: 100%;
+            min-height: 100vh;
+            background-color: #0b121f;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Degradado de fondo exacto */
+        body {
+            background: radial-gradient(circle at 80% 20%, #152238 0%, #0b121f 50%);
+            background-attachment: fixed;
+        }
+
+        .nav-link {
+            color: #9ca3af;
+            font-weight: 500;
+            font-size: 13px;
+            letter-spacing: 1px;
+            transition: color 0.2s;
+            text-transform: uppercase;
+        }
+        .nav-link:hover {
+            color: #ffffff;
+        }
+
+        /* Tarjetas Estilo Premium Oscuro */
+        .premium-card {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .premium-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Contenedor del Carrusel Animado con Máscara de Doble Degradado */
+        .hero-carousel-wrapper {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 55%;
+            height: 100%;
+            mask-image: linear-gradient(to left, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%), 
+                        linear-gradient(to bottom, rgba(0,0,0,1) 75%, rgba(0,0,0,0) 100%);
+            mask-composite: intersect;
+            -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%), 
+                                linear-gradient(to bottom, rgba(0,0,0,1) 75%, rgba(0,0,0,0) 100%);
+            -webkit-mask-composite: destination-in;
+            z-index: 1;
+        }
+
+        /* Imágenes individuales dentro del carrusel */
+        .carousel-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            filter: brightness(0.85) contrast(1.05);
+            opacity: 0;
+            transition: opacity 1.2s ease-in-out;
+        }
+
+        /* Clase activa para mostrar la imagen */
+        .carousel-img.active {
+            opacity: 1;
+        }
+
+        @media (max-width: 1024px) {
+            .hero-carousel-wrapper {
+                position: relative;
+                width: 100%;
+                height: 300px;
+                mask-image: none;
+                -webkit-mask-image: none;
+                margin-top: 1.5rem;
+                border-radius: 12px;
+                overflow: hidden;
+            }
+        }
+
+        /* Estilos tipográficos para emular la fuente del logo original */
+        .font-vital {
+            font-family: 'Arial Rounded MT Bold', 'Ubuntu', sans-serif;
+            font-weight: bold;
+            font-style: italic;
+            fill: #2dd4bf;
+        }
+        .font-up {
+            font-family: 'Arial Rounded MT Bold', 'Ubuntu', sans-serif;
+            font-weight: bold;
+            font-style: italic;
+            fill: #ffffff;
+        }
+    </style>
+</head>
+<body class="text-white flex flex-col justify-between min-h-screen">
+
+    <!-- ================= NAV BAR (Con Logo Ajustado) ================= -->
+    <nav class="w-full max-w-7xl mx-auto px-6 py-4 flex items-center justify-between z-50 relative">
+        
+        <!-- Logo Vital Up - Corazón acercado de forma óptima (viewBox recortado a 320) -->
+        <div class="w-44 h-12 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 90" width="100%" height="100%">
+              <g id="Texto-Logo">
+                <text x="10" y="62" font-size="58" class="font-vital" letter-spacing="-1">Vital</text>
+                <text x="145" y="62" font-size="58" class="font-up" letter-spacing="-1">Up</text>
+              </g>
+              <!-- Corazón reubicado más a la izquierda (translate modificado a 228) -->
+              <g id="Icono-Corazon" transform="translate(228, 12)">
+                <path d="M32,58 L29,55.2 C18.5,45.6 11.5,39.2 11.5,31.2 C11.5,24.7 16.6,19.6 23,19.6 C26.6,19.6 30.1,21.3 32,24 C33.9,21.3 37.4,19.6 41,19.6 C47.4,19.6 52.5,24.7 52.5,31.2 C52.5,39.2 45.5,45.6 35,55.2 L32,58 Z" fill="#ff5722" />
+                <path d="M12,36 L22,36 L25,27 L29,45 L33,32 L36,36 L52,36" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+              </g>
+            </svg>
+        </div>
+
+        <div class="hidden lg:flex items-center gap-10">
+            <a href="usuarios.html" class="nav-link">gestion de usuarios</a>
+            <a href="traductor.html" class="nav-link">Fitness</a>
+            <a href="recomendaciones.html" class="nav-link">Nutrición</a>
+            <a href="#" class="nav-link">Logros</a>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2.5">
+                <img id="user-avatar" src="https://ui-avatars.com/api/?name=U&background=6366f1&color=fff" class="w-7 h-7 rounded-full object-cover border border-cyan-400" alt="Avatar">
+                <span id="user-name" class="text-xs font-bold tracking-wider text-gray-300 uppercase">Cargando...</span>
+            </div>
+            <span class="text-gray-600">|</span>
+            <button onclick="logout()" class="text-xs font-bold text-gray-400 hover:text-white uppercase tracking-widest transition">
+                Salir
+            </button>
+        </div>
+    </nav>
+
+    <!-- ================= SECCIÓN HERO INTEGRADA CON CARRUSEL ================= -->
+    <header class="w-full max-w-7xl mx-auto px-6 relative py-8 lg:py-16 flex flex-col lg:flex-row items-center overflow-hidden">
+        <div class="w-full lg:w-7xl z-10 relative space-y-6 text-center lg:text-left">
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-none text-white uppercase">
+                Tu transformación<br>
+                <span class="text-[#ff5722]">total</span> <span class="text-cyan-400">empieza hoy.</span>
+            </h1>
+            
+            <div class="space-y-1">
+                <p class="text-lg font-bold tracking-wide text-gray-100 uppercase">Bienvenido a Vital Up.</p>
+                <p class="text-lg font-bold tracking-wide text-gray-100 uppercase">No te conformes, logra más.</p>
+            </div>
+
+            <div>
+                <button onclick="galeria()" class="bg-[#ff5722] hover:bg-orange-600 text-white font-bold px-8 py-3 rounded-full uppercase tracking-wider text-xs shadow-lg shadow-orange-600/30 transition transform hover:-translate-y-0.5">
+                    Inicia tu cambio
+                </button>
+            </div>
+        </div>
+
+        <div class="hero-carousel-wrapper">
+            <img src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=1200&auto=format&fit=crop" class="carousel-img active" alt="Fitness 1">
+            <img src="Tips-para-preparar-comida-saludable.webp" class="carousel-img" alt="Fitness 2">
+            <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1200&auto=format&fit=crop" class="carousel-img" alt="Fitness 3">
+        </div>
+    </header>
+
+    <!-- ================= GRID DE TARJETAS ================= -->
+    <main class="w-full max-w-7xl mx-auto px-6 pb-12 z-20 relative">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+
+            <!-- 1. BIBLIOTECA EJERCICIOS -->
+            <div onclick="galeria()" class="premium-card flex flex-col justify-between overflow-hidden cursor-pointer group p-3">
+                <div>
+                    <div class="h-36 rounded-xl overflow-hidden mb-4">
+                        <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover transition duration-500 group-hover:scale-105" alt="Ejercicios">
+                    </div>
+                    <div class="px-2 space-y-1">
+                        <h3 class="text-base font-bold tracking-wide uppercase text-white">Biblioteca Ejercicios</h3>
+                        <p class="text-[11px] text-gray-400 leading-relaxed font-normal">Aprende técnicas seguras, consectetuer adipiscing elit, sed dias modo tempor.</p>
+                    </div>
+                </div>
+                <div class="p-2 pt-4">
+                    <button class="w-full py-2 text-center text-[11px] font-bold uppercase tracking-wider rounded-md bg-[#2dd4bf] hover:bg-teal-500 text-slate-950 transition" onclick="galeria()">
+                        Ver Ejercicios
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2. RECETAS SALUDABLES / COMIDAS -->
+            <div onclick="comidas()" class="premium-card flex flex-col justify-between overflow-hidden cursor-pointer group p-3">
+                <div>
+                    <div class="h-36 rounded-xl overflow-hidden mb-4">
+                        <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover transition duration-500 group-hover:scale-105" alt="Comidas">
+                    </div>
+                    <div class="px-2 space-y-1">
+                        <h3 class="text-base font-bold tracking-wide uppercase text-white">Biblioteca comidas</h3>
+                        <p class="text-[11px] text-gray-400 leading-relaxed font-normal">Eiieenam ipsum dolor sit amet, consectetuer adipiscing elit, sed eiusmod tempor.</p>
+                    </div>
+                </div>
+                <div class="p-2 pt-4">
+                    <button class="w-full py-2 text-center text-[11px] font-bold uppercase tracking-wider rounded-md bg-[#ff5722] hover:bg-orange-600 text-white transition" onclick="comidas()">
+                        Explorar Comidas
+                    </button>
+                </div>
+            </div>
+
+            <!-- 3. PLANES -->
+            <div class="premium-card flex flex-col justify-between overflow-hidden cursor-pointer group p-3">
+                <div>
+                    <div class="h-36 rounded-xl overflow-hidden mb-4">
+                        <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover transition duration-500 group-hover:scale-105" alt="Planes">
+                    </div>
+                    <div class="px-2 space-y-1">
+                        <h3 class="text-base font-bold tracking-wide uppercase text-white">Planes de Entrenamiento</h3>
+                        <p class="text-[11px] text-gray-400 leading-relaxed font-normal">Plamoessasum dolor sit amet, faaten, planes, bomormdeas at comidas thenidas.</p>
+                    </div>
+                </div>
+                <div class="p-2 pt-4">
+                    <div class="w-full py-2 text-center text-[11px] font-bold uppercase tracking-wider rounded-md bg-[#2dd4bf] hover:bg-teal-500 text-slate-950 transition">
+                        Ver Mis Planes
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. IMC -->
+            <div onclick="IMC()" class="premium-card flex flex-col justify-between overflow-hidden cursor-pointer group p-3">
+                <div>
+                    <div class="h-36 rounded-xl overflow-hidden mb-4">
+                        <img src="ChatGPT Image 13 may 2026, 13_35_25.png" class="w-full h-full object-cover transition duration-500 group-hover:scale-105" onerror="this.src='https://images.unsplash.com/photo-1518481612222-68bbe828ecd1?q=80&w=1200&auto=format&fit=crop'" alt="IMC">
+                    </div>
+                    <div class="px-2 space-y-1">
+                        <h3 class="text-base font-bold tracking-wide uppercase text-white">Análisis de IMC</h3>
+                        <p class="text-[11px] text-gray-400 leading-relaxed font-normal">Liuenam ipsum dolor sit amet, consectetuer adipiscing elit, sed eiusmod tumpta.</p>
+                    </div>
+                </div>
+                <div class="p-2 pt-4">
+                    <div class="w-full py-2 text-center text-[11px] font-bold uppercase tracking-wider rounded-md border border-gray-600 text-gray-300 hover:bg-white hover:text-slate-950 transition">
+                        Ver Mi Progreso
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="w-full py-4 border-t border-white/5 text-center text-xs text-gray-500 tracking-wider uppercase space-x-4 z-50 bg-[#0b121f]">
+        <a href="#" class="hover:text-gray-300 transition">Comunidad</a>
+        <span>|</span>
+        <a href="#" class="hover:text-gray-300 transition">Soporte</a>
+    </footer>
+
+    <!-- ================= LOGIC JAVASCRIPT ================= -->
+    <script>
+    let currentImgIndex = 0;
+    const carouselImages = document.querySelectorAll('.carousel-img');
+
+    function startHeroCarousel() {
+        setInterval(() => {
+            carouselImages[currentImgIndex].classList.remove('active');
+            currentImgIndex = (currentImgIndex + 1) % carouselImages.length;
+            carouselImages[currentImgIndex].classList.add('active');
+        }, 5000);
+    }
+
+    startHeroCarousel();
+
+    const SUPABASE_URL = "https://hkqljtcnbnlvcqqmbcdv.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhrcWxqdGNuYm5sdmNxcW1iY2R2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyMTk4NjgsImV4cCI6MjA5Mjc5NTg2OH0.GWL0JQOAiLornI_r2nQgKfsEr3NMTacVcODLWXE2-gg";
+    const { createClient } = supabase;
+
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    async function checkAuth(){
+        try {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+
+            if(!user){
+                window.location.href = "login.html";
+                return;
+            }
+
+            const { data: profile } = await supabaseClient
+                .from("usuario")
+                .select("*")
+                .eq("auth_id", user.id)
+                .maybeSingle();
+
+            const nombre = profile?.nombre || "Usuario";
+
+            document.getElementById("user-name").innerText = nombre;
+            const iniciales = nombre.substring(0, 2).toUpperCase();
+
+            document.getElementById("user-avatar").src = `https://ui-avatars.com/api/?name=${iniciales}&background=6366f1&color=fff`;
+
+        } catch (error) {
+            console.error("Error en la autenticación:", error);
+        }
+    }
+
+    function galeria(){
+        window.location.href = "galeria.html";
+    }
+
+    function comidas(){
+        window.location.href = "comidas.html";
+    }
+
+    function IMC(){
+        window.location.href = "imc.html";
+    }
+
+    async function logout(){
+        await supabaseClient.auth.signOut();
+        window.location.href = "login.html";
+    }
+
+    window.onload = checkAuth;
+    </script>
+</body>
+</html>

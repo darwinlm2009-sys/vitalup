@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Vital Up - Gestión de Usuarios</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+
+/* ================= RESET GENERAL ================= */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+/* ================= FONDO ESTILO VITAL UP MATE ================= */
+html,
+body{
+    min-height:100%;
+    background:#0b0f19; 
+}
+
+body {
+    font-family:'Poppins',sans-serif;
+    color:#f1f5f9;
+}
+
+/* ================= CONTENEDOR PRINCIPAL ================= */
+.main-container{
+    width:100%;
+    max-width:1200px;
+    margin:auto;
+    padding:30px 20px 40px 20px; /* Reducido el padding superior para subir todo */
+}
+
+/* ================= ENCABEZADO CENTRADO OPTIMIZADO ================= */
+.header-centered {
+    text-align:center;
+    margin-bottom:35px;
+}
+
+/* Título con los colores integrados de la página (Azul, Blanco y Naranja) */
+.title-vital {
+    font-size:34px;
+    font-weight:800;
+    letter-spacing:-0.5px;
+}
+.title-vital .text-blue { color: #2dd4bf; }
+.title-vital .text-white { color: #ffffff; }
+.title-vital .text-orange { color: #ff5722; }
+
+/* Subrayado sutil tricolor */
+.title-line {
+    display:flex;
+    justify-content:center;
+    gap:4px;
+    margin:10px auto 0 auto;
+    width:70px;
+}
+.line-b { width:30px; height:3px; background:#2dd4bf; border-radius:2px; }
+.line-w { width:15px; height:3px; background:#ffffff; border-radius:2px; }
+.line-o { width:25px; height:3px; background:#ff5722; border-radius:2px; }
+
+.section-subtitle {
+    color:#56657c;
+    font-size:13px;
+    margin-top:10px;
+}
+
+/* ================= GRID INVERTIDO (TABLA IZQUIERDA, FORM DERECHA) ================= */
+.content-grid{
+    display:grid;
+    grid-template-columns:1fr 340px;
+    gap:24px;
+}
+
+/* ================= TARJETAS PLANAS MINIMALISTAS ================= */
+.flat-card {
+    background:#111827;
+    border:1px solid rgba(255,255,255,0.03);
+    border-radius:12px;
+    padding:24px;
+}
+
+/* ================= INPUTS Y SELECTS SUTILES ================= */
+.input-label {
+    color:#64748b;
+    font-size:11px;
+    font-weight:600;
+    margin-bottom:6px;
+    display:block;
+    letter-spacing:0.3px;
+}
+
+.flat-input,
+.flat-select {
+    width:100%;
+    background:#1f2937;
+    border:1px solid rgba(255,255,255,0.04);
+    color:#f8fafc;
+    padding:11px 14px;
+    border-radius:8px;
+    outline:none;
+    transition:.2s ease;
+    margin-bottom:14px;
+    font-size:14px;
+}
+
+.flat-input::placeholder {
+    color:#4b5563;
+}
+
+.flat-input:focus,
+.flat-select:focus {
+    border-color:#2dd4bf;
+    box-shadow:0 0 0 1px rgba(45,212,191,0.2);
+}
+
+.flat-select option {
+    background:#111827;
+    color:white;
+}
+
+/* ================= BOTÓN PRINCIPAL NARANJA ================= */
+.main-button {
+    width:100%;
+    padding:11px;
+    border:none;
+    border-radius:8px;
+    background:#ff5722; /* Color Naranja Vital Up */
+    color:#ffffff;
+    font-weight:600;
+    font-size:14px;
+    cursor:pointer;
+    transition:.2s ease;
+    box-shadow: 0 4px 12px rgba(255, 87, 34, 0.15);
+}
+
+.main-button:hover {
+    background:#f44336;
+    box-shadow: 0 4px 16px rgba(255, 87, 34, 0.25);
+}
+
+.cancel-button {
+    width:100%;
+    padding:9px;
+    border:1px solid rgba(239,68,68,0.2);
+    border-radius:8px;
+    background:transparent;
+    color:#fca5a5;
+    font-weight:500;
+    font-size:13px;
+    cursor:pointer;
+    margin-top:8px;
+    transition:.2s;
+}
+
+.cancel-button:hover {
+    background:rgba(239,68,68,0.05);
+}
+
+/* ================= CAJA DE BÚSQUEDA PLAN DEBAJO DE LA BARRA ================= */
+.search-container {
+    position:relative;
+    margin-bottom:16px;
+}
+
+.search-input {
+    width:100%;
+    padding:11px 14px 11px 40px;
+    border-radius:8px;
+    border:1px solid rgba(255,255,255,0.03);
+    background:#111827;
+    color:white;
+    font-size:14px;
+    outline:none;
+    transition:.2s;
+}
+
+.search-input:focus {
+    border-color:rgba(255,255,255,0.1);
+}
+
+.search-input::placeholder {
+    color:#4b5563;
+}
+
+.search-icon {
+    position:absolute;
+    left:14px;
+    top:12px;
+    font-size:13px;
+    color:#4b5563;
+}
+
+/* ================= TABLA ESTILIZADA MATE ================= */
+.table-container {
+    overflow-x:auto;
+}
+
+table {
+    width:100%;
+    border-collapse:collapse;
+}
+
+thead {
+    background:rgba(255,255,255,0.005);
+    border-bottom:1px solid rgba(255,255,255,0.02);
+}
+
+th {
+    color:#4b5563;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    padding:12px 16px;
+    text-align:left;
+    font-weight:600;
+}
+
+td {
+    padding:14px 16px;
+    border-top:1px solid rgba(255,255,255,0.01);
+}
+
+tbody tr {
+    transition:.15s ease;
+}
+
+tbody tr:hover {
+    background:rgba(255,255,255,0.008);
+}
+
+/* ================= BADGES MODERNOS ================= */
+.badge {
+    padding:2px 6px;
+    border-radius:4px;
+    font-size:11px;
+    font-weight:500;
+}
+
+.badge-admin { background:rgba(147,51,234,0.08); color:#c084fc; }
+.badge-user { background:rgba(14,165,233,0.08); color:#38bdf8; }
+.badge-active { background:rgba(20,184,166,0.08); color:#2dd4bf; }
+.badge-inactive { background:rgba(225,29,72,0.08); color:#fb7185; }
+
+/* ================= BOTONES ACCIÓN COMPACTOS ================= */
+.action-btn {
+    width:28px;
+    height:28px;
+    border-radius:6px;
+    border:none;
+    cursor:pointer;
+    transition:.15s;
+    color:#475569;
+    font-size:12px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(255,255,255,0.01);
+    border:1px solid rgba(255,255,255,0.02);
+}
+
+.edit-btn:hover {
+    background:rgba(45,212,191,0.06);
+    color:#2dd4bf;
+    border-color:rgba(45,212,191,0.15);
+}
+
+.delete-btn:hover {
+    background:rgba(244,63,94,0.06);
+    color:#fb7185;
+    border-color:rgba(244,63,94,0.15);
+}
+
+/* ================= RESPONSIVE ================= */
+@media(max-width:960px){
+    .content-grid {
+        grid-template-columns:1fr;
+    }
+}
+
+</style>
+</head>
+        <a href="profesorhome.html" class="text-xs font-bold tracking-wider text-gray-400 hover:text-white uppercase transition">Volver</a>
+
+<body>
+
+<div class="main-container">
+
+    <!-- ENCABEZADO CENTRADO CON COLORES DE MARCA -->
+    <div class="header-centered">
+        <h1 class="title-vital">
+            <span class="text-blue">Gestión</span> 
+            <span class="text-white">de</span> 
+            <span class="text-orange">Usuarios</span>
+        </h1>
+        <div class="title-line">
+            <div class="line-b"></div>
+            <div class="line-w"></div>
+            <div class="line-o"></div>
+        </div>
+        <p class="section-subtitle">Administración global de accesos, roles y estados de Vital Up</p>
+    </div>
+
+    <!-- CUERPO DE CONTENIDO REORGANIZADO -->
+    <div class="content-grid">
+
+        <!-- COLUMNA IZQUIERDA: LISTA DE USUARIOS (PRINCIPAL) -->
+        <div>
+            <!-- BUSCADOR -->
+            <div class="search-container">
+                <input
+                    id="search"
+                    onkeyup="filtrar()"
+                    placeholder="Buscar por nombre o dirección de correo..."
+                    class="search-input"
+                >
+            </div>
+
+            <!-- TABLA DE DATOS -->
+            <div class="flat-card table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Rol</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- COLUMNA DERECHA: FICHA DE ACCIÓN -->
+        <div class="flat-card h-fit">
+            <h3 class="text-sm font-semibold mb-4 text-slate-300 flex items-center gap-1.5">
+                 GESTION DE USUARIOS
+            </h3>
+
+            <form id="form">
+                <input type="hidden" id="id">
+
+                <label class="input-label">Nombre completo</label>
+                <input
+                    id="nombre"
+                    type="text"
+                    placeholder="Ej. Juan Pérez"
+                    class="flat-input"
+                    required
+                >
+
+                <label class="input-label">Correo electrónico</label>
+                <input
+                    id="email"
+                    type="email"
+                    placeholder="correo@ejemplo.com"
+                    class="flat-input"
+                    required
+                >
+
+                <label class="input-label">Contraseña</label>
+                <input
+                    id="password"
+                    type="password"
+                    placeholder="Mínimo 6 caracteres"
+                    class="flat-input"
+                >
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="input-label">Rol</label>
+                        <select id="rol" class="flat-select">
+                            <option>Cargando...</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="input-label">Estado</label>
+                        <select id="estado" class="flat-select">
+                            <option>Cargando...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="main-button mt-1">
+                    Guardar Cambios
+                </button>
+
+                <button
+                    type="button"
+                    onclick="limpiarForm()"
+                    id="btn-cancelar"
+                    class="cancel-button hidden"
+                >
+                    Cancelar edición
+                </button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<script>
+/* ================= CONFIGURACIÓN SUPABASE ================= */
+const SUPABASE_URL = "https://hkqljtcnbnlvcqqmbcdv.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhrcWxqdGNuYm5sdmNxcW1iY2R2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyMTk4NjgsImV4cCI6MjA5Mjc5NTg2OH0.GWL0JQOAiLornI_r2nQgKfsEr3NMTacVcODLWXE2-gg";
+
+const { createClient } = supabase;
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let cache = [];
+
+/* ================= CONTROL DE SESIÓN SUTIL ================= */
+async function checkAuth(){
+    const { data:{ user } } = await supabaseClient.auth.getUser();
+    if(!user){
+        window.location.href = "login.html";
+    }
+}
+
+/* ================= SELECTS & BASE DE DATOS ================= */
+async function getRoles(){
+    const select = document.getElementById("rol");
+    const { data } = await supabaseClient.from("rol").select("*");
+    select.innerHTML = "";
+    data.forEach(r => {
+        select.innerHTML += `<option value="${r.id}">${r.nombre}</option>`;
+    });
+}
+
+async function getEstados(){
+    const select = document.getElementById("estado");
+    const { data } = await supabaseClient.from("estado").select("*");
+    select.innerHTML = "";
+    data.forEach(e => {
+        select.innerHTML += `<option value="${e.id}">${e.nombre}</option>`;
+    });
+}
+
+async function getUsuarios(){
+    const { data } = await supabaseClient.from("usuario").select(`*, rol(nombre), estado(nombre)`);
+    cache = data;
+    render(data);
+}
+
+/* ================= RENDERING DE LA TABLA ================= */
+function render(data){
+    const tabla = document.getElementById("tabla");
+    tabla.innerHTML = "";
+
+    data.forEach((u,index)=>{
+        const rolClass = u.rol?.nombre === "Administrador" ? "badge-admin" : "badge-user";
+        const estadoClass = u.estado?.nombre === "Activo" ? "badge-active" : "badge-inactive";
+
+        tabla.innerHTML += `
+        <tr>
+            <td>
+                <div class="flex flex-col">
+                    <span class="font-medium text-sm text-slate-200">${u.nombre}</span>
+                    <span class="text-slate-500 text-xs mt-0.5">${u.email}</span>
+                </div>
+            </td>
+            <td>
+                <span class="badge ${rolClass}">${u.rol?.nombre}</span>
+            </td>
+            <td>
+                <span class="badge ${estadoClass}">${u.estado?.nombre}</span>
+            </td>
+            <td>
+                <div class="flex gap-1.5">
+                    <button onclick="editarBtnClick(${index})" class="action-btn edit-btn" title="Editar">✏️</button>
+                    <button onclick="eliminar('${u.id}')" class="action-btn delete-btn" title="Eliminar">🗑️</button>
+                </div>
+            </td>
+        </tr>
+        `;
+    });
+}
+
+/* ================= PROCESOS CRUD ================= */
+document.getElementById("form").onsubmit = async (e)=>{
+    e.preventDefault();
+
+    const data = {
+        nombre: document.getElementById("nombre").value,
+        email: document.getElementById("email").value,
+        rol_id: document.getElementById("rol").value,
+        estado_id: document.getElementById("estado").value
+    };
+
+    const password = document.getElementById("password").value;
+    const id = document.getElementById("id").value;
+    let error;
+
+    if(id){
+        ({ error } = await supabaseClient.from("usuario").update(data).eq("id",id));
+    }else{
+        const { data:authData, error:authError } = await supabaseClient.auth.signUp({
+            email:data.email,
+            password:password
+        });
+
+        if(authError){
+            Swal.fire("Error", authError.message, "error");
+            return;
+        }
+
+        data.auth_id = authData.user.id;
+        ({ error } = await supabaseClient.from("usuario").insert([data]));
+    }
+
+    if(error){
+        Swal.fire("Error", error.message, "error");
+        return;
+    }
+
+    Swal.fire("Listo", "Usuario guardado correctamente", "success");
+    limpiarForm();
+    getUsuarios();
+};
+
+function editarBtnClick(index){
+    const u = cache[index];
+    document.getElementById("id").value = u.id;
+    document.getElementById("nombre").value = u.nombre;
+    document.getElementById("email").value = u.email;
+    document.getElementById("rol").value = u.rol_id;
+    document.getElementById("estado").value = u.estado_id;
+    document.getElementById("btn-cancelar").classList.remove("hidden");
+}
+
+function limpiarForm(){
+    document.getElementById("form").reset();
+    document.getElementById("id").value = "";
+    document.getElementById("btn-cancelar").classList.add("hidden");
+}
+
+async function eliminar(id){
+    const res = await Swal.fire({
+        title:"¿Remover usuario?",
+        text:"Esta acción descartará permanentemente la cuenta de la base de datos.",
+        icon:"warning",
+        showCancelButton:true,
+        confirmButtonColor:"#ff5722",
+        cancelButtonColor:"#fb7185",
+        confirmButtonText:"Confirmar",
+        cancelButtonText:"Cancelar"
+    });
+
+    if(res.isConfirmed){
+        await supabaseClient.from("usuario").delete().eq("id",id);
+        getUsuarios();
+        Swal.fire("Hecho", "Usuario eliminado.", "success");
+    }
+}
+
+function filtrar(){
+    const q = document.getElementById("search").value.toLowerCase();
+    const f = cache.filter(u => u.nombre.toLowerCase().includes(q) || u.email.toLowerCase().includes(q));
+    render(f);
+}
+
+/* ================= INICIALIZACIÓN ================= */
+window.onload = async ()=>{
+    await checkAuth();
+    getRoles();
+    getEstados();
+    getUsuarios();
+};
+</script>
+
+</body>
+</html>

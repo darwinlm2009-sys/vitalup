@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Login - Vital Up</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* 🌑 Fondo oscuro elegante integrado */
+body {
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Poppins', sans-serif;
+    background-color: #050811;
+}
+
+/* ⚡ Luces decorativas oficiales */
+body::before {
+    content: "";
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(45, 212, 191, 0.15) 0%, rgba(0,0,0,0) 70%);
+    top: -150px;
+    left: -150px;
+    pointer-events: none;
+}
+
+body::after {
+    content: "";
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255, 87, 34, 0.12) 0%, rgba(0,0,0,0) 70%);
+    bottom: -150px;
+    right: -150px;
+    pointer-events: none;
+}
+
+/* 🧊 Glassmorphism Premium */
+.glass {
+    background: rgba(10, 16, 30, 0.7);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), 0 0 40px rgba(45, 212, 191, 0.02);
+}
+
+/* ✨ Inputs adaptados */
+.input {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: white;
+}
+
+.input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.input:focus {
+    border-color: #2dd4bf;
+    box-shadow: 0 0 0 2px rgba(45, 212, 191, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* 🔥 Botón principal de rendimiento */
+.btn-main {
+    background: #ff5722;
+    box-shadow: 0 4px 20px rgba(255, 87, 34, 0.2);
+}
+
+.btn-main:hover {
+    background: #e64a19;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(255, 87, 34, 0.35);
+}
+
+/* 🟢 Botón secundario corporativo */
+.btn-secondary {
+    border-color: rgba(45, 212, 191, 0.4);
+    color: #2dd4bf;
+    background: rgba(45, 212, 191, 0.02);
+}
+
+.btn-secondary:hover {
+    background: rgba(45, 212, 191, 0.08);
+    border-color: #2dd4bf;
+    transform: translateY(-2px);
+}
+
+/* Estilos tipográficos del logo oficial */
+.font-vital { font-family: sans-serif; font-weight: bold; font-style: italic; fill: #2dd4bf; }
+.font-up { font-family: sans-serif; font-weight: bold; font-style: italic; fill: #ffffff; }
+
+/* Animación entrada */
+.fade-in {
+    animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Link "olvidaste tu contraseña" en línea con el tema */
+.link-teal {
+    color: #2dd4bf;
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    display: block;
+    text-align: right;
+    width: 100%;
+    margin-top: -8px;
+}
+.link-teal:hover { text-decoration: underline; }
+
+.link-muted {
+    color: rgba(255,255,255,0.4);
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 11px;
+    cursor: pointer;
+    display: block;
+    text-align: center;
+    width: 100%;
+}
+.link-muted:hover { color: #2dd4bf; }
+</style>
+
+</head>
+
+<body class="flex items-center justify-center relative">
+
+<!-- LOGIN CARD -->
+<div class="glass p-10 w-[420px] fade-in text-white z-10 mx-4">
+
+    <!-- Logo Corporativo SVG -->
+    <div class="w-48 h-12 mx-auto mb-4 flex items-center justify-center cursor-pointer" onclick="window.location.href='index.html'">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 90" width="100%" height="100%">
+          <g id="Texto-Logo">
+            <text x="10" y="62" font-size="58" class="font-vital" letter-spacing="-1">Vital</text>
+            <text x="145" y="62" font-size="58" class="font-up" letter-spacing="-1">Up</text>
+          </g>
+          <g id="Icono-Corazon" transform="translate(228, 12)">
+            <path d="M32,58 L29,55.2 C18.5,45.6 11.5,39.2 11.5,31.2 C11.5,24.7 16.6,19.6 23,19.6 C26.6,19.6 30.1,21.3 32,24 C33.9,21.3 37.4,19.6 41,19.6 C47.4,19.6 52.5,24.7 52.5,31.2 C52.5,39.2 45.5,45.6 35,55.2 L32,58 Z" fill="#ff5722" />
+            <path d="M12,36 L22,36 L25,27 L29,45 L33,32 L36,36 L52,36" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+          </g>
+        </svg>
+    </div>
+
+    <p id="subtitulo" class="text-center text-gray-400 mb-8 text-xs font-light tracking-wide">
+        Accede a tu cuenta y continúa tu progreso
+    </p>
+
+    <!-- ===================== BLOQUE 1: LOGIN ===================== -->
+    <div id="bloqueLogin" class="space-y-5">
+
+        <!-- EMAIL -->
+        <div>
+            <label class="text-xs font-semibold tracking-wider text-gray-400 uppercase block mb-2">Correo Electrónico</label>
+            <input id="email" type="email" placeholder="correo@ejemplo.com"
+                class="input w-full p-3.5 rounded-xl outline-none text-sm transition-all">
+        </div>
+
+        <!-- PASSWORD -->
+        <div>
+            <label class="text-xs font-semibold tracking-wider text-gray-400 uppercase block mb-2">Contraseña</label>
+            <input id="password" type="password" placeholder="••••••••"
+                class="input w-full p-3.5 rounded-xl outline-none text-sm transition-all">
+        </div>
+
+        <button type="button" class="link-teal" onclick="mostrarRecuperacion()">
+            ¿Olvidaste tu contraseña?
+        </button>
+
+        <!-- LOGIN -->
+        <button onclick="login()"
+            class="btn-main w-full text-white text-xs font-bold uppercase tracking-wider py-4 rounded-xl transition-all mt-3">
+            Iniciar Sesión
+        </button>
+
+        <!-- DIVIDER -->
+        <div class="relative flex py-2 items-center">
+            <div class="flex-grow border-t border-white/5"></div>
+            <span class="mx-4 text-gray-600 text-[10px] font-bold">-</span>
+            <div class="flex-grow border-t border-white/5"></div>
+        </div>
+
+        <!-- REGISTER -->
+        <button onclick="window.location.href='registro.html'"
+            class="btn-secondary w-full border text-xs font-bold uppercase tracking-wider py-4 rounded-xl transition-all">
+            Crear Cuenta Nueva
+        </button>
+
+    </div>
+
+    <!-- ===================== BLOQUE 2: PEDIR ENLACE DE RECUPERACIÓN ===================== -->
+    <div id="bloqueRecuperar" class="space-y-5" style="display:none">
+
+        <div>
+            <label class="text-xs font-semibold tracking-wider text-gray-400 uppercase block mb-2">Correo Electrónico</label>
+            <input id="recuperarEmail" type="email" placeholder="Tu correo registrado"
+                class="input w-full p-3.5 rounded-xl outline-none text-sm transition-all">
+        </div>
+
+        <button type="button" onclick="enviarRecuperacion()"
+            class="btn-main w-full text-white text-xs font-bold uppercase tracking-wider py-4 rounded-xl transition-all mt-3">
+            Enviar enlace de recuperación
+        </button>
+
+        <button type="button" class="link-muted" onclick="ocultarRecuperacion()">
+            Volver a iniciar sesión
+        </button>
+
+    </div>
+
+    <!-- ===================== BLOQUE 3: NUEVA CONTRASEÑA (tras click en el enlace del correo) ===================== -->
+    <div id="bloqueNuevaPassword" class="space-y-5" style="display:none">
+
+        <div>
+            <label class="text-xs font-semibold tracking-wider text-gray-400 uppercase block mb-2">Nueva Contraseña</label>
+            <input id="nuevaPassword" type="password" placeholder="••••••••"
+                class="input w-full p-3.5 rounded-xl outline-none text-sm transition-all">
+        </div>
+
+        <div>
+            <label class="text-xs font-semibold tracking-wider text-gray-400 uppercase block mb-2">Confirmar Contraseña</label>
+            <input id="confirmarPassword" type="password" placeholder="••••••••"
+                class="input w-full p-3.5 rounded-xl outline-none text-sm transition-all">
+        </div>
+
+        <button type="button" onclick="actualizarPassword()"
+            class="btn-main w-full text-white text-xs font-bold uppercase tracking-wider py-4 rounded-xl transition-all mt-3">
+            Actualizar Contraseña
+        </button>
+
+    </div>
+
+</div>
+
+<!-- Lógica de Autenticación de Negocio -->
+<script>
+const SUPABASE_URL = "https://hkqljtcnbnlvcqqmbcdv.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhrcWxqdGNuYm5sdmNxcW1iY2R2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyMTk4NjgsImV4cCI6MjA5Mjc5NTg2OH0.GWL0JQOAiLornI_r2nQgKfsEr3NMTacVcODLWXE2-gg";
+const { createClient } = supabase;
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ---------- Manejo de vistas ----------
+function verBloque(id) {
+    ["bloqueLogin", "bloqueRecuperar", "bloqueNuevaPassword"].forEach(b => {
+        document.getElementById(b).style.display = (b === id) ? "block" : "none";
+    }); 
+}
+
+function mostrarRecuperacion() {
+    document.getElementById("subtitulo").textContent = "Te enviaremos un enlace para recuperar tu acceso";
+    verBloque("bloqueRecuperar");
+}
+
+function ocultarRecuperacion() {
+    document.getElementById("subtitulo").textContent = "Accede a tu cuenta y continúa tu progreso";
+    verBloque("bloqueLogin");
+}
+
+// ---------- Login normal ----------
+async function login() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    if (!email || !password) {
+        Swal.fire("Atención", "Por favor ingresa tus credenciales", "warning");
+        return;
+    }
+
+    Swal.fire({
+        title: 'Verificando...',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+    });
+
+    const { data: { user }, error: authError } = await supabaseClient.auth.signInWithPassword({
+        email,
+        password
+    });
+
+    if (authError) {
+        Swal.fire("Error de Acceso", authError.message, "error");
+        return;
+    }
+
+    const { data: profile } = await supabaseClient
+        .from("usuario")
+        .select("rol:rol_id(nombre)")
+        .eq("auth_id", user.id)
+        .single();
+
+    if (profile.rol.nombre === "Administrador") {
+        window.location.href = "profesorhome.html";
+    } else {
+        window.location.href = "home.html";
+    }
+}
+
+// ---------- Paso 1: pedir el enlace de recuperación ----------
+async function enviarRecuperacion() {
+    const email = document.getElementById('recuperarEmail').value.trim();
+    if (!email) {
+        Swal.fire("Atención", "Escribe tu correo electrónico.", "warning");
+        return;
+    }
+
+    Swal.fire({
+        title: 'Enviando enlace...',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+    });
+
+    // El enlace vuelve a ESTA MISMA página (login.html), sin necesidad
+    // de una página aparte para poner la nueva contraseña.
+    const redirectUrl = window.location.origin + window.location.pathname;
+
+    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectUrl
+    });
+
+    if (error) {
+        Swal.fire('Error', 'No se pudo enviar el enlace: ' + error.message, 'error');
+        return;
+    }
+
+    // Por seguridad, este mensaje es igual exista o no el correo en el
+    // sistema (así nadie puede usarlo para adivinar qué correos están registrados)
+    Swal.fire(
+        '¡Listo!',
+        'Si ese correo está registrado, te llegará un enlace para crear una nueva contraseña. Revisa también spam.',
+        'success'
+    ).then(() => ocultarRecuperacion());
+}
+
+// ---------- Paso 2: detectar que el usuario volvió desde el enlace del correo ----------
+// Supabase procesa el token que viene en la URL (#access_token=...&type=recovery)
+// y dispara el evento "PASSWORD_RECOVERY" automáticamente.
+supabaseClient.auth.onAuthStateChange((event, session) => {
+    if (event === "PASSWORD_RECOVERY") {
+        document.getElementById("subtitulo").textContent = "Crea tu nueva contraseña";
+        verBloque("bloqueNuevaPassword");
+    }
+});
+
+// ---------- Paso 3: guardar la nueva contraseña ----------
+async function actualizarPassword() {
+    const nueva = document.getElementById('nuevaPassword').value;
+    const confirmar = document.getElementById('confirmarPassword').value;
+
+    if (!nueva || !confirmar) {
+        Swal.fire("Atención", "Completa ambos campos.", "warning");
+        return;
+    }
+    if (nueva.length < 6) {
+        Swal.fire("Atención", "La contraseña debe tener al menos 6 caracteres.", "warning");
+        return;
+    }
+    if (nueva !== confirmar) {
+        Swal.fire("Atención", "Las contraseñas no coinciden.", "warning");
+        return;
+    }
+
+    Swal.fire({
+        title: 'Actualizando...',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+    });
+
+    const { error } = await supabaseClient.auth.updateUser({ password: nueva });
+
+    if (error) {
+        Swal.fire('Error', 'No se pudo actualizar la contraseña: ' + error.message, 'error');
+        return;
+    }
+
+    // Cerramos la sesión temporal de recuperación y limpiamos el token de la URL
+    await supabaseClient.auth.signOut();
+
+    Swal.fire('¡Contraseña actualizada!', 'Ya puedes iniciar sesión con tu nueva contraseña.', 'success')
+        .then(() => {
+            // Limpia el hash (#access_token=...) de la barra de direcciones
+            window.location.replace(window.location.origin + window.location.pathname);
+        });
+}
+</script>
+
+</body>
+</html>

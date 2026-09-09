@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca de Nutrición - Vital Up</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@700;800&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #050811;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        
+        .font-display { font-family: 'Syne', sans-serif; }
+        .font-tech { font-family: 'Space Grotesk', sans-serif; }
+
+        .glow-cyan { background: radial-gradient(circle, rgba(45, 212, 191, 0.12) 0%, rgba(0,0,0,0) 70%); }
+        .glow-orange { background: radial-gradient(circle, rgba(255, 87, 34, 0.1) 0%, rgba(0,0,0,0) 70%); }
+
+        .glass-card {
+            background: rgba(10, 16, 30, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(45, 212, 191, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(45, 212, 191, 0.05);
+            transform: translateY(-4px);
+        }
+
+        .font-vital { font-family: sans-serif; font-weight: bold; font-style: italic; fill: #2dd4bf; }
+        .font-up { font-family: sans-serif; font-weight: bold; font-style: italic; fill: #ffffff; }
+
+        .modal-overlay {
+            backdrop-filter: blur(0px);
+            transition: all 0.3s ease-in-out;
+        }
+        .modal-overlay.active {
+            backdrop-filter: blur(16px);
+            background-color: rgba(5, 8, 17, 0.85);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- Luces de fondo decorativas -->
+    <div class="absolute top-0 right-0 w-[600px] h-[600px] glow-cyan pointer-events-none z-0"></div>
+    <div class="absolute bottom-1/4 left-[-100px] w-[500px] h-[500px] glow-orange pointer-events-none z-0"></div>
+
+    <!-- HEADER / NAV -->
+    <header class="w-full max-w-7xl mx-auto px-6 pt-3 pb-6 flex items-center justify-between relative z-50">
+        <div class="w-44 h-12 flex">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 90" width="100%" height="100%">
+              <g id="Texto-Logo">
+                <text x="10" y="62" font-size="58" class="font-vital" letter-spacing="-1">Vital</text>
+                <text x="145" y="62" font-size="58" class="font-up" letter-spacing="-1">Up</text>
+              </g>
+              <g id="Icono-Corazon" transform="translate(228, 12)">
+                <path d="M32,58 L29,55.2 C18.5,45.6 11.5,39.2 11.5,31.2 C11.5,24.7 16.6,19.6 23,19.6 C26.6,19.6 30.1,21.3 32,24 C33.9,21.3 37.4,19.6 41,19.6 C47.4,19.6 52.5,24.7 52.5,31.2 C52.5,39.2 45.5,45.6 35,55.2 L32,58 Z" fill="#ff5722" />
+                <path d="M12,36 L22,36 L25,27 L29,45 L33,32 L36,36 L52,36" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+              </g>
+            </svg>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <button class="font-display font-extrabold text-xs uppercase tracking-wider text-gray-300 hover:text-[#2dd4bf] border border-white/10 hover:border-[#2dd4bf]/40 bg-white/[0.02] backdrop-blur-md px-5 py-2.5 rounded-xl transition-all" onclick="window.location.href='home.html'">
+                volver
+            </button>
+        </div>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="w-full max-w-7xl mx-auto px-6 flex-1 flex flex-col justify-start py-2 relative z-10">
+        
+        <div class="max-w-5xl mb-10">
+            <span class="text-[#2dd4bf] font-tech text-xs font-bold uppercase tracking-widest block mb-2">Módulos de Alimentación</span>
+            <h1 class="text-4xl sm:text-6xl font-display font-extrabold uppercase tracking-tighter leading-none text-white">
+                BIBLIOTECA DE NUTRICIÓN <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#2dd4bf] to-[#ff5722]">SALUDABLE</span>
+            </h1>
+            <p class="text-gray-400 text-xs sm:text-sm max-w-2xl mt-4 leading-relaxed">
+                Alimenta tus objetivos con precisión biológica. Selecciona un plato para analizar su densidad macro-nutricional, calorías totales y consejos de preparación limpia.
+            </p>
+        </div>
+
+        <!-- REJILLA DE 16 MINI TARJETAS -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            
+            <!-- Plato 1 -->
+            <div onclick="openFood('avena-proteica')" class="glass-card rounded-2xl cursor-pointer overflow-hidden flex flex-col justify-between group border-l-2 border-l-[#2dd4bf]">
+                <div class="w-full h-40 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1517673400267-0251440c45dc?q=80&w=500&auto=format&fit=crop');"></div>
+                <div class="p-5 flex-1 flex flex-col justify-between">
+                    <div>
+                        <span class="text-[10px] font-tech font-bold text-gray-500 tracking-wider uppercase block">Desayuno / Energía</span>
+                        <h3 class="text-base font-bold uppercase text-white tracking-wide mt-1 group-hover:text-[#2dd4bf] transition-colors">Avena Nocturna con Whey</h3>
+                    </div>
+                    <div class="text-[10px] font-tech text-[#2dd4bf] mt-4 flex items-center gap-1"><span>Ver macros</span> &rarr;</div>
+                </div>
+            </div>
+
+            <!-- Plato 2 -->
+            <div onclick="openFood('pollo-camote')" class="glass-card rounded-2xl cursor-pointer overflow-hidden flex flex-col justify-between group border-l-2 border-l-[#ff5722]">
+                <div class="w-full h-40 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1532550907401-a500c9a57435?q=80&w=500&auto=format&fit=crop');"></div>
+                <div class="p-5 flex-1 flex flex-col justify-between">
+                    <div>
+                        <span class="text-[10px] font-tech font-bold text-gray-500 tracking-wider uppercase block">Almuerzo / Construcción</span>
+                        <h3 class="text-base font-bold uppercase text-white tracking-wide mt-1 group-hover:text-[#ff5722] transition-colors">Pechuga con Camote</h3>
+                    </div>
+                    <div class="text-[10px] font-tech text-[#ff5722] mt-4 flex items-center gap-1"><span>Ver macros</span> &rarr;</div>
+                </div>
+            </div>
+
+            <!-- Plato 3 -->
+            <div onclick="openFood('salmon-esparragos')" class="glass-card rounded-2xl cursor-pointer overflow-hidden flex flex-col justify-between group border-l-2 border-l-purple-500">
+                <div class="w-full h-40 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1467003909585-2f8a72700288?q=80&w=500&auto=format&fit=crop');"></div>
+                <div class="p-5 flex-1 flex flex-col justify-between">
+                    <div>
+                        <span class="text-[10px] font-tech font-bold text-gray-500 tracking-wider uppercase block">Cena / Omega 3</span>
+                        <h3 class="text-base font-bold uppercase text-white tracking-wide mt-1 group-hover:text-purple-400 transition-colors">Salmón con Espárragos</h3>
+                    </div>
+                    <div class="text-[10px] font-tech text-purple-400 mt-4 flex items-center gap-1"><span>Ver macros</span> &rarr;</div>
+                </div>
+            </div>
+
+            <!-- Plato 4 -->
+            <div onclick="openFood('tostadas-aguacate')" class="glass-card rounded-2xl cursor-pointer overflow-hidden flex flex-col justify-between group border-l-2 border-l-[#2dd4bf]">
+                <div class="w-full h-40 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1525351484163-7529414344d8?q=80&w=500&auto=format&fit=crop');"></div>
+                <div class="p-5 flex-1 flex flex-col justify-between">
+                    <div>
+                        <span class="text-[10px] font-tech font-bold text-gray-500 tracking-wider uppercase block">Desayuno / Grasas Saludables</span>
+                        <h3 class="text-base font-bold uppercase text-white tracking-wide mt-1 group-hover:text-[#2dd4bf] transition-colors">Tostadas con Aguacate</h3>
+                    </div>
+                    <div class="text-[10px] font-tech text-[#2dd4bf] mt-4 flex items-center gap-1"><span>Ver macros</span> &rarr;</div>
+                </div>
+            </div>
+
+            <!-- Plato 5 -->
+            <div onclick="openFood('bowl-quinoa')" class="glass-card rounded-2xl cursor-pointer overflow-hidden flex flex-col justify-between group border-l-2 border-l-purple-500">
+                <div class="w-full h-40 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=500&auto=format&fit=crop');"></div>
+                <div class="p-5 flex-1 flex flex-col justify-between">
+                    <div>
+                        <span class="text-[10px] font-tech font-bold text-gray-500 tracking-wider uppercase block">Almuerzo / Carbo Complejo</span>
+                        <h3 class="text-base font-bold uppercase text-white tracking-wide mt-1 group-hover:text-purple-400 transition-colors">Bowl de Quinoa y Atún</h3>
+                    </div>
+                    <div class="text-[10px] font-tech text-purple-400 mt-4 flex items-center gap-1"><span>Ver macros</span> &rarr;</div>
+                </div>
+            </div>
+
+            <!-- Plato 6 -->
+            <div onclick="openFood('yogurt-griego')" class="glass-card rounded-2xl cursor-pointer overflow-hidden flex flex-col justify-between group border-l-2 border-l-[#ff5722]">
+                <div class="w-full h-40 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1488477181946-6428a0291777?q=80&w=500&auto=format&fit=crop');"></div>
+                <div class="p-5 flex-1 flex flex-col justify-between">
+                    <div>
+                        <span class="text-[10px] font-tech font-bold text-gray-500 tracking-wider uppercase block">Snack / Probióticos</span>
+                        <h3 class="text-base font-bold uppercase text-white tracking-wide mt-1 group-hover:text-[#ff5722] transition-colors">Yogurt Griego con Berries</h3>
+                    </div>
+                    <div class="text-[10px] font-tech text-[#ff5722] mt-4 flex items-center gap-1"><span>Ver macros</span> &rarr;</div>
+                </div>
+            </div>
+
+            <!-- Plato 7 -->
+            <div onclick="openFood('tortilla-espinaca')" class="glass-card rounded-2xl cursor-pointer overflow-hidden flex flex-col justify-between group border-l-2 border-l-[#2dd4bf]">
+                <div class="w-full h-40 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1494597564530-871f2b93ac55?q=80&w=500&auto=format&fit=crop');"></div>
+                <div class="p-5 flex-1 flex flex-col justify-between">
+                    <div>
+                        <span class="text-[10px] font-tech font-bold text-gray-500 tracking-wider uppercase block">Desayuno / Micronutrientes</span>
+                        <h3 class="text-base font-bold uppercase text-white tracking-wide mt-1 group-hover:text-[#2dd4bf] transition-colors">Tortilla de Claras e Espinaca</h3>
+                    </div>
+                    <div class="text-[10px] font-tech text-[#2dd4bf] mt-4 flex items-center gap-1"><span>Ver macros</span> &rarr;</div>
+                </div>
+            </div>
+
+            <!-- Plato 8 -->
+            <div onclick="openFood('ensalada-garbanzos')" class="glass-card rounded-2xl cursor-pointer overflow-hidden flex flex-col justify-between group border-l-2 border-l-[#ff5722]">
+                <div class="w-full h-40 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=500&auto=format&fit=crop');"></div>
+                <div class="p-5 flex-1 flex flex-col justify-between">
+                    <div>
+                        <span class="text-[10px] font-tech font-bold text-gray-500 tracking-wider uppercase block">Cena / Fibra & Veggie</span>
+                        <h3 class="text-base font-bold uppercase text-white tracking-wide mt-1 group-hover:text-[#ff5722] transition-colors">Ensalada de Garbanzos</h3>
+                    </div>
+                    <div class="text-[10px] font-tech text-[#ff5722] mt-4 flex items-center gap-1"><span>Ver macros</span> &rarr;</div>
+                </div>
+            </div>
+
+            <!-- Plato 9 -->
+            <div onclick="openFood('filete-res')" class="glass-card rounded-2xl cursor-pointer overflow-hidden flex flex-col justify-between group border-l-2 border-l-[#2dd4bf]">
+                <div class="w-full h-40 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=500&auto=format&fit=crop');"></div>
+                <div class="p-5 flex-1 flex flex-col justify-between">
+                    <div>
+                        <span class="text-[10px] font-tech font-bold text-gray-500 tracking-wider uppercase block">Almuerzo / Hierro & Zinc</span>
+                        <h3 class="text-base font-bold uppercase text-white tracking-wide mt-1 group-hover:text-[#2dd4bf] transition-colors">Filete de Res con Brócoli</h3>
+                    </div>
+                    <div class="text-[10px] font-tech text-[#2dd4bf] mt-4 flex items-center gap-1"><span>Ver macros</span> &rarr;</div>
+                </div>
+            </div>
+
+            <!-- Plato 10 -->
+            <div onclick="openFood('pancakes-avena')" class="glass-card rounded-2xl cursor-pointer overflow-hidden flex flex-col justify-between group border-l-2 border-l-purple-500">
+                <div class="w-full h-40 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?q=80&w=500&auto=format&fit=crop');"></div>
+                <div class="p-5 flex-1 flex flex-col justify-between">
+                    <div>
+                        <span class="text-[10px] font-tech font-bold text-gray-500 tracking-wider uppercase block">Desayuno / Fit Cheat</span>
+                        <h3 class="text-base font-bold uppercase text-white tracking-wide mt-1 group-hover:text-purple-400 transition-colors">Pancakes de Avena y Banano</h3>
+                    </div>
+                    <div class="text-[10px] font-tech text-purple-400 mt-4 flex items-center gap-1"><span>Ver macros</span> &rarr;</div>
+                </div>
+            </div>
+
+            <!-- Plato 11 -->
+            <div onclick="openFood('tacos-pollo')" class="glass-card rounded-2xl cursor-pointer overflow-hidden flex flex-col justify-between group border-l-2 border-l-[#ff5722]">
+                <div class="w-full h-40 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1565299585323-38d6b0865b47?q=80&w=500&auto=format&fit=crop');"></div>
+                <div class="p-5 flex-1 flex flex-col justify-between">
+                    <div>
+                        <span class="text-[10px] font-tech font-bold text-gray-500 tracking-wider uppercase block">Cena / Alta Proteína</span>
+                        <h3 class="text-base font-bold uppercase text-white tracking-wide mt-1 group-hover:text-[#ff5722] transition-colors">Tacos de Pollo en Lechuga</h3>
+                    </div>
+                    <div class="text-[10px] font-tech text-[#ff5722] mt-4 flex items-center gap-1"><span>Ver macros</span> &rarr;</div>
+                </div>
+            </div>
+
+            <!-- Plato 12 -->
+            <div onclick="openFood('crema-calabaza')" class="glass-card rounded-2xl cursor-pointer overflow-hidden flex flex-col justify-between group border-l-2 border-l-[#2dd4bf]">
+                <div class="w-full h-40 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1476718406336-bb5a9690ee2a?q=80&w=500&auto=format&fit=crop');"></div>
+                <div class="p-5 flex-1 flex flex-col justify-between">
+                    <div>
+                        <span class="text-[10px] font-tech font-bold text-gray-500 tracking-wider uppercase block">Cena / Baja en Calorías</span>
+                        <h3 class="text-base font-bold uppercase text-white tracking-wide mt-1 group-hover:text-[#2dd4bf] transition-colors">Crema de Calabaza y Queso</h3>
+                    </div>
+                    <div class="text-[10px] font-tech text-[#2dd4bf] mt-4 flex items-center gap-1"><span>Ver macros</span> &rarr;</div>
+                </div>
+            </div>
+
+            <!-- Plato 13 -->
+            <div onclick="openFood('mix-frutos')" class="glass-card rounded-2xl cursor-pointer overflow-hidden flex flex-col justify-between group border-l-2 border-l-[#ff5722]">
+                <div class="w-full h-40 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1596560548464-f01068e6020a?q=80&w=500&auto=format&fit=crop');"></div>
+                <div class="p-5 flex-1 flex flex-col justify-between">
+                    <div>
+                        <span class="text-[10px] font-tech font-bold text-gray-500 tracking-wider uppercase block">Snack / Saciedad rápida</span>
+                        <h3 class="text-base font-bold uppercase text-white tracking-wide mt-1 group-hover:text-[#ff5722] transition-colors">Mix de Frutos Secos</h3>
+                    </div>
+                    <div class="text-[10px] font-tech text-[#ff5722] mt-4 flex items-center gap-1"><span>Ver macros</span> &rarr;</div>
+                </div>
+            </div>
+
+            <!-- Plato 14 -->
+            <div onclick="openFood('chia-pudding')" class="glass-card rounded-2xl cursor-pointer overflow-hidden flex flex-col justify-between group border-l-2 border-l-purple-500">
+                <div class="w-full h-40 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1541658016709-82535e94bc69?q=80&w=500&auto=format&fit=crop');"></div>
+                <div class="p-5 flex-1 flex flex-col justify-between">
+                    <div>
+                        <span class="text-[10px] font-tech font-bold text-gray-500 tracking-wider uppercase block">Postre / Fit Digestivo</span>
+                        <h3 class="text-base font-bold uppercase text-white tracking-wide mt-1 group-hover:text-purple-400 transition-colors">Pudding de Chía y Coco</h3>
+                    </div>
+                    <div class="text-[10px] font-tech text-purple-400 mt-4 flex items-center gap-1"><span>Ver macros</span> &rarr;</div>
+                </div>
+            </div>
+
+            <!-- Plato 15 -->
+            <div onclick="openFood('pavo-arroz')" class="glass-card rounded-2xl cursor-pointer overflow-hidden flex flex-col justify-between group border-l-2 border-l-[#2dd4bf]">
+                <div class="w-full h-40 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1543339308-43e59d6b73a6?q=80&w=500&auto=format&fit=crop');"></div>
+                <div class="p-5 flex-1 flex flex-col justify-between">
+                    <div>
+                        <span class="text-[10px] font-tech font-bold text-gray-500 tracking-wider uppercase block">Almuerzo / Post-Entreno</span>
+                        <h3 class="text-base font-bold uppercase text-white tracking-wide mt-1 group-hover:text-[#2dd4bf] transition-colors">Pavo Molido con Arroz</h3>
+                    </div>
+                    <div class="text-[10px] font-tech text-[#2dd4bf] mt-4 flex items-center gap-1"><span>Ver macros</span> &rarr;</div>
+                </div>
+            </div>
+
+            <!-- Plato 16 -->
+            <div onclick="openFood('batido-verde')" class="glass-card rounded-2xl cursor-pointer overflow-hidden flex flex-col justify-between group border-l-2 border-l-[#ff5722]">
+                <div class="w-full h-40 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1610970881699-44a5587cabec?q=80&w=500&auto=format&fit=crop');"></div>
+                <div class="p-5 flex-1 flex flex-col justify-between">
+                    <div>
+                        <span class="text-[10px] font-tech font-bold text-gray-500 tracking-wider uppercase block">Snack / Detox-Vitamínico</span>
+                        <h3 class="text-base font-bold uppercase text-white tracking-wide mt-1 group-hover:text-[#ff5722] transition-colors">Green Smoothie Fibra</h3>
+                    </div>
+                    <div class="text-[10px] font-tech text-[#ff5722] mt-4 flex items-center gap-1"><span>Ver macros</span> &rarr;</div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- INTERFAZ MODAL DINÁMICA -->
+    <div id="foodModal" class="modal-overlay fixed inset-0 z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="glass-card max-w-2xl w-full rounded-3xl overflow-hidden shadow-2xl relative border border-white/10 flex flex-col md:flex-row transform scale-95 transition-transform duration-300" id="modalCard">
+            
+            <!-- Mini X superior para cierre rápido -->
+            <button onclick="closeFood()" class="absolute top-4 right-4 text-gray-400 hover:text-white font-tech text-sm z-30 bg-slate-900/60 w-8 h-8 rounded-full flex items-center justify-center border border-white/5">&times;</button>
+
+            <!-- Izquierda: Imagen del plato + PANEL DE MACROS DINÁMICO -->
+            <div class="w-full md:w-1/2 h-56 md:h-auto bg-slate-950 relative flex items-end p-4 border-b md:border-b-0 md:border-r border-white/5">
+                <img id="modalImage" src="" alt="Comida Saludable" class="w-full h-full object-cover absolute inset-0 opacity-60">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#050811] via-transparent to-transparent"></div>
+                
+                <!-- Tabla Informativa de Calorías y Macros -->
+                <div class="relative z-10 w-full bg-slate-900/80 backdrop-blur-md rounded-xl p-3 border border-white/5 flex justify-between items-center text-center">
+                    <div>
+                        <span class="text-[9px] font-tech font-bold text-[#ff5722] uppercase tracking-wider block">Calorías</span>
+                        <span id="macroKcal" class="text-sm font-bold text-white font-tech">000 kcal</span>
+                    </div>
+                    <div class="w-px h-6 bg-white/10"></div>
+                    <div>
+                        <span class="text-[9px] font-tech font-bold text-[#2dd4bf] uppercase tracking-wider block">Prot</span>
+                        <span id="macroProt" class="text-xs font-semibold text-white">00g</span>
+                    </div>
+                    <div class="w-px h-6 bg-white/10"></div>
+                    <div>
+                        <span class="text-[9px] font-tech font-bold text-amber-400 uppercase tracking-wider block">Carbs</span>
+                        <span id="macroCarbs" class="text-xs font-semibold text-white">00g</span>
+                    </div>
+                    <div class="w-px h-6 bg-white/10"></div>
+                    <div>
+                        <span class="text-[9px] font-tech font-bold text-purple-400 uppercase tracking-wider block">Grasas</span>
+                        <span id="macroFat" class="text-xs font-semibold text-white">00g</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Derecha: Desglose Técnico Informativo -->
+            <div class="w-full md:w-1/2 p-6 flex flex-col justify-between space-y-4 relative z-20 bg-[#0a101e]/90">
+                <div>
+                    <span id="modalCategory" class="text-[10px] font-tech font-bold text-[#2dd4bf] tracking-widest uppercase block">Categoría</span>
+                    <h2 id="modalTitle" class="text-xl sm:text-2xl font-display font-black uppercase text-white tracking-tight mt-1">Nombre Plato</h2>
+                    <p id="modalDescription" class="text-gray-300 text-xs leading-relaxed mt-3">Detalles nutricionales del plato.</p>
+                </div>
+
+                <div class="space-y-3 pt-2 border-t border-white/5">
+                    <div>
+                        <span class="text-[9px] font-tech font-bold text-gray-500 uppercase block tracking-wider">Ingredientes Clave</span>
+                        <span id="modalIngredients" class="text-xs font-semibold text-white block mt-0.5">Ingredientes</span>
+                    </div>
+                    <div>
+                        <span class="text-[9px] font-tech font-bold text-gray-500 uppercase block tracking-wider">Beneficio Clínico</span>
+                        <p id="modalBenefit" class="text-[#ff5722] text-[11px] leading-relaxed italic mt-0.5">Tip clínico nutricional.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="w-full py-6 border-t border-white/5 px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] text-gray-500 tracking-widest uppercase bg-[#060913] mt-12 relative z-50">
+        <div>&copy; 2026 Vital Up. Todos los derechos reservados.</div>
+        <div class="flex gap-6">
+            <a href="#" class="hover:text-white transition">Privacidad</a>
+            <a href="#" class="hover:text-white transition">Términos de Uso</a>
+        </div>
+    </footer>
+
+    <!-- MAPEO DE LOS 16 PLATOS CON SUS CALORÍAS Y MACROS -->
+    <script>
+        const foodData = {
+            "avena-proteica": {
+                title: "Avena con Whey",
+                category: "Desayuno / Energía Sostenida",
+                description: "Avena reposada en leche de almendras con una porción de proteína aislada y canela. Aporte de carbohidratos complejos de absorción lenta.",
+                ingredients: "Avena en hojuelas, Whey Protein, Leche de almendras, Fresas.",
+                benefit: "Mantiene la glucemia estable y aporta energía de calidad para tus entrenamientos de fuerza.",
+                kcal: "380 kcal", prot: "30g", carbs: "45g", fat: "6g",
+                image: "https://images.unsplash.com/photo-1517673400267-0251440c45dc?q=80&w=600"
+            },
+            "pollo-camote": {
+                title: "Pechuga con Camote",
+                category: "Almuerzo / Hipertrofia",
+                description: "Pechuga de pollo sazonada a las finas hierbas cocinada al grill, acompañada de rodajas de camote (batata) al horno.",
+                ingredients: "Pechuga de pollo, Camote rallado u horneado, Aceite de oliva (3ml).",
+                benefit: "Combinación limpia por excelencia para la recuperación muscular y recarga de glucógeno.",
+                kcal: "420 kcal", prot: "42g", carbs: "38g", fat: "7g",
+                image: "https://images.unsplash.com/photo-1532550907401-a500c9a57435?q=80&w=600"
+            },
+            "salmon-esparragos": {
+                title: "Salmón con Espárragos",
+                category: "Cena / Perfil Lipídico",
+                description: "Filete de salmón fresco sellado a la plancha, montado sobre una cama de espárragos trigueros salteados.",
+                ingredients: "Salmón, Espárragos verdes, Limón, Pimienta negra.",
+                benefit: "Alto contenido de ácidos grasos esenciales Omega-3 que reducen la inflamación sistémica.",
+                kcal: "460 kcal", prot: "34g", carbs: "8g", fat: "22g",
+                image: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?q=80&w=600"
+            },
+            "tostadas-aguacate": {
+                title: "Tostadas con Aguacate",
+                category: "Desayuno / Grasas Cardiosaludables",
+                description: "Pan de masa madre tostado, untado con puré de aguacate sazonado y dos huevos pochados en la parte superior.",
+                ingredients: "Pan integral de masa madre, Aguacate (50g), 2 Huevos enteros.",
+                benefit: "Aporte óptimo de grasas monoinsaturadas y vitaminas liposolubles A, D, E y K.",
+                kcal: "410 kcal", prot: "18g", carbs: "28g", fat: "19g",
+                image: "https://images.unsplash.com/photo-1525351484163-7529414344d8?q=80&w=600"
+            },
+            "bowl-quinoa": {
+                title: "Bowl de Quinoa y Atún",
+                category: "Almuerzo / Completo Veggie-Fish",
+                description: "Base de quinoa cocida mezclada con lomo de atún en agua, tomates cherry, cubos de pepino y aderezo ligero de limón.",
+                ingredients: "Quinoa, Atún en agua, Tomate cherry, Pepino.",
+                benefit: "La quinoa aporta todos los aminoácidos esenciales combinada con una proteína de digestión rápida.",
+                kcal: "390 kcal", prot: "35g", carbs: "42g", fat: "5g",
+                image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=600"
+            },
+            "yogurt-griego": {
+                title: "Yogurt con Berries",
+                category: "Snack / Salud Intestinal",
+                description: "Yogurt griego natural sin azúcar añadido, mezclado con arándanos, frambuesas frescas y semillas de calabaza.",
+                ingredients: "Yogurt Griego 0%, Arándanos, Semillas de calabaza crudas.",
+                benefit: "Alto aporte de caseína de liberación lenta y cultivos vivos para optimizar la microbiota.",
+                kcal: "240 kcal", prot: "19g", carbs: "16g", fat: "4g",
+                image: "https://images.unsplash.com/photo-1488477181946-6428a0291777?q=80&w=600"
+            },
+            "tortilla-espinaca": {
+                title: "Tortilla de Claras",
+                category: "Desayuno / Definición Líquida",
+                description: "Omelette ligero preparado puramente con claras de huevo batidas e infundido con espinacas baby y champiñones.",
+                ingredients: "5 Claras de huevo, Espinacas orgánicas, Champiñones cortados.",
+                benefit: "Volumen gástrico alto con una densidad calórica sumamente baja. Ideal para control de apetito.",
+                kcal: "180 kcal", prot: "24g", carbs: "4g", fat: "1g",
+                image: "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?q=80&w=600"
+            },
+            "ensalada-garbanzos": {
+                title: "Ensalada Garbanzos",
+                category: "Cena / Proteína Vegetal",
+                description: "Garbanzos tiernos cocidos sazonados con pimientos picados, cebolla morada, perejil y cubos de queso feta bajo en grasa.",
+                ingredients: "Garbanzos enteros, Pimiento rojo, Queso Feta Light, Vinagre de manzana.",
+                benefit: "Excelente fuente de fibra soluble e insoluble que promueve la digestión nocturna.",
+                kcal: "320 kcal", prot: "14g", carbs: "44g", fat: "8g",
+                image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=600"
+            },
+            "filete-res": {
+                title: "Res con Brócoli",
+                category: "Almuerzo / Fuerza Estructural",
+                description: "Corte magro de res salteado al wok en aminoácidos de coco junto con floretes de brócoli al vapor.",
+                ingredients: "Filete de res magro, Brócoli, Aminoácidos de coco o soya baja en sodio.",
+                benefit: "Alto nivel de creatina natural y hierro hemo para mantener los niveles de fuerza y oxigenación celular.",
+                kcal: "440 kcal", prot: "40g", carbs: "12g", fat: "14g",
+                image: "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=600"
+            },
+            "pancakes-avena": {
+                title: "Pancakes Fit",
+                category: "Desayuno / Recompensa Inteligente",
+                description: "Tortas esponjosas hechas a base de harina de avena, claras y banano triturado, servidas con miel de agave orgánica.",
+                ingredients: "Harina de avena integral, 1/2 Banano, Claras de huevo, Canela.",
+                benefit: "Satisface antojos dulces de forma saludable sin recurrir a harinas refinadas ni azúcares industriales.",
+                kcal: "350 kcal", prot: "20g", carbs: "52g", fat: "3g",
+                image: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?q=80&w=600"
+            },
+            "tacos-pollo": {
+                title: "Tacos de Pollo Fit",
+                category: "Cena / Low Carb",
+                description: "Fajitas de pechuga de pollo marinadas envueltas en hojas firmes y crujientes de lechuga romana, coronadas con pico de gallo.",
+                ingredients: "Pechuga desmechada, Hojas de lechuga romana, Tomate, Cebolla, Cilantro.",
+                benefit: "Permite cenar una porción abundante reduciendo los carbohidratos drásticamente antes de dormir.",
+                kcal: "260 kcal", prot: "32g", carbs: "6g", fat: "4g",
+                image: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?q=80&w=600"
+            },
+            "crema-calabaza": {
+                title: "Crema de Calabaza",
+                category: "Cena / Confort Térmico",
+                description: "Sopa tersa y caliente de calabaza licuada con un toque de leche de coco ligera y cubos de tofu o queso bajo en grasa.",
+                ingredients: "Calabaza/Auyama, Leche de coco light, Queso fresco magro.",
+                benefit: "Muy reconfortante para el sistema nervioso central en las noches debido a su digestión dócil.",
+                kcal: "190 kcal", prot: "9g", carbs: "22g", fat: "5g",
+                image: "https://images.unsplash.com/photo-1476718406336-bb5a9690ee2a?q=80&w=600"
+            },
+            "mix-frutos": {
+                title: "Mix Frutos Secos",
+                category: "Snack / Saciedad Hormonal",
+                description: "Porción pesada y medida de almendras, nueces del nogal y avellanas tostadas al natural sin sal.",
+                ingredients: "Almendras, Nueces, Avellanas enteras (30g totales).",
+                benefit: "Estimula la hormona de la saciedad gracias a su densidad de grasas poliinsaturadas esenciales.",
+                kcal: "180 kcal", prot: "6g", carbs: "5g", fat: "16g",
+                image: "https://images.unsplash.com/photo-1596560548464-f01068e6020a?q=80&w=600"
+            },
+            "chia-pudding": {
+                title: "Pudding de Chía",
+                category: "Postre / Control Insulinémico",
+                description: "Semillas de chía hidratadas en leche de coco hasta formar un gel sedoso, endulzado con estevia pura y ralladura de limón.",
+                ingredients: "Semillas de Chía, Leche de coco, Extracto de vainilla, Estevia.",
+                benefit: "Aporte masivo de mucílagos que limpian el tracto digestivo y mejoran la sensibilidad a la insulina.",
+                kcal: "210 kcal", prot: "5g", carbs: "12g", fat: "11g",
+                image: "https://images.unsplash.com/photo-1541658016709-82535e94bc69?q=80&w=600"
+            },
+            "pavo-arroz": {
+                title: "Pavo con Arroz",
+                category: "Almuerzo / Anabolismo Limpio",
+                description: "Pavo molido magro cocinado sin exceso de grasas, combinado con arroz jazmín blanco al vapor.",
+                ingredients: "Muslo o pechuga de pavo molida, Arroz Jazmín blanco, Sal rosada.",
+                benefit: "Perfecto para reponer de forma veloz los depósitos de energía mermados tras sesiones intensas de ejercicio.",
+                kcal: "450 kcal", prot: "38g", carbs: "48g", fat: "8g",
+                image: "https://images.unsplash.com/photo-1543339308-43e59d6b73a6?q=80&w=600"
+            },
+            "batido-verde": {
+                title: "Smoothie Fibra",
+                category: "Snack / Alcalinizante",
+                description: "Bebida densa licuada en frío que integra hojas verdes frescas, tallos de apio, manzana verde y jengibre.",
+                ingredients: "Espinaca, Apio, 1/2 Manzana verde, Jengibre fresco, Agua filtrada.",
+                benefit: "Aporte inmediato de antioxidantes, potasio y magnesio para regular el equilibrio hídrico.",
+                kcal: "95 kcal", prot: "2g", carbs: "18g", fat: "0g",
+                image: "https://images.unsplash.com/photo-1610970881699-44a5587cabec?q=80&w=600"
+            }
+        };
+
+        const modal = document.getElementById("foodModal");
+        const modalCard = document.getElementById("modalCard");
+
+        function openFood(key) {
+            const data = foodData[key];
+            if (!data) return;
+
+            // Datos de textos
+            document.getElementById("modalTitle").innerText = data.title;
+            document.getElementById("modalCategory").innerText = data.category;
+            document.getElementById("modalDescription").innerText = data.description;
+            document.getElementById("modalIngredients").innerText = data.ingredients;
+            document.getElementById("modalBenefit").innerText = data.benefit;
+            document.getElementById("modalImage").src = data.image;
+
+            // Datos numéricos de Macros
+            document.getElementById("macroKcal").innerText = data.kcal;
+            document.getElementById("macroProt").innerText = data.prot;
+            document.getElementById("macroCarbs").innerText = data.carbs;
+            document.getElementById("macroFat").innerText = data.fat;
+
+            // Animación CSS clases
+            modal.classList.remove("pointer-events-none", "opacity-0");
+            modal.classList.add("active");
+            modalCard.classList.remove("scale-95");
+            modalCard.classList.add("scale-100");
+        }
+
+        function closeFood() {
+            modal.classList.add("pointer-events-none", "opacity-0");
+            modal.classList.remove("active");
+            modalCard.classList.remove("scale-100");
+            modalCard.classList.add("scale-95");
+        }
+
+        modal.addEventListener("click", function(e) {
+            if (e.target === modal) closeFood();
+        });
+    </script>
+
+</body>
+</html>

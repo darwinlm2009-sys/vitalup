@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <title>Vital Up - Analizador de IMC</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        body {
+            background: radial-gradient(circle at 80% 20%, #152238 0%, #0b121f 50%);
+            background-attachment: fixed;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .premium-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .input-premium {
+            background: rgba(11, 18, 31, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .input-premium:focus {
+            border-color: #2dd4bf;
+            box-shadow: 0 0 10px rgba(45, 212, 191, 0.2);
+            outline: none;
+        }
+
+        /* Estilos tipográficos del logo */
+        .font-vital {
+            font-family: sans-serif;
+            font-weight: bold;
+            font-style: italic;
+            fill: #2dd4bf;
+        }
+
+        .font-up {
+            font-family: sans-serif;
+            font-weight: bold;
+            font-style: italic;
+            fill: #ffffff;
+        }
+    </style>
+</head>
+
+<body class="text-white min-h-screen flex flex-col justify-between overflow-x-hidden">
+
+    <nav class="w-full max-w-7xl mx-auto px-6 py-4 flex items-center justify-between z-50 relative">
+        <div class="w-44 h-12 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 90" width="100%" height="100%">
+                <g id="Texto-Logo">
+                    <text x="10" y="62" font-size="58" class="font-vital" letter-spacing="-1">Vital</text>
+                    <text x="145" y="62" font-size="58" class="font-up" letter-spacing="-1">Up</text>
+                </g>
+                <g id="Icono-Corazon" transform="translate(228, 12)">
+                    <path
+                        d="M32,58 L29,55.2 C18.5,45.6 11.5,39.2 11.5,31.2 C11.5,24.7 16.6,19.6 23,19.6 C26.6,19.6 30.1,21.3 32,24 C33.9,21.3 37.4,19.6 41,19.6 C47.4,19.6 52.5,24.7 52.5,31.2 C52.5,39.2 45.5,45.6 35,55.2 L32,58 Z"
+                        fill="#ff5722" />
+                    <path d="M12,36 L22,36 L25,27 L29,45 L33,32 L36,36 L52,36" fill="none" stroke="#ffffff"
+                        stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                </g>
+            </svg>
+        </div>
+        
+        <div class="flex items-center gap-4">
+            <button class="font-display font-extrabold text-xs uppercase tracking-wider text-gray-300 hover:text-[#2dd4bf] border border-white/10 hover:border-[#2dd4bf]/40 bg-white/[0.02] backdrop-blur-md px-5 py-2.5 rounded-xl transition-all" onclick="window.location.href='home.html'">
+                volver
+            </button>
+        </div>
+    </nav>
+
+    <main class="w-full max-w-6xl mx-auto px-6 flex-1 flex flex-col justify-start pt-0 pb-6">
+
+        <div class="w-full text-center mb-4 mt-[-10px]">
+            <h1 class="text-4xl sm:text-5xl font-extrabold uppercase tracking-[0.18em] text-white">
+                ANÁLISIS <span class="text-[#2dd4bf] font-black">DE</span> <span
+                    class="text-[#ff5722] font-black">IMC</span>
+            </h1>
+            <p class="text-[11px] uppercase text-gray-400 tracking-[0.3em] mt-2 font-semibold">Plataforma Avanzada de
+                Diagnóstico Corporal</p>
+        </div>
+
+        <div id="alerta-error"
+            class="hidden mb-4 bg-red-500/20 border border-red-500/40 text-red-200 px-4 py-2.5 rounded-xl flex items-center gap-3 text-xs uppercase tracking-wider font-bold animate-pulse">
+            <svg class="w-4 h-4 text-red-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <span>Por favor, completa todos los campos para generar tu diagnóstico.</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch mt-10">
+
+            <section class="lg:col-span-5 premium-panel p-5 rounded-2xl flex flex-col justify-center shadow-xl">
+                <div class="space-y-4">
+                    <div>
+                        <h2 class="text-xl font-black uppercase tracking-tight text-white">Analizador Biométrico</h2>
+                        <p class="text-[11px] text-gray-400 mt-0.5">Ingresa tus datos físicos actuales.</p>
+                    </div>
+
+                    <form id="imc-form" class="space-y-3" onsubmit="calcularTodo(event)">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label
+                                    class="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Género</label>
+                                <select id="genero"
+                                    class="input-premium w-full rounded-xl px-3 py-2.5 text-xs text-white cursor-pointer">
+                                    <option value="">Elegir...</option>
+                                    <option value="m">Masculino</option>
+                                    <option value="f">Femenino</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Edad
+                                    (Máx 99)</label>
+                                <input type="number" id="edad" placeholder="Años" min="1" max="99"
+                                    oninput="if(parseInt(this.value) > 99) this.value = 99;"
+                                    class="input-premium w-full rounded-xl px-3 py-2.5 text-xs text-white">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label
+                                    class="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Peso
+                                    kg (Máx 500)</label>
+                                <input type="number" step="0.1" id="peso" placeholder="Ej: 74.5" min="1" max="500"
+                                    oninput="if(parseFloat(this.value) > 500) this.value = 500;"
+                                    class="input-premium w-full rounded-xl px-3 py-2.5 text-xs text-white">
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Altura
+                                    cm (Máx 275)</label>
+                                <input type="number" id="altura" placeholder="Ej: 175" min="1" max="275"
+                                    oninput="if(parseInt(this.value) > 275) this.value = 275;"
+                                    class="input-premium w-full rounded-xl px-3 py-2.5 text-xs text-white">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label
+                                class="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Contextura
+                                física predominante</label>
+                            <select id="contextura"
+                                class="input-premium w-full rounded-xl px-3 py-2.5 text-xs text-white cursor-pointer">
+                                <option value="">Selecciona una opción...</option>
+                                <option value="ecto">Delgado / Estilizado (Dificultad para ganar músculo)</option>
+                                <option value="meso">Atlético / Robust (Gana músculo con facilidad)</option>
+                                <option value="endo">Ancho / Corpulento (Tendencia a acumular grasa)</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" 
+                            class="w-full bg-[#ff5722] hover:bg-orange-600 text-white font-bold py-3 rounded-xl uppercase tracking-wider text-[11px] transition shadow-lg shadow-orange-600/20 mt-1">
+                            Calcular Diagnóstico
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <section class="lg:col-span-7 flex flex-col justify-between space-y-4">
+
+                <div id="resultados-box"
+                    class="premium-panel p-4 rounded-2xl grid grid-cols-2 sm:grid-cols-4 gap-3 text-center shadow-md">
+                    <div class="p-2 bg-white/5 rounded-xl border border-white/5">
+                        <p class="text-[9px] uppercase tracking-wider font-bold text-gray-400">Tu IMC</p>
+                        <p id="res-imc" class="text-xl font-black text-cyan-400 mt-0.5">--.-</p>
+                    </div>
+                    <div class="p-2 bg-white/5 rounded-xl border border-white/5">
+                        <p class="text-[9px] uppercase tracking-wider font-bold text-gray-400">Clasificación</p>
+                        <p id="res-escala" class="text-[11px] font-extrabold text-white uppercase truncate mt-1.5">
+                            Ninguna</p>
+                    </div>
+                    <div class="p-2 bg-white/5 rounded-xl border border-white/5">
+                        <p class="text-[9px] uppercase tracking-wider font-bold text-gray-400">Metabolismo</p>
+                        <p id="res-meta" class="text-[11px] font-extrabold text-white uppercase truncate mt-1.5">--</p>
+                    </div>
+                    <div class="p-2 bg-white/5 rounded-xl border border-white/5">
+                        <p class="text-[9px] uppercase tracking-wider font-bold text-gray-400">Somatotipo</p>
+                        <p id="res-somato" class="text-[11px] font-extrabold text-[#ff5722] uppercase truncate mt-1.5">
+                            --</p>
+                    </div>
+                </div>
+
+                <div id="plan-box"
+                    class="premium-panel p-5 rounded-2xl min-h-[180px] flex flex-col justify-center relative shadow-lg transition-all">
+
+                    <div id="plan-vacio" class="text-center space-y-2 text-gray-500 py-6">
+                        <svg class="w-10 h-10 mx-auto text-gray-600" fill="none" stroke="currentColor"
+                            stroke-width="1.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <p class="text-[11px] uppercase tracking-wider font-semibold max-w-xs mx-auto leading-relaxed">
+                            Completa los campos para estructurar tu diagnóstico.</p>
+                    </div>
+
+                    <div id="plan-contenido" class="hidden space-y-3.5">
+                        <div class="border-b border-white/10 pb-2 flex justify-between items-center">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-[#2dd4bf]">📋 Enfoque Asignado
+                            </h3>
+                            <span
+                                class="bg-[#ff5722] text-white text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wider"
+                                id="plan-badge">Fitness</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[11px]">
+                            <div class="space-y-0.5 bg-black/20 p-3 rounded-xl border border-white/5">
+                                <h4 class="font-bold text-gray-300 uppercase tracking-wide text-[10px]">🏋️
+                                    Entrenamiento:</h4>
+                                <p id="plan-entreno" class="text-gray-400 leading-relaxed"></p>
+                            </div>
+                            <div class="space-y-0.5 bg-black/20 p-3 rounded-xl border border-white/5">
+                                <h4 class="font-bold text-gray-300 uppercase tracking-wide text-[10px]">🍎 Ajuste
+                                    Nutricional:</h4>
+                                <p id="plan-nutricion" class="text-gray-400 leading-relaxed"></p>
+                            </div>
+                        </div>
+
+                        <div id="zona-interactiva-dinamica" class="pt-1 flex justify-center">
+                            <button id="btn-action-plan" onclick="procesarPlanPDF()"
+                                class="bg-[#2dd4bf] hover:bg-teal-500 text-slate-950 font-extrabold px-6 py-2.5 rounded-xl uppercase tracking-wider text-[10px] transition duration-300 flex items-center gap-2 shadow-lg shadow-teal-400/20">
+                                <span>Generar Plan Completo</span>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer
+        class="w-full py-3 border-t border-white/5 text-center text-[10px] text-gray-500 tracking-wider uppercase bg-[#0b121f]">
+        &copy; 2026 Vital Up. Tu Transformación Total.
+    </footer>
+
+    <script>
+const SUPABASE_URL = "https://hkqljtcnbnlvcqqmbcdv.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhrcWxqdGNuYm5sdmNxcW1iY2R2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyMTk4NjgsImV4cCI6MjA5Mjc5NTg2OH0.GWL0JQOAiLornI_r2nQgKfsEr3NMTacVcODLWXE2-gg";
+const { createClient } = supabase;
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+
+
+
+        let globalIMC = "--";
+        let globalEscala = "--";
+        let globalSomatotipo = "--";
+        let globalMetabolismo = "--";
+
+        
+     async function alm(genero, edad, peso, altura, contextura) {
+
+console.log({
+    genero,
+    edad,
+    peso,
+    altura,
+    contextura
+});
+
+console.log(JSON.stringify({
+    genero,
+    edad,
+    peso,
+    altura,
+    contextura
+}, null, 2));
+
+        }
+async function guardarAnalisis(genero, edad, peso, altura, contextura) {
+
+    try {
+
+        // 1. Obtener usuario autenticado
+        const {
+            data: { user },
+            error: authError
+        } = await supabaseClient.auth.getUser();
+
+        if (authError || !user) {
+            console.error("No hay un usuario autenticado.", authError);
+            return;
+        }
+
+        // 2. Buscar el usuario en la tabla usuario
+        const {
+            data: usuario,
+            error: usuarioError
+        } = await supabaseClient
+            .from("usuario")
+            .select("id")
+            .eq("auth_id", user.id)
+            .single();
+
+        if (usuarioError) {
+            console.error("No se encontró el usuario.", usuarioError);
+            return;
+        }
+
+        const usuario_id = usuario.id;
+
+        // 3. Insertar el análisis IMC
+        const {
+            data: analisis,
+            error: analisisError
+        } = await supabaseClient
+            .from("analisis_imc")
+            .insert([{
+                imc: parseFloat(globalIMC),
+                clasificacion: globalEscala,
+                metabolismo: globalMetabolismo,
+                somatotipo: globalSomatotipo
+            }])
+            .select()
+            .single();
+
+        if (analisisError) {
+            console.error("Error al guardar el análisis.", analisisError);
+            return;
+        }
+
+        const analisis_id = analisis.id_analisis;
+
+        // 4. Insertar datos del usuario
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("datosimc_usuario")
+            .insert([{
+                genero,
+                edad,
+                peso,
+                altura,
+                contextura,
+                usuario_id,
+                analisis_id
+            }]);
+
+        if (error) {
+            console.error("Error al guardar datos.", error);
+            return;
+        }
+
+        console.log("Registro guardado correctamente.");
+
+    } catch (err) {
+        console.error("Error inesperado:", err);
+    }
+
+}
+        
+
+    async   function calcularTodo(e) {
+            e.preventDefault();
+
+            
+     
+            const genero = document.getElementById('genero').value;
+            const edad = Number(document.getElementById('edad').value);
+            const peso = parseFloat(document.getElementById('peso').value);
+            const altura = parseFloat(document.getElementById('altura').value);
+            const contextura = document.getElementById('contextura').value;
+
+            await alm(genero, edad, peso, altura, contextura)
+          
+            const alerta = document.getElementById('alerta-error');
+            const planVacio = document.getElementById('plan-vacio');
+            const planContenido = document.getElementById('plan-contenido');
+            const zonaDinamica = document.getElementById('zona-interactiva-dinamica');
+
+            if (!genero || !edad || !peso || !altura || !contextura || edad > 99 || peso > 500 || altura > 275) {
+                alerta.classList.remove('hidden');
+                planContenido.classList.add('hidden');
+                planVacio.classList.remove('hidden');
+                window.scrollTo({ top: 3, behavior: 'smooth' });
+                return;
+            }
+
+            alerta.classList.add('hidden');
+
+            zonaDinamica.innerHTML = `
+                <button id="btn-action-plan" onclick="procesarPlanPDF()" class="bg-[#2dd4bf] hover:bg-teal-500 text-slate-950 font-extrabold px-6 py-2.5 rounded-xl uppercase tracking-wider text-[10px] transition duration-300 flex items-center gap-2 shadow-lg shadow-teal-400/20">
+                    <span>Generar Plan Completo</span>
+                </button>
+            `;
+
+            const alturaM = altura / 100;
+            globalIMC = (peso / (alturaM * alturaM)).toFixed(1);
+            document.getElementById('res-imc').innerText = globalIMC;
+
+            if (globalIMC < 18.5) globalEscala = "Bajo Peso";
+            else if (globalIMC < 25) globalEscala = "Normal";
+            else if (globalIMC < 30) globalEscala = "Sobrepeso";
+            else globalEscala = "Obesidad";
+            document.getElementById('res-escala').innerText = globalEscala;
+
+            if (contextura === "ecto") {
+                globalSomatotipo = "Ectomorfo";
+                globalMetabolismo = "Rapido / Hiper";
+            } else if (contextura === "meso") {
+                globalSomatotipo = "Mesomorfo";
+                globalMetabolismo = "Equilibrado";
+            } else {
+                globalSomatotipo = "Endomorfo";
+                globalMetabolismo = "Lento / Basal";
+            }
+
+            document.getElementById('res-somato').innerText = globalSomatotipo;
+            document.getElementById('res-meta').innerText = globalMetabolismo;
+
+            let txtEntreno = "";
+            let txtNutricion = "";
+            let badgeText = "";
+
+            if (globalEscala === "Bajo Peso" || contextura === "ecto") {
+                badgeText = "Hipertrofia";
+                txtEntreno = "Rutinas cortas y pesadas de fuerza (3-4 dias). Reducir cardio.";
+                txtNutricion = "Superavit del 15%. Carbohidratos complejos y proteinas magras.";
+            } else if (globalEscala === "Normal" && contextura === "meso") {
+                badgeText = "Recomposicion";
+                txtEntreno = "Fuerza pesada complementada con HIIT funcional 2 veces por semana.";
+                txtNutricion = "Dieta normocalorica con ciclado estrategico de carbohidratos.";
+            } else {
+                badgeText = "Definicion";
+                txtEntreno = "Conservar masa muscular combinando pesas con bloques de cardio LISS.";
+                txtNutricion = "Deficit controlado del 20%. Restriccion estricta de azucares.";
+            }
+
+            document.getElementById('plan-badge').innerText = badgeText;
+            document.getElementById('plan-entreno').innerText = txtEntreno;
+            document.getElementById('plan-nutricion').innerText = txtNutricion;
+
+            planVacio.classList.add('hidden');
+            planContenido.classList.remove('hidden');
+            await guardarAnalisis(
+    genero,
+    edad,
+    peso,
+    altura,
+    contextura
+);
+        }
+
+        function procesarPlanPDF() {
+            const btnAction = document.getElementById('btn-action-plan');
+            const zonaDinamica = document.getElementById('zona-interactiva-dinamica');
+
+            btnAction.disabled = true;
+
+            btnAction.innerHTML = `
+                <svg class="animate-spin h-3 w-3 text-slate-950" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Generando...</span>
+            `;
+            btnAction.className = "bg-teal-500 text-slate-950 font-extrabold px-6 py-2.5 rounded-xl uppercase tracking-wider text-[10px] flex items-center gap-2 shadow-lg";
+
+            setTimeout(() => {
+                zonaDinamica.innerHTML = `
+                    <div class="w-full p-3 rounded-xl bg-cyan-950/40 border border-cyan-500/30 flex items-center justify-between text-left">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-red-600/20 border border-red-500/30 flex items-center justify-center text-red-400 flex-shrink-0">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 012-2h4.586A1 1 0 0113 2.586L15.414 5A1 1 0 0116 5.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"></path></svg>
+                            </div>
+                            <div>
+                                <h4 class="text-[11px] font-bold uppercase tracking-wide text-white">Plan_Oficial_VitalUp.pdf</h4>
+                                <p class="text-[9px] text-gray-400">Documento de ejemplo listo para descargar</p>
+                            </div>
+                        </div>
+                        <button onclick="descargarPDFReal()" class="bg-white hover:bg-gray-200 text-slate-950 font-bold px-3 py-1.5 rounded-lg text-[9px] uppercase tracking-wider transition flex-shrink-0">
+                            Descargar
+                        </button>
+                    </div>
+                `;
+            }, 1800);
+        }
+
+        function descargarPDFReal() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+
+            doc.setFillColor(11, 18, 31);
+            doc.rect(0, 0, 210, 40, 'F');
+
+            doc.setTextColor(45, 212, 191);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(24);
+            doc.text("VITAL UP", 15, 20);
+
+            doc.setTextColor(255, 255, 255);
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10);
+            doc.text("INFORME DE EVALUACION Y BALANCE CORPORAL BIOMETRICO", 15, 28);
+
+            doc.setTextColor(15, 23, 42);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(14);
+            doc.text("RESUMEN DE RESULTADOS BIOMETRICOS", 15, 55);
+
+            doc.setFillColor(245, 247, 250);
+            doc.rect(15, 60, 180, 25, 'F');
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(10);
+            doc.text("Indice de Masa Corporal (IMC):", 20, 70);
+            doc.text("Clasificacion Oficial:", 20, 78);
+            doc.text("Tipo de Somatotipo:", 110, 70);
+            doc.text("Ritmo Metabolismo:", 110, 78);
+
+            doc.setFont("helvetica", "normal");
+            doc.text(`${globalIMC}`, 75, 70);
+            doc.text(`${globalEscala}`, 60, 78);
+            doc.text(`${globalSomatotipo}`, 148, 70);
+            doc.text(`${globalMetabolismo}`, 148, 78);
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(14);
+            doc.text("PLAN ESTRATEGICO COMPLETO (EJEMPLO)", 15, 100);
+
+            doc.setFillColor(245, 247, 250);
+            doc.rect(15, 105, 180, 38, 'F');
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(11);
+            doc.text("PROPUESTA DE GUIA NUTRICIONAL", 20, 112);
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            doc.text("- Desayuno: 3 Huevos revueltos con espinaca + 1 taza de avena integral.", 20, 118);
+            doc.text("- Almuerzo: 200g de pechuga de pollo o pescado + 150g de arroz o camote + ensalada.", 20, 124);
+            doc.text("- Merienda: 1 Porcion de yogur griego natural sin azucar + 30g de almendras.", 20, 130);
+            doc.text("- Cena: 180g de carne magra de res + porcion de brocoli al vapor.", 20, 136);
+
+            doc.setFillColor(245, 247, 250);
+            doc.rect(15, 150, 180, 32, 'F');
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(11);
+            doc.text("ESTRUCTURA DE ENTRENAMIENTO", 20, 157);
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            doc.text("- Calentamiento: Movilidad articular y activacion de zona core (5-10 min).", 20, 163);
+            doc.text("- Bloque de Fuerza: Sentadillas, Press de Banca y Remo con mancuerna (4 x 12 reps).", 20, 169);
+            doc.text("- Bloque Cardio: 15-20 minutos de caminata inclinada o trote controlado.", 20, 175);
+
+            doc.setFont("helvetica", "italic");
+            doc.setFontSize(8);
+            doc.setTextColor(150, 150, 150);
+            doc.text("Este documento es un reporte interactivo generado de forma automatica por la plataforma Vital Up.", 15, 280);
+
+            doc.save("Plan_Oficial_VitalUp.pdf");
+        }
+
+
+    </script>
+</body>
+
+</html>
