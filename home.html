@@ -11,7 +11,6 @@
 
     <style>
         /* ================= RESET & BASE ================= */
-        
         html, body {
             width: 100%;
             min-height: 100vh;
@@ -118,22 +117,26 @@
 
     <!-- ================= NAV BAR (Con Logo Ajustado) ================= -->
     <nav class="w-full max-w-7xl mx-auto px-6 py-4 flex items-center justify-between z-50 relative">
-        
-        <!-- Logo Vital Up - Corazón acercado de forma óptima (viewBox recortado a 320) -->
         <div class="w-44 h-12 flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 90" width="100%" height="100%">
               <g id="Texto-Logo">
                 <text x="10" y="62" font-size="58" class="font-vital" letter-spacing="-1">Vital</text>
                 <text x="145" y="62" font-size="58" class="font-up" letter-spacing="-1">Up</text>
               </g>
-              <!-- Corazón reubicado más a la izquierda (translate modificado a 228) -->
               <g id="Icono-Corazon" transform="translate(228, 12)">
                 <path d="M32,58 L29,55.2 C18.5,45.6 11.5,39.2 11.5,31.2 C11.5,24.7 16.6,19.6 23,19.6 C26.6,19.6 30.1,21.3 32,24 C33.9,21.3 37.4,19.6 41,19.6 C47.4,19.6 52.5,24.7 52.5,31.2 C52.5,39.2 45.5,45.6 35,55.2 L32,58 Z" fill="#ff5722" />
                 <path d="M12,36 L22,36 L25,27 L29,45 L33,32 L36,36 L52,36" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
               </g>
             </svg>
         </div>
-        
+
+        <div class="hidden lg:flex items-center gap-10">
+            <a href="tabla.html" class="nav-link">Empieza</a>
+            <a href="traductor.html" class="nav-link">Fitness</a>
+            <a href="recomendaciones.html" class="nav-link">Nutrición</a>
+            <a href="#" class="nav-link">Logros</a>
+        </div>
+
         <div class="flex items-center gap-4">
             <div class="flex items-center gap-2.5">
                 <img id="user-avatar" src="https://ui-avatars.com/api/?name=U&background=6366f1&color=fff" class="w-7 h-7 rounded-full object-cover border border-cyan-400" alt="Avatar">
@@ -173,79 +176,44 @@
         </div>
     </header>
 
-    <!-- ================= GRID DE TARJETAS ================= -->
+    <!-- ================= GRID DE TARJETAS CENTRADAS ================= -->
     <main class="w-full max-w-7xl mx-auto px-6 pb-12 z-20 relative">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <!-- Ajustamos a grid-cols-1 sm:grid-cols-2 max-w-3xl mx-auto justify-center -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto justify-center items-stretch">
 
             <!-- 1. BIBLIOTECA EJERCICIOS -->
-            <div onclick="galeria()" class="premium-card flex flex-col justify-between overflow-hidden cursor-pointer group p-3">
+            <div onclick="galeria()" class="premium-card w-full flex flex-col justify-between overflow-hidden cursor-pointer group p-4">
                 <div>
-                    <div class="h-36 rounded-xl overflow-hidden mb-4">
+                    <div class="h-40 rounded-xl overflow-hidden mb-4">
                         <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover transition duration-500 group-hover:scale-105" alt="Ejercicios">
                     </div>
                     <div class="px-2 space-y-1">
                         <h3 class="text-base font-bold tracking-wide uppercase text-white">Biblioteca Ejercicios</h3>
-                        <p class="text-[11px] text-gray-400 leading-relaxed font-normal">Aprende técnicas seguras, consectetuer adipiscing elit, sed dias modo tempor.</p>
+                        <p class="text-xs text-gray-400 leading-relaxed font-normal">Aprende técnicas seguras y encuentra los mejores movimientos para tu rutina.</p>
                     </div>
                 </div>
-                <div class="p-2 pt-4">
-                    <button class="w-full py-2 text-center text-[11px] font-bold uppercase tracking-wider rounded-md bg-[#2dd4bf] hover:bg-teal-500 text-slate-950 transition" onclick="galeria()">
+                <div class="pt-4">
+                    <button class="w-full py-2.5 text-center text-xs font-bold uppercase tracking-wider rounded-lg bg-[#2dd4bf] hover:bg-teal-500 text-slate-950 transition">
                         Ver Ejercicios
                     </button>
                 </div>
             </div>
 
-            <!-- 2. RECETAS SALUDABLES / COMIDAS -->
-            <div onclick="comidas()" class="premium-card flex flex-col justify-between overflow-hidden cursor-pointer group p-3">
+            <!-- 2. ANÁLISIS DE IMC -->
+            <div onclick="IMC()" class="premium-card w-full flex flex-col justify-between overflow-hidden cursor-pointer group p-4">
                 <div>
-                    <div class="h-36 rounded-xl overflow-hidden mb-4">
-                        <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover transition duration-500 group-hover:scale-105" alt="Comidas">
-                    </div>
-                    <div class="px-2 space-y-1">
-                        <h3 class="text-base font-bold tracking-wide uppercase text-white">Biblioteca comidas</h3>
-                        <p class="text-[11px] text-gray-400 leading-relaxed font-normal">Eiieenam ipsum dolor sit amet, consectetuer adipiscing elit, sed eiusmod tempor.</p>
-                    </div>
-                </div>
-                <div class="p-2 pt-4">
-                    <button class="w-full py-2 text-center text-[11px] font-bold uppercase tracking-wider rounded-md bg-[#ff5722] hover:bg-orange-600 text-white transition" onclick="comidas()">
-                        Explorar Comidas
-                    </button>
-                </div>
-            </div>
-
-            <!-- 3. PLANES -->
-            <div class="premium-card flex flex-col justify-between overflow-hidden cursor-pointer group p-3">
-                <div>
-                    <div class="h-36 rounded-xl overflow-hidden mb-4">
-                        <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover transition duration-500 group-hover:scale-105" alt="Planes">
-                    </div>
-                    <div class="px-2 space-y-1">
-                        <h3 class="text-base font-bold tracking-wide uppercase text-white">Planes de Entrenamiento</h3>
-                        <p class="text-[11px] text-gray-400 leading-relaxed font-normal">Plamoessasum dolor sit amet, faaten, planes, bomormdeas at comidas thenidas.</p>
-                    </div>
-                </div>
-                <div class="p-2 pt-4">
-                    <div class="w-full py-2 text-center text-[11px] font-bold uppercase tracking-wider rounded-md bg-[#2dd4bf] hover:bg-teal-500 text-slate-950 transition">
-                        Ver Mis Planes
-                    </div>
-                </div>
-            </div>
-
-            <!-- 4. IMC -->
-            <div onclick="IMC()" class="premium-card flex flex-col justify-between overflow-hidden cursor-pointer group p-3">
-                <div>
-                    <div class="h-36 rounded-xl overflow-hidden mb-4">
+                    <div class="h-40 rounded-xl overflow-hidden mb-4">
                         <img src="ChatGPT Image 13 may 2026, 13_35_25.png" class="w-full h-full object-cover transition duration-500 group-hover:scale-105" onerror="this.src='https://images.unsplash.com/photo-1518481612222-68bbe828ecd1?q=80&w=1200&auto=format&fit=crop'" alt="IMC">
                     </div>
                     <div class="px-2 space-y-1">
                         <h3 class="text-base font-bold tracking-wide uppercase text-white">Análisis de IMC</h3>
-                        <p class="text-[11px] text-gray-400 leading-relaxed font-normal">Liuenam ipsum dolor sit amet, consectetuer adipiscing elit, sed eiusmod tumpta.</p>
+                        <p class="text-xs text-gray-400 leading-relaxed font-normal">Calcula tu índice de masa corporal y realiza el seguimiento de tus avances.</p>
                     </div>
                 </div>
-                <div class="p-2 pt-4">
-                    <div class="w-full py-2 text-center text-[11px] font-bold uppercase tracking-wider rounded-md border border-gray-600 text-gray-300 hover:bg-white hover:text-slate-950 transition">
+                <div class="pt-4">
+                    <button class="w-full py-2.5 text-center text-xs font-bold uppercase tracking-wider rounded-lg border border-gray-600 text-gray-300 group-hover:bg-white group-hover:text-slate-950 transition">
                         Ver Mi Progreso
-                    </div>
+                    </button>
                 </div>
             </div>
 
@@ -309,10 +277,6 @@
 
     function galeria(){
         window.location.href = "galeria.html";
-    }
-
-    function comidas(){
-        window.location.href = "comidas.html";
     }
 
     function IMC(){

@@ -1,573 +1,3632 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-    <title>Vital Up - Analizador de IMC</title>
-
+    <title>Vital Up - Calculadora IMC</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body {
             background: radial-gradient(circle at 80% 20%, #152238 0%, #0b121f 50%);
             background-attachment: fixed;
             font-family: 'Poppins', sans-serif;
         }
-
         .premium-panel {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(12px);
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(14px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
-
         .input-premium {
-            background: rgba(11, 18, 31, 0.8);
+            background: rgba(11, 18, 31, 0.9);
             border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
         }
-
         .input-premium:focus {
             border-color: #2dd4bf;
-            box-shadow: 0 0 10px rgba(45, 212, 191, 0.2);
+            box-shadow: 0 0 12px rgba(45, 212, 191, 0.25);
             outline: none;
         }
-
-        /* Estilos tipográficos del logo */
-        .font-vital {
-            font-family: sans-serif;
-            font-weight: bold;
-            font-style: italic;
-            fill: #2dd4bf;
-        }
-
-        .font-up {
-            font-family: sans-serif;
-            font-weight: bold;
-            font-style: italic;
-            fill: #ffffff;
-        }
+        .font-vital { font-weight: bold; font-style: italic; fill: #2dd4bf; }
+        .font-up { font-weight: bold; font-style: italic; fill: #ffffff; }
     </style>
 </head>
-
-<body class="text-white min-h-screen flex flex-col justify-between overflow-x-hidden">
+<body class="text-white min-h-screen flex flex-col justify-between">
 
     <nav class="w-full max-w-7xl mx-auto px-6 py-4 flex items-center justify-between z-50 relative">
         <div class="w-44 h-12 flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 90" width="100%" height="100%">
                 <g id="Texto-Logo">
-                    <text x="10" y="62" font-size="58" class="font-vital" letter-spacing="-1">Vital</text>
-                    <text x="145" y="62" font-size="58" class="font-up" letter-spacing="-1">Up</text>
-                </g>
-                <g id="Icono-Corazon" transform="translate(228, 12)">
-                    <path
-                        d="M32,58 L29,55.2 C18.5,45.6 11.5,39.2 11.5,31.2 C11.5,24.7 16.6,19.6 23,19.6 C26.6,19.6 30.1,21.3 32,24 C33.9,21.3 37.4,19.6 41,19.6 C47.4,19.6 52.5,24.7 52.5,31.2 C52.5,39.2 45.5,45.6 35,55.2 L32,58 Z"
-                        fill="#ff5722" />
-                    <path d="M12,36 L22,36 L25,27 L29,45 L33,32 L36,36 L52,36" fill="none" stroke="#ffffff"
-                        stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
-                </g>
+                <text x="10" y="62" font-size="58" class="font-vital" letter-spacing="-1">Vital</text>
+                <text x="145" y="62" font-size="58" class="font-up" letter-spacing="-1">Up</text>
+              </g>
+              <g id="Icono-Corazon" transform="translate(228, 12)">
+                <path d="M32,58 L29,55.2 C18.5,45.6 11.5,39.2 11.5,31.2 C11.5,24.7 16.6,19.6 23,19.6 C26.6,19.6 30.1,21.3 32,24 C33.9,21.3 37.4,19.6 41,19.6 C47.4,19.6 52.5,24.7 52.5,31.2 C52.5,39.2 45.5,45.6 35,55.2 L32,58 Z" fill="#ff5722" />
+                <path d="M12,36 L22,36 L25,27 L29,45 L33,32 L36,36 L52,36" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+              </g>
             </svg>
         </div>
-        
-        <div class="flex items-center gap-4">
-            <button class="font-display font-extrabold text-xs uppercase tracking-wider text-gray-300 hover:text-[#2dd4bf] border border-white/10 hover:border-[#2dd4bf]/40 bg-white/[0.02] backdrop-blur-md px-5 py-2.5 rounded-xl transition-all" onclick="window.location.href='home.html'">
-                volver
-            </button>
-        </div>
+        <a href="home.html" class="text-xs font-semibold text-gray-400 hover:text-cyan-300 transition flex items-center gap-1.5 tracking-wide">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Regresar
+        </a>
     </nav>
 
     <main class="w-full max-w-6xl mx-auto px-6 flex-1 flex flex-col justify-start pt-0 pb-6">
-
-        <div class="w-full text-center mb-4 mt-[-10px]">
+        <div class="w-full text-center mb-4 mt-[-5px]">
             <h1 class="text-4xl sm:text-5xl font-extrabold uppercase tracking-[0.18em] text-white">
-                ANÁLISIS <span class="text-[#2dd4bf] font-black">DE</span> <span
-                    class="text-[#ff5722] font-black">IMC</span>
+                Calculadora IMC
             </h1>
-            <p class="text-[11px] uppercase text-gray-400 tracking-[0.3em] mt-2 font-semibold">Plataforma Avanzada de
-                Diagnóstico Corporal</p>
+            <p class="text-[11px] uppercase text-cyan-400 tracking-[0.2em] mt-2 font-semibold">Configura tu perfil biométrico con validación cruzada y planes optimizados</p>
         </div>
 
-        <div id="alerta-error"
-            class="hidden mb-4 bg-red-500/20 border border-red-500/40 text-red-200 px-4 py-2.5 rounded-xl flex items-center gap-3 text-xs uppercase tracking-wider font-bold animate-pulse">
-            <svg class="w-4 h-4 text-red-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5"
-                viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-            <span>Por favor, completa todos los campos para generar tu diagnóstico.</span>
+        <div id="alerta-error" class="hidden mb-4 bg-red-500/20 border border-red-500/40 text-red-200 px-4 py-2.5 rounded-xl flex items-center gap-3 text-xs uppercase tracking-wider font-bold animate-pulse">
+            <span id="texto-alerta">Por favor, completa todos los campos correctamente.</span>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch mt-10">
-
-            <section class="lg:col-span-5 premium-panel p-5 rounded-2xl flex flex-col justify-center shadow-xl">
-                <div class="space-y-4">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch mt-4">
+            <section class="lg:col-span-5 premium-panel p-5 rounded-2xl flex flex-col justify-center shadow-2xl">
+                <div class="space-y-3.5">
                     <div>
-                        <h2 class="text-xl font-black uppercase tracking-tight text-white">Analizador Biométrico</h2>
-                        <p class="text-[11px] text-gray-400 mt-0.5">Ingresa tus datos físicos actuales.</p>
+                        <h2 class="text-lg font-black uppercase tracking-tight text-white flex items-center gap-2">
+                            <span></span> Ingrese sus datos biométricos aquí
+                        </h2>
                     </div>
 
-                    <form id="imc-form" class="space-y-3" onsubmit="calcularTodo(event)">
+                    <form id="imc-form" class="space-y-3" onsubmit="procesarSistemaUnificado(event)">
                         <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label
-                                    class="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Género</label>
-                                <select id="genero"
-                                    class="input-premium w-full rounded-xl px-3 py-2.5 text-xs text-white cursor-pointer">
-                                    <option value="">Elegir...</option>
-                                    <option value="m">Masculino</option>
-                                    <option value="f">Femenino</option>
+                                <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Género</label>
+                                <select id="genero" class="input-premium w-full rounded-xl px-3 py-2 text-xs text-white">
+                                    <option value="masculino">Masculino</option>
+                                    <option value="femenino">Femenino</option>
                                 </select>
                             </div>
                             <div>
-                                <label
-                                    class="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Edad
-                                    (Máx 99)</label>
-                                <input type="number" id="edad" placeholder="Años" min="1" max="99"
-                                    oninput="if(parseInt(this.value) > 99) this.value = 99;"
-                                    class="input-premium w-full rounded-xl px-3 py-2.5 text-xs text-white">
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label
-                                    class="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Peso
-                                    kg (Máx 500)</label>
-                                <input type="number" step="0.1" id="peso" placeholder="Ej: 74.5" min="1" max="500"
-                                    oninput="if(parseFloat(this.value) > 500) this.value = 500;"
-                                    class="input-premium w-full rounded-xl px-3 py-2.5 text-xs text-white">
-                            </div>
-                            <div>
-                                <label
-                                    class="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Altura
-                                    cm (Máx 275)</label>
-                                <input type="number" id="altura" placeholder="Ej: 175" min="1" max="275"
-                                    oninput="if(parseInt(this.value) > 275) this.value = 275;"
-                                    class="input-premium w-full rounded-xl px-3 py-2.5 text-xs text-white">
+                                <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Somatotipo</label>
+                                <select id="somatotipo" class="input-premium w-full rounded-xl px-3 py-2 text-xs text-white">
+                                    <option value="normal">Normal / Estándar</option>
+                                    <option value="flaco">Flaco / Ectomorfo</option>
+                                    <option value="gordo">Gordo / Sobrepeso</option>
+                                </select>
                             </div>
                         </div>
 
                         <div>
-                            <label
-                                class="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Contextura
-                                física predominante</label>
-                            <select id="contextura"
-                                class="input-premium w-full rounded-xl px-3 py-2.5 text-xs text-white cursor-pointer">
-                                <option value="">Selecciona una opción...</option>
-                                <option value="ecto">Delgado / Estilizado (Dificultad para ganar músculo)</option>
-                                <option value="meso">Atlético / Robust (Gana músculo con facilidad)</option>
-                                <option value="endo">Ancho / Corpulento (Tendencia a acumular grasa)</option>
-                            </select>
+                            <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Edad (15 - 99 años)</label>
+                            <input type="number" id="edad" required placeholder="Años" min="15" max="99" class="input-premium w-full rounded-xl px-3 py-2.5 text-xs text-white">
                         </div>
 
-                        <button type="submit" 
-                            class="w-full bg-[#ff5722] hover:bg-orange-600 text-white font-bold py-3 rounded-xl uppercase tracking-wider text-[11px] transition shadow-lg shadow-orange-600/20 mt-1">
-                            Calcular Diagnóstico
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Peso (kg)</label>
+                                <input type="number" step="0.1" id="peso" required placeholder="Ej: 70.0" min="20" max="250" class="input-premium w-full rounded-xl px-3 py-2.5 text-xs text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Altura (cm)</label>
+                                <input type="number" id="altura" required placeholder="Ej: 170" min="100" max="250" class="input-premium w-full rounded-xl px-3 py-2.5 text-xs text-white">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full bg-[#ff5722] hover:bg-orange-600 text-white font-bold py-3 rounded-xl uppercase tracking-wider text-[11px] transition shadow-lg shadow-orange-600/20 mt-1 cursor-pointer">
+                            Generar Diagnóstico y Plan PDF
                         </button>
                     </form>
                 </div>
             </section>
 
             <section class="lg:col-span-7 flex flex-col justify-between space-y-4">
-
-                <div id="resultados-box"
-                    class="premium-panel p-4 rounded-2xl grid grid-cols-2 sm:grid-cols-4 gap-3 text-center shadow-md">
-                    <div class="p-2 bg-white/5 rounded-xl border border-white/5">
-                        <p class="text-[9px] uppercase tracking-wider font-bold text-gray-400">Tu IMC</p>
-                        <p id="res-imc" class="text-xl font-black text-cyan-400 mt-0.5">--.-</p>
-                    </div>
-                    <div class="p-2 bg-white/5 rounded-xl border border-white/5">
-                        <p class="text-[9px] uppercase tracking-wider font-bold text-gray-400">Clasificación</p>
-                        <p id="res-escala" class="text-[11px] font-extrabold text-white uppercase truncate mt-1.5">
-                            Ninguna</p>
-                    </div>
-                    <div class="p-2 bg-white/5 rounded-xl border border-white/5">
-                        <p class="text-[9px] uppercase tracking-wider font-bold text-gray-400">Metabolismo</p>
-                        <p id="res-meta" class="text-[11px] font-extrabold text-white uppercase truncate mt-1.5">--</p>
-                    </div>
-                    <div class="p-2 bg-white/5 rounded-xl border border-white/5">
-                        <p class="text-[9px] uppercase tracking-wider font-bold text-gray-400">Somatotipo</p>
-                        <p id="res-somato" class="text-[11px] font-extrabold text-[#ff5722] uppercase truncate mt-1.5">
-                            --</p>
-                    </div>
+                <div id="resultados-box" class="premium-panel p-5 rounded-2xl text-center shadow-md flex flex-col justify-center items-center">
+                    <p class="text-[10px] uppercase tracking-wider font-bold text-gray-400">Resultado IMC Calculado</p>
+                    <p id="res-imc" class="text-4xl font-black text-cyan-400 mt-1">--.-</p>
+                    <p id="label-estado-imc" class="text-[10px] text-gray-400 uppercase tracking-widest mt-1">Pendiente de configuración</p>
                 </div>
 
-                <div id="plan-box"
-                    class="premium-panel p-5 rounded-2xl min-h-[180px] flex flex-col justify-center relative shadow-lg transition-all">
-
-                    <div id="plan-vacio" class="text-center space-y-2 text-gray-500 py-6">
-                        <svg class="w-10 h-10 mx-auto text-gray-600" fill="none" stroke="currentColor"
-                            stroke-width="1.5" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <div id="plan-box" class="premium-panel p-6 rounded-2xl min-h-[180px] flex flex-col justify-center items-center relative shadow-lg">
+                    <div id="plan-vacio" class="text-center space-y-2 text-gray-500 py-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto text-gray-600 opacity-50 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                         </svg>
-                        <p class="text-[11px] uppercase tracking-wider font-semibold max-w-xs mx-auto leading-relaxed">
-                            Completa los campos para estructurar tu diagnóstico.</p>
+                        <p class="text-[11px] uppercase tracking-wider font-semibold max-w-xs mx-auto">Configura tus datos en el panel izquierdo para habilitar tu programa personalizado en PDF.</p>
                     </div>
 
-                    <div id="plan-contenido" class="hidden space-y-3.5">
-                        <div class="border-b border-white/10 pb-2 flex justify-between items-center">
-                            <h3 class="text-xs font-bold uppercase tracking-wider text-[#2dd4bf]">📋 Enfoque Asignado
-                            </h3>
-                            <span
-                                class="bg-[#ff5722] text-white text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wider"
-                                id="plan-badge">Fitness</span>
+                    <div id="plan-contenido" class="hidden space-y-4 text-center w-full">
+                        <div class="inline-block bg-teal-500/10 border border-teal-500/30 px-3 py-1 rounded-full">
+                            <h3 class="text-[11px] font-bold uppercase tracking-wider text-[#2dd4bf]">¡Perfil Validado con Éxito!</h3>
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[11px]">
-                            <div class="space-y-0.5 bg-black/20 p-3 rounded-xl border border-white/5">
-                                <h4 class="font-bold text-gray-300 uppercase tracking-wide text-[10px]">🏋️
-                                    Entrenamiento:</h4>
-                                <p id="plan-entreno" class="text-gray-400 leading-relaxed"></p>
-                            </div>
-                            <div class="space-y-0.5 bg-black/20 p-3 rounded-xl border border-white/5">
-                                <h4 class="font-bold text-gray-300 uppercase tracking-wide text-[10px]">🍎 Ajuste
-                                    Nutricional:</h4>
-                                <p id="plan-nutricion" class="text-gray-400 leading-relaxed"></p>
-                            </div>
-                        </div>
-
+                        <p id="info-diagnostico-detallado" class="text-[11px] text-gray-300 max-w-md mx-auto">Tus parámetros han sido procesados correctamente.</p>
+                        
                         <div id="zona-interactiva-dinamica" class="pt-1 flex justify-center">
-                            <button id="btn-action-plan" onclick="procesarPlanPDF()"
-                                class="bg-[#2dd4bf] hover:bg-teal-500 text-slate-950 font-extrabold px-6 py-2.5 rounded-xl uppercase tracking-wider text-[10px] transition duration-300 flex items-center gap-2 shadow-lg shadow-teal-400/20">
-                                <span>Generar Plan Completo</span>
+                            <button id="btn-action-plan" onclick="descargarPDFDinamico()" class="bg-[#ff5722] hover:bg-orange-600 text-white font-extrabold px-6 py-3 rounded-xl uppercase tracking-wider text-[11px] transition duration-300 flex items-center gap-2 shadow-lg shadow-orange-600/20 cursor-pointer">
+                                <span>Descargar Plan Completo (PDF)</span>
                             </button>
                         </div>
                     </div>
-
                 </div>
             </section>
-
         </div>
     </main>
 
-    <footer
-        class="w-full py-3 border-t border-white/5 text-center text-[10px] text-gray-500 tracking-wider uppercase bg-[#0b121f]">
-        &copy; 2026 Vital Up. Tu Transformación Total.
+    <footer class="w-full py-3 border-t border-white/5 text-center text-[10px] text-gray-500 uppercase bg-[#0b121f]">
+        &copy; 2026 Vital Up. Todos los derechos reservados.
     </footer>
 
     <script>
-const SUPABASE_URL = "https://hkqljtcnbnlvcqqmbcdv.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhrcWxqdGNuYm5sdmNxcW1iY2R2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyMTk4NjgsImV4cCI6MjA5Mjc5NTg2OH0.GWL0JQOAiLornI_r2nQgKfsEr3NMTacVcODLWXE2-gg";
-const { createClient } = supabase;
-const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-
-
-
+    const SUPABASE_URL = "https://hkqljtcnbnlvcqqmbcdv.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhrcWxqdGNuYm5sdmNxcW1iY2R2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyMTk4NjgsImV4cCI6MjA5Mjc5NTg2OH0.GWL0JQOAiLornI_r2nQgKfsEr3NMTacVcODLWXE2-gg";
+   const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);  
         let globalIMC = "--";
-        let globalEscala = "--";
-        let globalSomatotipo = "--";
-        let globalMetabolismo = "--";
+        let globalEdad = 18;
+        let somatotipoElegido = "normal";
+        let generoElegido = "masculino";
+        let estadoIMC = "normal"; 
+        let tipoEdad = "joven"; 
 
-        
-     async function alm(genero, edad, peso, altura, contextura) {
+        async function procesarSistemaUnificado(e) {
 
-console.log({
-    genero,
-    edad,
-    peso,
-    altura,
-    contextura
-});
+    e.preventDefault();
 
-console.log(JSON.stringify({
-    genero,
-    edad,
-    peso,
-    altura,
-    contextura
-}, null, 2));
+    // ==========================================
+    // 1. OBTENER DATOS DEL FORMULARIO
+    // ==========================================
 
+    const peso = parseFloat(
+        document.getElementById('peso').value
+    );
+
+    const altura = parseFloat(
+        document.getElementById('altura').value
+    );
+
+    globalEdad = parseInt(
+        document.getElementById('edad').value
+    );
+
+    generoElegido =
+        document.getElementById('genero').value;
+
+    somatotipoElegido =
+        document.getElementById('somatotipo').value;
+
+
+    // ==========================================
+    // 2. ELEMENTOS DE LA INTERFAZ
+    // ==========================================
+
+    const alerta =
+        document.getElementById('alerta-error');
+
+    const textoAlerta =
+        document.getElementById('texto-alerta');
+
+    const planVacio =
+        document.getElementById('plan-vacio');
+
+    const planContenido =
+        document.getElementById('plan-contenido');
+
+
+    // ==========================================
+    // 3. VALIDAR DATOS
+    // ==========================================
+
+    if (
+        !peso ||
+        !altura ||
+        !globalEdad ||
+        globalEdad < 15 ||
+        globalEdad > 99 ||
+        peso < 20 ||
+        peso > 250 ||
+        altura < 100 ||
+        altura > 250
+    ) {
+
+        textoAlerta.innerText =
+            "Por favor, completa todos los datos correctamente.";
+
+        alerta.classList.remove('hidden');
+
+        planVacio.classList.remove('hidden');
+
+        planContenido.classList.add('hidden');
+
+        return;
+    }
+
+
+    // ==========================================
+    // 4. CALCULAR IMC
+    // ==========================================
+
+    const alturaM = altura / 100;
+
+    globalIMC = parseFloat(
+        (peso / (alturaM * alturaM)).toFixed(1)
+    );
+
+
+    // ==========================================
+    // 5. CLASIFICAR IMC
+    // ==========================================
+
+    let clasificacion;
+
+    if (globalIMC < 18.5) {
+
+        clasificacion = "Bajo Peso";
+
+    } else if (globalIMC < 25) {
+
+        clasificacion = "Normal";
+
+    } else if (globalIMC < 30) {
+
+        clasificacion = "Sobrepeso";
+
+    } else {
+
+        clasificacion = "Obesidad";
+    }
+
+
+    // ==========================================
+    // 6. DETERMINAR ESTADO
+    // ==========================================
+
+    if (somatotipoElegido === 'flaco') {
+
+        if (globalIMC <= 16.5) {
+
+            estadoIMC = 'critico';
+
+        } else if (globalIMC <= 17.5) {
+
+            estadoIMC = 'mediano';
+
+        } else {
+
+            estadoIMC = 'normal';
         }
-async function guardarAnalisis(genero, edad, peso, altura, contextura) {
+
+    } else if (somatotipoElegido === 'normal') {
+
+        if (globalIMC <= 20.5) {
+
+            estadoIMC = 'critico';
+
+        } else if (globalIMC <= 22.7) {
+
+            estadoIMC = 'mediano';
+
+        } else {
+
+            estadoIMC = 'normal';
+        }
+
+    } else {
+
+        if (globalIMC <= 33.5) {
+
+            estadoIMC = 'normal';
+
+        } else if (globalIMC <= 37.0) {
+
+            estadoIMC = 'mediano';
+
+        } else {
+
+            estadoIMC = 'critico';
+        }
+    }
+
+
+    // ==========================================
+    // 7. DETERMINAR TIPO DE EDAD
+    // ==========================================
+
+    tipoEdad =
+        globalEdad >= 45
+            ? 'mayor'
+            : 'joven';
+
+
+    // ==========================================
+    // 8. DETERMINAR SOMATOTIPO PARA SUPABASE
+    // ==========================================
+
+    let somatotipoBD;
+
+    if (somatotipoElegido === 'flaco') {
+
+        somatotipoBD = 'Ectomorfo';
+
+    } else if (somatotipoElegido === 'normal') {
+
+        somatotipoBD = 'Mesomorfo';
+
+    } else {
+
+        somatotipoBD = 'Endomorfo';
+    }
+
+
+    // ==========================================
+    // 9. DETERMINAR METABOLISMO
+    // ==========================================
+
+    let metabolismoBD;
+
+    if (somatotipoElegido === 'flaco') {
+
+        metabolismoBD = 'Rapido / Hiper';
+
+    } else if (somatotipoElegido === 'normal') {
+
+        metabolismoBD = 'Equilibrado';
+
+    } else {
+
+        metabolismoBD = 'Lento / Basal';
+    }
+
+
+    // ==========================================
+    // 10. MOSTRAR RESULTADO
+    // ==========================================
+
+    alerta.classList.add('hidden');
+
+    document.getElementById('res-imc').innerText =
+        globalIMC;
+
+    document.getElementById('label-estado-imc').innerText =
+        `${generoElegido.toUpperCase()} | ` +
+        `${somatotipoBD.toUpperCase()} | ` +
+        `${estadoIMC.toUpperCase()} | ` +
+        `${tipoEdad.toUpperCase()}`;
+
+
+    document.getElementById(
+        'info-diagnostico-detallado'
+    ).innerText =
+        `Categoría: ${tipoEdad} (${globalEdad} años) | ` +
+        `IMC: ${globalIMC} (${clasificacion})`;
+
+
+    planVacio.classList.add('hidden');
+
+    planContenido.classList.remove('hidden');
+
+
+    // ==========================================
+    // 11. GUARDAR EN SUPABASE
+    // ==========================================
+
+    await guardarRegistroIMC({
+
+        peso: peso,
+
+        altura: altura,
+
+        edad: globalEdad,
+
+        genero: generoElegido,
+
+        imc: globalIMC,
+
+        clasificacion: clasificacion,
+
+        metabolismo: metabolismoBD,
+
+        somatotipo: somatotipoBD
+    });
+}
+async function guardarRegistroIMC(datos) {
+
+    console.log("=================================");
+    console.log("INICIANDO GUARDADO");
+    console.log("Datos recibidos:", datos);
+    console.log("=================================");
 
     try {
 
-        // 1. Obtener usuario autenticado
+        // ==========================================
+        // 1. COMPROBAR SUPABASE
+        // ==========================================
+
+        if (!supabaseClient) {
+            throw new Error(
+                "supabaseClient no está definido."
+            );
+        }
+
+
+        // ==========================================
+        // 2. COMPROBAR SESIÓN
+        // ==========================================
+
         const {
-            data: { user },
+            data: authData,
             error: authError
         } = await supabaseClient.auth.getUser();
 
-        if (authError || !user) {
-            console.error("No hay un usuario autenticado.", authError);
-            return;
+
+        console.log("Usuario Auth:", authData);
+        console.log("Error Auth:", authError);
+
+
+        if (authError) {
+
+            throw new Error(
+                "Error obteniendo sesión: " +
+                authError.message
+            );
         }
 
-        // 2. Buscar el usuario en la tabla usuario
+
+        if (!authData || !authData.user) {
+
+            throw new Error(
+                "No hay un usuario autenticado."
+            );
+        }
+
+
+        const authId = authData.user.id;
+
+        console.log(
+            "Auth ID:",
+            authId
+        );
+
+
+        // ==========================================
+        // 3. BUSCAR USUARIO EN public.usuario
+        // ==========================================
+
         const {
             data: usuario,
             error: usuarioError
         } = await supabaseClient
             .from("usuario")
-            .select("id")
-            .eq("auth_id", user.id)
-            .single();
+            .select("id, nombre, email, auth_id")
+            .eq("auth_id", authId)
+            .maybeSingle();
+
+
+        console.log(
+            "Usuario encontrado:",
+            usuario
+        );
+
+        console.log(
+            "Error buscando usuario:",
+            usuarioError
+        );
+
 
         if (usuarioError) {
-            console.error("No se encontró el usuario.", usuarioError);
-            return;
+
+            throw new Error(
+                "Error buscando usuario en public.usuario: " +
+                usuarioError.message
+            );
         }
 
-        const usuario_id = usuario.id;
 
-        // 3. Insertar el análisis IMC
+        if (!usuario) {
+
+            throw new Error(
+                "El usuario está autenticado en Supabase Auth, " +
+                "pero no existe en public.usuario."
+            );
+        }
+
+
+        // ==========================================
+        // 4. INSERTAR EN REGISTRO
+        // ==========================================
+
+        const datosRegistro = {
+
+            id_usuario: usuario.id,
+
+            altura: datos.altura,
+
+            peso: datos.peso,
+
+            edad: datos.edad,
+
+            genero: datos.genero,
+
+            imc: datos.imc,
+
+            clasificacion: datos.clasificacion,
+
+            metabolismo: datos.metabolismo,
+
+            tipo_somatotipo: datos.somatotipo
+
+        };
+
+
+        console.log(
+            "Datos que se enviarán a registro:",
+            datosRegistro
+        );
+
+
         const {
-            data: analisis,
-            error: analisisError
+            data: registro,
+            error: registroError
         } = await supabaseClient
-            .from("analisis_imc")
-            .insert([{
-                imc: parseFloat(globalIMC),
-                clasificacion: globalEscala,
-                metabolismo: globalMetabolismo,
-                somatotipo: globalSomatotipo
-            }])
+            .from("registro")
+            .insert([datosRegistro])
             .select()
             .single();
 
-        if (analisisError) {
-            console.error("Error al guardar el análisis.", analisisError);
-            return;
+
+        console.log(
+            "Respuesta INSERT:",
+            registro
+        );
+
+        console.log(
+            "Error INSERT:",
+            registroError
+        );
+
+
+        // ==========================================
+        // 5. ERROR DE SUPABASE
+        // ==========================================
+
+        if (registroError) {
+
+            throw new Error(
+                "Supabase rechazó el INSERT:\n" +
+                registroError.message +
+                "\nCódigo: " +
+                (registroError.code || "N/A")
+            );
         }
 
-        const analisis_id = analisis.id_analisis;
 
-        // 4. Insertar datos del usuario
-        const {
-            data,
+        // ==========================================
+        // 6. ÉXITO
+        // ==========================================
+
+        console.log(
+            "================================="
+        );
+
+        console.log(
+            "REGISTRO GUARDADO CORRECTAMENTE"
+        );
+
+        console.log(
+            registro
+        );
+
+        console.log(
+            "================================="
+        );
+
+
+        alert(
+            "✅ Tus datos fueron guardados correctamente."
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "================================="
+        );
+
+        console.error(
+            "ERROR AL GUARDAR"
+        );
+
+        console.error(
             error
-        } = await supabaseClient
-            .from("datosimc_usuario")
-            .insert([{
-                genero,
-                edad,
-                peso,
-                altura,
-                contextura,
-                usuario_id,
-                analisis_id
-            }]);
+        );
 
-        if (error) {
-            console.error("Error al guardar datos.", error);
-            return;
-        }
+        console.error(
+            "================================="
+        );
 
-        console.log("Registro guardado correctamente.");
 
-    } catch (err) {
-        console.error("Error inesperado:", err);
+        alert(
+            "❌ Error al guardar:\n\n" +
+            error.message
+        );
     }
-
 }
-        
 
-    async   function calcularTodo(e) {
-            e.preventDefault();
 
-            
-     
-            const genero = document.getElementById('genero').value;
-            const edad = Number(document.getElementById('edad').value);
-            const peso = parseFloat(document.getElementById('peso').value);
-            const altura = parseFloat(document.getElementById('altura').value);
-            const contextura = document.getElementById('contextura').value;
-
-            await alm(genero, edad, peso, altura, contextura)
-          
-            const alerta = document.getElementById('alerta-error');
-            const planVacio = document.getElementById('plan-vacio');
-            const planContenido = document.getElementById('plan-contenido');
-            const zonaDinamica = document.getElementById('zona-interactiva-dinamica');
-
-            if (!genero || !edad || !peso || !altura || !contextura || edad > 99 || peso > 500 || altura > 275) {
-                alerta.classList.remove('hidden');
-                planContenido.classList.add('hidden');
-                planVacio.classList.remove('hidden');
-                window.scrollTo({ top: 3, behavior: 'smooth' });
+        function descargarPDFDinamico() {
+            const { jsPDF } = window.jspdf;
+            if (!jsPDF) {
+                alert("La librería jsPDF no cargó correctamente.");
                 return;
             }
 
-            alerta.classList.add('hidden');
-
-            zonaDinamica.innerHTML = `
-                <button id="btn-action-plan" onclick="procesarPlanPDF()" class="bg-[#2dd4bf] hover:bg-teal-500 text-slate-950 font-extrabold px-6 py-2.5 rounded-xl uppercase tracking-wider text-[10px] transition duration-300 flex items-center gap-2 shadow-lg shadow-teal-400/20">
-                    <span>Generar Plan Completo</span>
-                </button>
-            `;
-
-            const alturaM = altura / 100;
-            globalIMC = (peso / (alturaM * alturaM)).toFixed(1);
-            document.getElementById('res-imc').innerText = globalIMC;
-
-            if (globalIMC < 18.5) globalEscala = "Bajo Peso";
-            else if (globalIMC < 25) globalEscala = "Normal";
-            else if (globalIMC < 30) globalEscala = "Sobrepeso";
-            else globalEscala = "Obesidad";
-            document.getElementById('res-escala').innerText = globalEscala;
-
-            if (contextura === "ecto") {
-                globalSomatotipo = "Ectomorfo";
-                globalMetabolismo = "Rapido / Hiper";
-            } else if (contextura === "meso") {
-                globalSomatotipo = "Mesomorfo";
-                globalMetabolismo = "Equilibrado";
-            } else {
-                globalSomatotipo = "Endomorfo";
-                globalMetabolismo = "Lento / Basal";
-            }
-
-            document.getElementById('res-somato').innerText = globalSomatotipo;
-            document.getElementById('res-meta').innerText = globalMetabolismo;
-
-            let txtEntreno = "";
-            let txtNutricion = "";
-            let badgeText = "";
-
-            if (globalEscala === "Bajo Peso" || contextura === "ecto") {
-                badgeText = "Hipertrofia";
-                txtEntreno = "Rutinas cortas y pesadas de fuerza (3-4 dias). Reducir cardio.";
-                txtNutricion = "Superavit del 15%. Carbohidratos complejos y proteinas magras.";
-            } else if (globalEscala === "Normal" && contextura === "meso") {
-                badgeText = "Recomposicion";
-                txtEntreno = "Fuerza pesada complementada con HIIT funcional 2 veces por semana.";
-                txtNutricion = "Dieta normocalorica con ciclado estrategico de carbohidratos.";
-            } else {
-                badgeText = "Definicion";
-                txtEntreno = "Conservar masa muscular combinando pesas con bloques de cardio LISS.";
-                txtNutricion = "Deficit controlado del 20%. Restriccion estricta de azucares.";
-            }
-
-            document.getElementById('plan-badge').innerText = badgeText;
-            document.getElementById('plan-entreno').innerText = txtEntreno;
-            document.getElementById('plan-nutricion').innerText = txtNutricion;
-
-            planVacio.classList.add('hidden');
-            planContenido.classList.remove('hidden');
-            await guardarAnalisis(
-    genero,
-    edad,
-    peso,
-    altura,
-    contextura
-);
-        }
-
-        function procesarPlanPDF() {
-            const btnAction = document.getElementById('btn-action-plan');
-            const zonaDinamica = document.getElementById('zona-interactiva-dinamica');
-
-            btnAction.disabled = true;
-
-            btnAction.innerHTML = `
-                <svg class="animate-spin h-3 w-3 text-slate-950" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <span>Generando...</span>
-            `;
-            btnAction.className = "bg-teal-500 text-slate-950 font-extrabold px-6 py-2.5 rounded-xl uppercase tracking-wider text-[10px] flex items-center gap-2 shadow-lg";
-
-            setTimeout(() => {
-                zonaDinamica.innerHTML = `
-                    <div class="w-full p-3 rounded-xl bg-cyan-950/40 border border-cyan-500/30 flex items-center justify-between text-left">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-lg bg-red-600/20 border border-red-500/30 flex items-center justify-center text-red-400 flex-shrink-0">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 012-2h4.586A1 1 0 0113 2.586L15.414 5A1 1 0 0116 5.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"></path></svg>
-                            </div>
-                            <div>
-                                <h4 class="text-[11px] font-bold uppercase tracking-wide text-white">Plan_Oficial_VitalUp.pdf</h4>
-                                <p class="text-[9px] text-gray-400">Documento de ejemplo listo para descargar</p>
-                            </div>
-                        </div>
-                        <button onclick="descargarPDFReal()" class="bg-white hover:bg-gray-200 text-slate-950 font-bold px-3 py-1.5 rounded-lg text-[9px] uppercase tracking-wider transition flex-shrink-0">
-                            Descargar
-                        </button>
-                    </div>
-                `;
-            }, 1800);
-        }
-
-        function descargarPDFReal() {
-            const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+            let nombreArchivo = `Plan_${generoElegido}_${somatotipoElegido}_${estadoIMC}_${tipoEdad}.pdf`;
 
             doc.setFillColor(11, 18, 31);
-            doc.rect(0, 0, 210, 40, 'F');
-
+            doc.rect(0, 0, 210, 36, 'F');
             doc.setTextColor(45, 212, 191);
             doc.setFont("helvetica", "bold");
-            doc.setFontSize(24);
-            doc.text("VITAL UP", 15, 20);
+            doc.setFontSize(20);
+            doc.text("VITAL UP", 15, 17);
 
             doc.setTextColor(255, 255, 255);
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(10);
-            doc.text("INFORME DE EVALUACION Y BALANCE CORPORAL BIOMETRICO", 15, 28);
+            doc.setFontSize(9);
+            doc.text(`PLAN VITAL UP (${generoElegido.toUpperCase()}) - ${tipoEdad.toUpperCase()}`, 15, 26);
 
             doc.setTextColor(15, 23, 42);
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(14);
-            doc.text("RESUMEN DE RESULTADOS BIOMETRICOS", 15, 55);
-
-            doc.setFillColor(245, 247, 250);
-            doc.rect(15, 60, 180, 25, 'F');
-
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(10);
-            doc.text("Indice de Masa Corporal (IMC):", 20, 70);
-            doc.text("Clasificacion Oficial:", 20, 78);
-            doc.text("Tipo de Somatotipo:", 110, 70);
-            doc.text("Ritmo Metabolismo:", 110, 78);
-
-            doc.setFont("helvetica", "normal");
-            doc.text(`${globalIMC}`, 75, 70);
-            doc.text(`${globalEscala}`, 60, 78);
-            doc.text(`${globalSomatotipo}`, 148, 70);
-            doc.text(`${globalMetabolismo}`, 148, 78);
-
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(14);
-            doc.text("PLAN ESTRATEGICO COMPLETO (EJEMPLO)", 15, 100);
-
-            doc.setFillColor(245, 247, 250);
-            doc.rect(15, 105, 180, 38, 'F');
-            doc.setFont("helvetica", "bold");
             doc.setFontSize(11);
-            doc.text("PROPUESTA DE GUIA NUTRICIONAL", 20, 112);
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(9);
-            doc.text("- Desayuno: 3 Huevos revueltos con espinaca + 1 taza de avena integral.", 20, 118);
-            doc.text("- Almuerzo: 200g de pechuga de pollo o pescado + 150g de arroz o camote + ensalada.", 20, 124);
-            doc.text("- Merienda: 1 Porcion de yogur griego natural sin azucar + 30g de almendras.", 20, 130);
-            doc.text("- Cena: 180g de carne magra de res + porcion de brocoli al vapor.", 20, 136);
+            doc.text("PROGRAMA PERSONALIZADO DE ENTRENAMIENTO", 15, 45);
 
             doc.setFillColor(245, 247, 250);
-            doc.rect(15, 150, 180, 32, 'F');
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(11);
-            doc.text("ESTRUCTURA DE ENTRENAMIENTO", 20, 157);
-            doc.setFont("helvetica", "normal");
+            doc.rect(15, 49, 180, 16, 'F');
             doc.setFontSize(9);
-            doc.text("- Calentamiento: Movilidad articular y activacion de zona core (5-10 min).", 20, 163);
-            doc.text("- Bloque de Fuerza: Sentadillas, Press de Banca y Remo con mancuerna (4 x 12 reps).", 20, 169);
-            doc.text("- Bloque Cardio: 15-20 minutos de caminata inclinada o trote controlado.", 20, 175);
+            doc.text(`IMC: ${globalIMC} (${estadoIMC.toUpperCase()}) | Edad: ${globalEdad} años`, 20, 59);
+            doc.text(`Somatotipo: ${somatotipoElegido.toUpperCase()} | Grupo: ${tipoEdad.toUpperCase()}`, 105, 59);
 
-            doc.setFont("helvetica", "italic");
-            doc.setFontSize(8);
-            doc.setTextColor(150, 150, 150);
-            doc.text("Este documento es un reporte interactivo generado de forma automatica por la plataforma Vital Up.", 15, 280);
+            let yPos = 76;
+            let diasEntreno = obtenerPlanPorMatriz(generoElegido, somatotipoElegido, estadoIMC, tipoEdad);
 
-            doc.save("Plan_Oficial_VitalUp.pdf");
+            diasEntreno.forEach((bloqueDia) => {
+                if (yPos > 250) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+                
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(9);
+                doc.setTextColor(45, 212, 191);
+                doc.text(bloqueDia.dia, 15, yPos);
+                yPos += 5;
+
+                bloqueDia.bloquesMusculares.forEach((sub) => {
+                    if (yPos > 265) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+                    
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(8);
+                    doc.setTextColor(15, 23, 42);
+                    doc.text(sub.subtitulo, 18, yPos);
+                    yPos += 4;
+
+                    doc.setFont("helvetica", "normal");
+                    doc.setFontSize(8);
+                    doc.setTextColor(60, 60, 60);
+
+                    sub.ejercicios.forEach((ej) => {
+                        if (yPos > 275) {
+                            doc.addPage();
+                            yPos = 20;
+                        }
+                        doc.text(`• ${ej}`, 22, yPos);
+                        yPos += 4;
+                    });
+                    yPos += 2;
+                });
+                yPos += 3;
+            });
+
+            doc.save(nombreArchivo);
         }
 
 
+        let estadobd = ""
+        // ==========================================
+        // MATRIZ DE PLANES CORREGIDA
+        // ==========================================
+function obtenerPlanPorMatriz(genero, somatotipo, estado, edadTipo) {
+    // Validar género principal
+
+
+    // Ejemplo para JOVEN + FLACO
+    if (edadTipo === 'joven' && somatotipo === 'flaco' && genero === 'masculino') {
+        if (estado === 'critico') {
+            return [
+                {
+                    dia: "LUNES: TREN SUPERIOR",
+                    bloquesMusculares: [
+                        { subtitulo: "BÍCEPS", ejercicios: ["1. Curl martillo (3x15)", "2. Curl con barra (3x15)", "3. Curl concentrado (3x15)"] },
+                        { subtitulo: "HOMBROS", ejercicios: ["1. Elevaciones laterales con máquina (3x12)", "2. Press militar con barra (3x15)", "3. apertura en máquina (3x15)"] }
+                    ]
+                },
+                {
+                    dia: "MARTES: TREN SUPERIOR",
+                    bloquesMusculares: [
+                        { subtitulo: "PECHO", ejercicios: ["1. Press banca con mancuernas (3x15)", "3. Press declinado barra (3x15)", "4. Press inclinado con barra (3x15)"] },
+                        { subtitulo: "ANTEBRAZO", ejercicios: ["1. Rodillo antebrazo (3x al fallo)", "3. curl de Antebrazo con mancuerna (3x12)"] },
+                        { subtitulo: "TRÍCEPS", ejercicios: ["1. Extensiones en polea (3x15)", "2. Extensiones verticales con mancuerna (3x15)", "3. Patada de tricep por lado (3x15)"] }
+                    ]
+                },
+                {
+                    dia: "MIERCOLES: TREN INFERIOR",
+                    bloquesMusculares: [
+                        { subtitulo: "PIERNAS 1", ejercicios: ["1. Sentadilla libre (3x15)", "2. Extensión de cuádriceps en máquina (3x15)", "3. Extensión de femoral en máquina (3x15)", "4. Pantorrillas con mancuerna (3x15)"] },
+                        { subtitulo: "BÍCEPS", ejercicios: ["1. Curl martillo (3x15)", "2. Curl con barra (3x15)", "3. Curl concentrado (3x12)"] }
+                    ]
+                },
+                {
+                    dia: "JUEVES: TREN SUPERIOR",
+                    bloquesMusculares: [
+                        { subtitulo: "ESPALDA", ejercicios: ["1. Jalón al pecho (3x15)", "2. Remo sentado (3x15)", "3. Pull over polea (3x15)", "4. Trapecio con mancuernas (3x15)"] },
+                        { subtitulo: "ANTEBRAZO", ejercicios: ["1. Rodillo antebrazo (3x al fallo)", "3. curl de Antebrazo con mancuerna (3x12)"] },
+                        { subtitulo: "TRÍCEPS", ejercicios: ["1. Extensiones en polea (3x15)", "2. Extensiones verticales con mancuerna (3x15)", "3. Patada de tricep por lado (3x15)"] }
+                    ]
+                },
+                {
+                    dia: "VIERNES: TREN INFERIOR",
+                    bloquesMusculares: [
+                        { subtitulo: "PIERNAS 1", ejercicios: ["1. Sentadilla libre (3x15)", "2. Extensión de cuádriceps en máquina (3x15)", "3. Extensión de femoral en máquina (3x15)", "4. Pantorrillas con mancuerna (3x15)"] },
+                        { subtitulo: "HOMBROS", ejercicios: ["1. Elevaciones laterales con mancuerna (3x15)", "2. Press militar con barra (3x15)", "3. apertura en máquina (3x15)"] }
+                    ]
+                }
+            ];
+        } else if (estado === 'mediano') {
+            return [
+                {
+                    dia: "LUNES: TREN SUPERIOR",
+                    bloquesMusculares: [
+                        { subtitulo: "BÍCEPS", ejercicios: ["1. Curl martillo (3x12)", "2. Curl en polea (3x12)", "3. Curl concentrado (3x12)"] },
+                        { subtitulo: "HOMBROS", ejercicios: ["1. Elevaciones laterales con mancuerna (3x12)", "2. Press militar con mancuerna (3x12)", "3. aperturas en máquina (3x12)"] }
+                    ]
+                },
+                {
+                    dia: "MARTES: TREN SUPERIOR",
+                    bloquesMusculares: [
+                        { subtitulo: "PECHO", ejercicios: ["1. Press banca con mancuernas (3x12)", "2. Aperturas en máquina (3x12)", "3. Press declinado con mancuerna (3x12)", "4. Press inclinado con barra (3x12)"] },
+                        { subtitulo: "ANTEBRAZO", ejercicios: ["1. Rodillo antebrazo (3x al fallo)", "2. Pronación barra (3x12)", "3. Antebrazo en polea (3x12)"] },
+                        { subtitulo: "TRÍCEPS", ejercicios: ["1. Extensiones en polea (3x12)", "2. Extensiones verticales con mancuerna (3x12)", "3. Patada de tricep dos lados (3x12)"] }
+                    ]
+                },
+                {
+                    dia: "MIERCOLES: TREN INFERIOR",
+                    bloquesMusculares: [
+                        { subtitulo: "PIERNAS 1", ejercicios: ["1. Sentadilla libre (3x12)", "2. Extensión de cuádriceps en máquina (3x12)", "3. Extensión de femoral en máquina (3x15)", "4. Pantorrillas con mancuerna (3x12)", "5. Abductor interior con máquina (3x12)"] },
+                        { subtitulo: "BÍCEPS", ejercicios: ["1. Curl martillo (3x12)", "2. Curl en polea (3x12)", "3. Curl concentrado (3x12)"] }
+                    ]
+                },
+                {
+                    dia: "JUEVES: TREN SUPERIOR",
+                    bloquesMusculares: [
+                        { subtitulo: "ESPALDA", ejercicios: ["1. Jalón al pecho (3x12)", "2. Remo sentado (3x12)", "3. Pull over polea (3x15)", "4. Trapecio con mancuernas (3x12)", "5. Jalón al pecho cerrado (3x12)"] },
+                        { subtitulo: "ANTEBRAZO", ejercicios: ["1. Rodillo antebrazo (3x al fallo)", "2. Pronación barra (3x12)", "3. Antebrazo en polea (3x12)"] },
+                        { subtitulo: "TRÍCEPS", ejercicios: ["1. Extensiones en polea (3x12)", "2. Extensiones verticales con mancuerna (3x12)", "3. Patada de tricep dos lados (3x12)"] }
+                    ]
+                },
+                {
+                    dia: "VIERNES: TREN INFERIOR",
+                    bloquesMusculares: [
+                        { subtitulo: "PIERNAS 1", ejercicios: ["1. Sentadilla libre (3x12)", "2. Extensión de cuádriceps en máquina (3x12)", "3. Extensión de femoral en máquina (3x15)", "4. Pantorrillas con mancuerna (3x12)", "5. Abductor exterior con máquina (3x12)"] },
+                        { subtitulo: "HOMBROS", ejercicios: ["1. Elevaciones laterales con mancuerna (3x12)", "2. Press militar con mancuernas (3x12)", "3. aperturas en máquina (3x12)"] }
+                    ]
+                }
+            ];
+        } else {
+            // Estado por defecto (ej. fuerte / normal) para joven + flaco
+            return [
+                {
+                    dia: "LUNES: TREN SUPERIOR",
+                    bloquesMusculares: [
+                        { subtitulo: "BÍCEPS", ejercicios: ["1. Curl martillo (4x12)", "2. Curl en polea (4x12)", "3. Curl concentrado (4x12)"] },
+                        { subtitulo: "ANTEBRAZO", ejercicios: ["1. Rodillo antebrazo (4x al fallo)", "2. Pronación barra (4x12)", "3. Antebrazo en polea (4x12)"] },
+                        { subtitulo: "HOMBROS", ejercicios: ["1. Elevaciones laterales con mancuerna (4x12)", "2. Press militar con mancuerna (4x12)", "3. aperturas en máquina (4x12)"] }
+                    ]
+                },
+                {
+                    dia: "MARTES: TREN SUPERIOR",
+                    bloquesMusculares: [
+                        { subtitulo: "PECHO", ejercicios: ["1. Press banca con mancuernas (4x12)", "2. Aperturas en máquina (4x12)", "3. Press declinado con mancuerna (4x12)", "4. Press inclinado con barra (4x12)"] },
+                        { subtitulo: "TRÍCEPS", ejercicios: ["1. Extensiones en polea (4x12)", "2. Extensiones verticales con mancuerna (4x12)", "3. Patada de tricep dos lados (4x12)"] }
+                    ]
+                },
+                {
+                    dia: "MIERCOLES: TREN INFERIOR",
+                    bloquesMusculares: [
+                        { subtitulo: "PIERNAS 1", ejercicios: ["1. Sentadilla libre (4x12)", "2. Extensión de cuádriceps en máquina (4x12)", "3. Extensión de femoral en máquina (4x15)", "4. Pantorrillas con mancuerna (4x12)", "5. Abductor interior con máquina (4x12)"] },
+                        { subtitulo: "BÍCEPS", ejercicios: ["1. Curl martillo (4x12)", "2. Curl en polea (4x12)", "3. Curl concentrado (4x12)"] }
+                    ]
+                },
+                {
+                    dia: "JUEVES: TREN SUPERIOR",
+                    bloquesMusculares: [
+                        { subtitulo: "ESPALDA", ejercicios: ["1. Jalón al pecho (4x12)", "2. Remo sentado (4x12)", "3. Pull over polea (4x12)", "4. Trapecio con mancuernas (4x12)", "5. Jalón al pecho cerrado (4x12)"] },
+                        { subtitulo: "ANTEBRAZO", ejercicios: ["1. Rodillo antebrazo (4x al fallo)", "2. Pronación barra (4x12)", "3. Antebrazo en polea (4x12)"] },
+                        { subtitulo: "TRÍCEPS", ejercicios: ["1. Extensiones en polea (4x12)", "2. Extensiones verticales con mancuerna (4x12)", "3. Patada de tricep dos lados (4x12)"] }
+                    ]
+                },
+                {
+                    dia: "VIERNES: TREN INFERIOR",
+                    bloquesMusculares: [
+                        { subtitulo: "PIERNAS 1", ejercicios: ["1. hip thrust en maquina (4x12)", "2. Extensión de cuádriceps en máquina (4x12)", "3. Extensión de femoral en máquina (4x12)", "4. Pantorrillas con mancuerna (4x12)", "5. Abductor exterior con máquina (4x12)"] },
+                        { subtitulo: "HOMBROS", ejercicios: ["1. Elevaciones laterales con mancuerna (4x12)", "2. Press militar con mancuernas (4x12)", "3. aperturas en máquina (4x12)"] }
+                    ]
+                }
+            ];
+        }
+    } 
+    
+      if (edadTipo === 'joven' && somatotipo === 'normal' && genero === 'masculino') {
+        if (estado === 'critico') {
+    return [
+        {
+            dia: "LUNES: TREN SUPERIOR",
+            bloquesMusculares: [
+                { 
+                    subtitulo: "BÍCEPS", 
+                    ejercicios: ["1. Curl martillo (3x12)", "2. Curl en polea (3x12)", "3. Curl concentrado (3x12)"]
+                },
+                { 
+                    subtitulo: "HOMBROS", 
+                    ejercicios: ["1. Elevaciones laterales con mancuerna (3x12)", "2. Press militar con mancuerna (3x12)", "3. Aperturas en máquina (3x12)"] 
+                }
+            ]
+        },
+        { 
+            dia: "MARTES: TREN SUPERIOR",
+            bloquesMusculares: [
+                { 
+                    subtitulo: "PECHO", 
+                    ejercicios: ["1. Press banca con barra (3x12)", "2. Aperturas en máquina (3x12)", "3. Press declinado con mancuerna (3x12)", "4. Press inclinado con barra (3x12)"]
+                },
+                { 
+                    subtitulo: "ANTEBRAZO", 
+                    ejercicios: ["1. Curl de antebrazo mancuerna (3x12)", "2. Pronación barra (3x12)", "3. Curl de antebrazo inverso (3x12)"]
+                },
+                { 
+                    subtitulo: "TRÍCEPS", 
+                    ejercicios: ["1. Extensiones en polea (3x12)", "2. Extensiones verticales con mancuerna (3x12)", "3. Patada de trícep dos lados (3x12)"]
+                }
+            ]
+        },
+        {
+            dia: "MIERCOLES: TREN INFERIOR",
+            bloquesMusculares: [
+                { 
+                    subtitulo: "PIERNAS 1", 
+                    ejercicios: ["1. Sentadilla libre (3x12)", "2. Extensión de cuádriceps en máquina (3x12)", "3. Extensión de femoral en máquina (3x15)", "4. Pantorrillas en máquina (3x12)", "5. Abductor interior con máquina (3x12)"] 
+                },
+                { 
+                    subtitulo: "BÍCEPS", 
+                    ejercicios: ["1. Curl martillo (3x12)", "2. Curl en polea (3x12)", "3. Curl concentrado (3x12)"]
+                }
+            ]
+        },
+        { 
+            dia: "JUEVES: TREN SUPERIOR",
+            bloquesMusculares: [
+                { 
+                    subtitulo: "ESPALDA", 
+                    ejercicios: ["1. Jalón al pecho (3x12)", "2. Remo sentado (3x12)", "3. Pull over polea (3x15)", "4. Trapecio con mancuernas (3x12)", "5. Jalón al pecho cerrado (3x12)"] 
+                },
+                { 
+                    subtitulo: "ANTEBRAZO", 
+                    ejercicios: ["1. Curl de antebrazo mancuerna (3x12)", "2. Pronación barra (3x12)", "3. Curl de antebrazo inverso (3x12)"]
+                },
+                { 
+                    subtitulo: "TRÍCEPS", 
+                    ejercicios: ["1. Extensiones en polea (3x12)", "2. Extensiones verticales con mancuerna (3x12)", "3. Patada de trícep dos lados (3x12)"]
+                }
+            ]
+        },
+        { 
+            dia: "VIERNES: TREN INFERIOR",
+            bloquesMusculares: [
+                { 
+                    subtitulo: "PIERNAS 1", 
+                    ejercicios: ["1. Sentadilla libre (3x12)", "2. Extensión de cuádriceps en máquina (3x12)", "3. Extensión de femoral en máquina (3x15)", "4. Pantorrillas en máquina (3x12)", "5. Abductor exterior con máquina (3x12)"] 
+                },
+                { 
+                    subtitulo: "HOMBROS", 
+                    ejercicios: ["1. Elevaciones laterales con mancuerna (3x12)", "2. Press militar con mancuernas (3x12)", "3. Aperturas en máquina (3x12)"] 
+                }
+            ]
+        }
+    ];
+
+        } else if (estado === 'mediano') {
+return [
+    {
+        dia: "LUNES: TREN SUPERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "BÍCEPS", 
+                ejercicios: [
+                    "1. Curl martillo (4x12)", 
+                    "2. Curl en polea (4x12)", 
+                    "3. Curl concentrado (4x12)"
+                ]
+            },
+            { 
+                subtitulo: "ANTEBRAZO", 
+                ejercicios: [
+                    "1. Curl concentrado con barra (4x12)", 
+                    "2. Pronación barra (4x12)", 
+                    "3. Antebrazo en polea (4x12)"
+                ]
+            },
+            { 
+                subtitulo: "HOMBROS", 
+                ejercicios: [
+                    "1. Elevaciones laterales con mancuerna (4x12)", 
+                    "2. Press militar con mancuerna (4x12)", 
+                    "3. Aperturas en máquina (4x12)"
+                ] 
+            }
+        ]
+    },
+    { 
+        dia: "MARTES: TREN SUPERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "PECHO", 
+                ejercicios: [
+                    "1. Press banca (4x12)",
+                    "2. Aperturas en máquina (4x12)",
+                    "3. Press declinado con mancuerna (4x12)", 
+                    "4. Press inclinado con barra (4x12)"
+                ]
+            },
+            { 
+                subtitulo: "TRÍCEPS", 
+                ejercicios: [
+                    "1. Extensiones en polea (4x12)",
+                    "2. Extensiones verticales con mancuerna (4x12)",
+                    "3. Patada de tríceps dos lados (4x12)"
+                ]
+            }
+        ]
+    },
+    {
+        dia: "MIÉRCOLES: TREN INFERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "PIERNAS 1", 
+                ejercicios: [
+                    "1. Sentadilla en Smith (4x12)", 
+                    "2. Extensión de cuádriceps en máquina (4x12)", 
+                    "3. Extensión de femoral en máquina (4x15)", 
+                    "4. Pantorrillas en máquina (4x12)",
+                    "5. Abductor interior con máquina (4x12)"
+                ] 
+            },
+            { 
+                subtitulo: "BÍCEPS", 
+                ejercicios: [
+                    "1. Curl martillo (4x12)", 
+                    "2. Curl en polea (4x12)", 
+                    "3. Curl concentrado (4x12)"
+                ]
+            }
+        ]
+    },
+    { 
+        dia: "JUEVES: TREN SUPERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ESPALDA", 
+                ejercicios: [
+                    "1. Jalón al pecho (4x12)", 
+                    "2. Remo sentado (4x12)", 
+                    "3. Pull over polea (4x12)", 
+                    "4. Trapecio con mancuernas (4x12)",
+                    "5. Jalón al pecho cerrado (4x12)"
+                ] 
+            },
+            { 
+                subtitulo: "ANTEBRAZO", 
+                ejercicios: [
+                    "1. Curl concentrado con barra (4x12)", 
+                    "2. Pronación barra (4x12)", 
+                    "3. Antebrazo en polea (4x12)"
+                ]
+            },
+            { 
+                subtitulo: "TRÍCEPS", 
+                ejercicios: [
+                    "1. Extensiones en polea (4x12)",
+                    "2. Extensiones verticales con mancuerna (4x12)",
+                    "3. Patada de tríceps dos lados (4x12)"
+                ]
+            }
+        ]
+    },
+    { 
+        dia: "VIERNES: TREN INFERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "PIERNAS 1", 
+                ejercicios: [
+                    "1. Hip thrust en máquina (4x12)", 
+                    "2. Extensión de cuádriceps en máquina (4x12)", 
+                    "3. Extensión de femoral en máquina (4x12)", 
+                    "4. Pantorrillas en máquina (4x12)",
+                    "5. Abductor exterior con máquina (4x12)"
+                ] 
+            },
+            { 
+                subtitulo: "HOMBROS", 
+                ejercicios: [
+                    "1. Elevaciones laterales con mancuerna (4x12)", 
+                    "2. Press militar con mancuernas (4x12)", 
+                    "3. Aperturas en máquina (4x12)"
+                ] 
+            }
+        ]
+    }
+];
+        } else {
+            // Estado por defecto (ej. fuerte / normal) para joven + flaco
+            return [
+    {
+        dia: "LUNES: TREN SUPERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "BÍCEPS", 
+                ejercicios: ["1. Curl martillo (4x fallo)", "2. Curl en polea (4x fallo)", "3. Curl concentrado (4x fallo)"]
+            },
+            { 
+                subtitulo: "ANTEBRAZO", 
+                ejercicios: ["1. Curl concentrado con barra (4x fallo)", "2. Pronación barra (4x fallo)", "3. Antebrazo en polea (4x fallo)"]
+            },
+            { 
+                subtitulo: "HOMBROS", 
+                ejercicios: ["1. Elevaciones laterales con mancuerna (4x fallo)", "2. Press militar con mancuerna (4x fallo)", "3. aperturas en máquina (4x fallo)"] 
+            }
+        ]
+    },
+    { 
+        dia: "MARTES: TREN SUPERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "PECHO", 
+                ejercicios: ["1. Press banca (4x10)", "2. Aperturas en máquina (4x fallo)", "3. Press declinado con mancuerna (4x fallo)", "4. Press inclinado con barra (4x fallo)"]
+            },
+            { 
+                subtitulo: "TRÍCEPS", 
+                ejercicios: ["1. Extensiones en polea (4x fallo)", "2. Extensiones verticales con mancuerna (4x fallo)", "3. Patada de tricep dos lados (4x fallo)"]
+            }
+        ]
+    },
+    {
+        dia: "MIERCOLES: TREN INFERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "PIERNAS 1", 
+                ejercicios: ["1. Sentadilla en Smith (4x12)", "2. Extensión de cuádriceps en máquina(4x12)", "3. Extensión de femoral en máquina (4x15)", "4. Pantorrillas en máquina (4x12)", "5. Abductor interior con máquina (4x12)", "6. sentadilla hack (4x12)"] 
+            },
+            { 
+                subtitulo: "BÍCEPS", 
+                ejercicios: ["1. Curl martillo (4x fallo)", "2. Curl en polea (4x fallo)", "3. Curl concentrado (4x fallo)"]
+            }
+        ]
+    },
+    { 
+        dia: "JUEVES: TREN SUPERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ESPALDA", 
+                ejercicios: ["1. Jalón al pecho (4x12)", "2. Remo sentado (4x12)", "3. Pull over polea (4x12)", "4. Trapecio con mancuernas (4x12)", "5. Jalón al pecho cerrado (4x12)", "6. remo con barra (4x12)"] 
+            },
+            { 
+                subtitulo: "ANTEBRAZO", 
+                ejercicios: ["1. Curl concentrado con barra (4x fallo)", "2. Pronación barra (4x fallo)", "3. Antebrazo en polea (4x fallo)"]
+            },
+            { 
+                subtitulo: "TRÍCEPS", 
+                ejercicios: ["1. Extensiones en polea (4x fallo)", "2. Extensiones verticales con mancuerna (4x fallo)", "3. Patada de tricep dos lados (4x fallo)"]
+            }
+        ]
+    },
+    { 
+        dia: "VIERNES: TREN INFERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "PIERNAS 1", 
+                ejercicios: ["1. hip thrust en maquina (4x12)", "2. Extensión de cuádriceps en máquina(4x12)", "3. Extensión de femoral en máquina (4x12)", "4. Pantorrillas en máquina (4x12)", "5. Abductor exterior con máquina (4x12)", "6. sentadilla hack (4x12)"] 
+            },
+            { 
+                subtitulo: "HOMBROS", 
+                ejercicios: ["1. Elevaciones laterales con mancuerna (4x fallo)", "2. Press militar con mancuernas (4x fallo)", "3. aperturas en máquina (4x fallo)"] 
+            }
+        ]
+    }
+];
+        }
+    } 
+    
+      if (edadTipo === 'joven' && somatotipo === 'gordo' && genero === 'masculino') {
+        if (estado === 'critico') {
+    return [
+    {
+        dia: "LUNES: CORE",
+        bloquesMusculares: [
+            { 
+                subtitulo: "CARDIO", 
+                ejercicios: ["1. Caminadora velocidad media(20 minutos)", "2. Caminadora velocidad rápida (20 minutos)"]
+            },
+            { 
+                subtitulo: "Abdomen", 
+                ejercicios: ["1. Rueda abdominal (4x10)", "2. Russian twist (4x15)", "3. Elevación de piernas (4x15)"] 
+            }
+        ]
+    },
+    { 
+        dia: "MARTES: TREN INFERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "BÍCEPS", 
+                ejercicios: ["1. Curl martillo (4x12)", "2. Curl en barra (4x12)", "3. Curl concentrado (4x12)"]
+            },
+            { 
+                subtitulo: "PIERNA", 
+                ejercicios: ["1. Sentadilla sumo (4x12)", "2. Sentadilla libre (4x12)", "3. Sentadilla hack (4x12)", "4. Abductor interno maquina (4x12)"]
+            }
+        ]
+    },
+    {
+        dia: "MIERCOLES: TREN CORE",
+        bloquesMusculares: [
+            { 
+                subtitulo: "CARDIO", 
+                ejercicios: ["1. Caminadora velocidad media(20 minutos)", "2. Caminadora velocidad rápida (20 minutos)"]
+            },
+            { 
+                subtitulo: "Abdomen", 
+                ejercicios: ["1. Rueda abdominal (4x10)", "2. Russian twist (4x15)", "3. Elevación de piernas (4x15)"]
+            },
+            { 
+                subtitulo: "PECHO", 
+                ejercicios: ["1. Press banca (4x12)", "2. Press inclinado con mancuernas (4x12)", "3. Press declinado con mancuerna (4x12)", "4. Aperturas en maquina (4x12)"]
+            }
+        ]
+    },
+    { 
+        dia: "JUEVES: TREN SUPERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ESPALDA", 
+                ejercicios: ["1. Jalón al pecho (4x12)", "2. Remo sentado (4x12)", "3. Pull over polea (4x12)", "4. Trapecio con mancuernas (4x12)"] 
+            },
+            {
+                subtitulo: "TRÍCEPS", 
+                ejercicios: ["1. Extensiones en polea (4x12)", "2. Extensiones verticales con mancuerna (4x12)", "3. Patada de tricep por cada lado (4x12)"]
+            }
+        ]
+    },
+    { 
+        dia: "VIERNES: CORE",
+        bloquesMusculares: [
+            { 
+                subtitulo: "CARDIO", 
+                ejercicios: ["1. Caminadora velocidad media(20 minutos)", "2. Caminadora velocidad rápida (20 minutos)"]
+            },
+            { 
+                subtitulo: "Abdomen", 
+                ejercicios: ["1. Rueda abdominal (4x10)", "2. Russian twist (4x15)", "3. Elevación de piernas (4x15)"]
+            },
+            { 
+                subtitulo: "HOMBROS", 
+                ejercicios: ["1. Elevaciones laterales con mancuerna (4x12)", "2. Press militar con mancuernas (4x12)", "3. aperturas en máquina (4x12)"] 
+            }
+        ]
+    }
+];
+
+        } else if (estado === 'mediano') {
+ function getmesomorfoMasculinomediano() {
+}  if (estado === 'mediano') {
+            return [
+                {
+                    dia: "LUNES: CORE",
+                    bloquesMusculares: [
+                        { 
+                            subtitulo: "CARDIO", 
+                            ejercicios: ["1. Caminadora velocidad media (15 minutos)", "2. Caminadora velocidad rápida (15 minutos)"]
+                        },
+                        { 
+                            subtitulo: "Abdomen", 
+                            ejercicios: ["1. Rueda abdominal (4x12)", "2. Russian twist (4x15)", "3. Elevación de piernas (4x15)"] 
+                        }
+                    ]
+                },
+                { 
+                    dia: "MARTES: TREN INFERIOR",
+                    bloquesMusculares: [
+                        { 
+                            subtitulo: "BÍCEPS", 
+                            ejercicios: ["1. Curl martillo (4x15)", "2. Curl en polea (4x15)", "3. Curl concentrado (4x15)"]
+                        },
+                        { 
+                            subtitulo: "PIERNA", 
+                            ejercicios: ["1. Sentadilla sumo (4x15)", "2. Sentadilla Smith (4x15)", "3. Sentadilla hack (4x15)", "4. Abductor interno maquina (4x15)"]
+                        }
+                    ]
+                },
+                {
+                    dia: "MIERCOLES: TREN CORE",
+                    bloquesMusculares: [
+                        { 
+                            subtitulo: "CARDIO", 
+                            ejercicios: ["1. Caminadora velocidad media (15 minutos)", "2. Caminadora velocidad rápida (15 minutos)"]
+                        },
+                        { 
+                            subtitulo: "Abdomen", 
+                            ejercicios: ["1. Rueda abdominal (4x12)", "2. Russian twist (4x15)", "3. Elevación de piernas (4x15)"]
+                        },
+                        { 
+                            subtitulo: "PECHO", 
+                            ejercicios: ["1. Press banca (4x15)", "2. Press inclinado con barra (4x15)", "3. Press declinado con mancuerna (4x15)", "4. Aperturas en maquina (4x15)"]
+                        }
+                    ]
+                },
+                { 
+                    dia: "JUEVES: TREN SUPERIOR",
+                    bloquesMusculares: [
+                        { 
+                            subtitulo: "ESPALDA", 
+                            ejercicios: ["1. Jalón al pecho (4x12)", "2. Remo sentado (4x15)", "3. Pull over polea (4x15)", "4. Trapecio con mancuernas (4x15)", "5. Jalón al pecho cerrado (4x15)"] 
+                        },
+                        { 
+                            subtitulo: "TRÍCEPS", 
+                            ejercicios: ["1. Extensiones en polea (4x15)", "2. Extensiones verticales con barra (4x15)", "3. Patada de tricep dos lados (4x15)"]
+                        }
+                    ]
+                },
+                { 
+                    dia: "VIERNES: TREN SUPERIOR",
+                    bloquesMusculares: [
+                        { 
+                            subtitulo: "Abdomen", 
+                            ejercicios: ["1. Rueda abdominal (4x12)", "2. Russian twist (4x15)", "3. Elevación de piernas (4x15)"]
+                        },
+                        { 
+                            subtitulo: "HOMBROS", 
+                            ejercicios: ["1. Elevaciones laterales con mancuerna (4x15)", "2. Press militar con mancuernas (4x15)", "3. aperturas en máquina (4x15)"] 
+                        }
+                    ]
+                }
+            ];
+        } else {
+}
+        } else {
+            // Estado por defecto (ej. fuerte / normal) para joven + flaco
+return [
+    {
+        dia: "LUNES: CORE",
+        bloquesMusculares: [
+            { 
+                subtitulo: "BÍCEPS", 
+                ejercicios: ["1. Curl martillo (4x15)", "2. Curl en polea (4x15)", "3. Curl concentrado (4x15)"]
+            },
+            { 
+                subtitulo: "PECHO", 
+                ejercicios: ["1. Press banca con mancuernas (4x12)", "2. Aperturas en máquina (4x12)", "3. Press declinado con mancuerna (4x12)", "4. Press inclinado con barra (4x12)"] 
+            }
+        ]
+    },
+    { 
+        dia: "MARTES: CORE",
+        bloquesMusculares: [
+            { 
+                subtitulo: "CARDIO", 
+                ejercicios: ["1. Caminadora velocidad media (10 minutos)", "2. Caminadora velocidad rápida (15 minutos)"]
+            },
+            { 
+                subtitulo: "Abdomen", 
+                ejercicios: ["1. Rueda abdominal (4x12)", "2. Russian twist (4x15)", "3. Elevación de piernas (4x15)"] 
+            }
+        ]
+    },
+    {
+        dia: "MIERCOLES: TREN INFERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "HOMBROS", 
+                ejercicios: ["1. Elevaciones laterales con mancuerna (4x12)", "2. Press militar con mancuernas (4x12)", "3. aperturas en máquina (4x12)"] 
+            },
+            { 
+                subtitulo: "PIERNAS 1", 
+                ejercicios: ["1. Sentadilla libre (4x12)", "2. Extensión de cuádriceps en máquina (4x12)", "3. Extensión de femoral en máquina (4x15)", "4. Pantorrillas con mancuerna (4x12)", "5. Abductor interior con máquina (4x12)"] 
+            }
+        ]
+    },
+    { 
+        dia: "JUEVES: CORE",
+        bloquesMusculares: [
+            { 
+                subtitulo: "CARDIO", 
+                ejercicios: ["1. Caminadora velocidad media (10 minutos)", "2. Caminadora velocidad rápida (15 minutos)"]
+            },
+            { 
+                subtitulo: "Abdomen", 
+                ejercicios: ["1. Rueda abdominal (4x12)", "2. Russian twist (4x15)", "3. Elevación de piernas (4x15)"] 
+            }
+        ]
+    },
+    { 
+        dia: "VIERNES: TREN SUPERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ESPALDA", 
+                ejercicios: ["1. Jalón al pecho (4x12)", "2. Remo sentado (4x12)", "3. Pull over polea (4x12)", "4. Trapecio con mancuernas (4x12)", "5. Jalón al pecho cerrado (4x12)"] 
+            },
+            { 
+                subtitulo: "TRÍCEPS", 
+                ejercicios: ["1. Extensiones en polea (4x15)", "2. Extensiones verticales con barra (4x15)", "3. Patada de tricep dos lados (4x15)"] 
+            }
+        ]
+    }
+];
+        }
+    }
+
+
+
+
+
+
+if (edadTipo === 'mayor' && somatotipo === 'flaco' && genero === 'masculino') {
+        if (estado === 'critico') {
+            return [
+                {
+                    dia: "LUNES: TREN SUPERIOR",
+                    bloquesMusculares: [
+                        { 
+                            subtitulo: "BÍCEPS", 
+                            ejercicios: ["1. Curl martillo (2x15)", "2. Curl concentrado (2x15)"] 
+                        }
+                    ]
+                },
+                { 
+                    dia: "MARTES: TREN SUPERIOR",
+                    bloquesMusculares: [
+                        { 
+                            subtitulo: "PECHO", 
+                            ejercicios: ["1. Press con mancuerna (2x15)", "2. Press inclinado con barra (2x15)"]
+                        },
+                        { 
+                            subtitulo: "TRÍCEPS", 
+                            ejercicios: ["1. Extensiones en polea (2x15)", "2. Patada de tricep dos lados (2x15)"] 
+                        }
+                    ]
+                },
+                {
+                    dia: "MIERCOLES: TREN INFERIOR",
+                    bloquesMusculares: [
+                        { 
+                            subtitulo: "PIERNAS 1", 
+                            ejercicios: ["1. Extensión de cuádriceps en máquina (2x15)", "2. Extensión de femoral en máquina (2x15)", "3. Pantorrillas en máquina (2x15)"] 
+                        }
+                    ]
+                },
+                { 
+                    dia: "JUEVES: TREN SUPERIOR",
+                    bloquesMusculares: [
+                        { 
+                            subtitulo: "ESPALDA", 
+                            ejercicios: ["1. Jalón al pecho (2x15)", "2. Remo sentado (2x15)", "3. Trapecio con mancuernas (4x12)"] 
+                        }
+                    ]
+                },
+                { 
+                    dia: "VIERNES: TREN SUPERIOR",
+                    bloquesMusculares: [
+                        { 
+                            subtitulo: "HOMBROS", 
+                            ejercicios: ["1. Press militar con mancuerna (2x15)", "2. flys (2x15)"] 
+                        }
+                    ]
+                }
+            ];
+        } else if (estado === 'mediano') {
+            return [
+                {
+                    dia: "LUNES: TREN SUPERIOR",
+                    bloquesMusculares: [
+                        { 
+                            subtitulo: "BÍCEPS", 
+                            ejercicios: ["1. Curl martillo (3x15)", "2. Curl concentrado (3x15)"] 
+                        }
+                    ]
+                },
+                { 
+                    dia: "MARTES: TREN SUPERIOR",
+                    bloquesMusculares: [
+                        { 
+                            subtitulo: "PECHO", 
+                            ejercicios: ["1. Press con mancuerna (3x15)", "2. Press inclinado con barra (3x15)"]
+                        },
+                        { 
+                            subtitulo: "TRÍCEPS", 
+                            ejercicios: ["1. Extensiones en polea (3x15)", "2. Patada de tricep dos lados (3x15)"] 
+                        }
+                    ]
+                },
+                {
+                    dia: "MIERCOLES: TREN INFERIOR",
+                    bloquesMusculares: [
+                        { 
+                            subtitulo: "PIERNAS 1", 
+                            ejercicios: ["1. Extensión de cuádriceps en máquina (3x15)", "2. Extensión de femoral en máquina (3x15)", "3. Pantorrillas en máquina (3x15)"] 
+                        }
+                    ]
+                },
+                { 
+                    dia: "JUEVES: TREN SUPERIOR",
+                    bloquesMusculares: [
+                        { 
+                            subtitulo: "ESPALDA", 
+                            ejercicios: ["1. Jalón al pecho (3x15)", "2. Remo sentado (3x15)", "3. Trapecio con mancuernas (3x15)"] 
+                        }
+                    ]
+                },
+                { 
+                    dia: "VIERNES: TREN SUPERIOR",
+                    bloquesMusculares: [
+                        { 
+                            subtitulo: "HOMBROS", 
+                            ejercicios: ["1. Press militar con mancuerna (3x15)", "2. flys (3x15)"] 
+                        }
+                    ]
+                }
+            ];
+        } else {
+            // Estado por defecto (ej. normal) para viejo + flaco
+            return [
+                {
+                    dia: "LUNES: TREN SUPERIOR",
+                    bloquesMusculares: [
+                        { 
+                            subtitulo: "BÍCEPS", 
+                            ejercicios: [
+                                "1. Curl martillo (3x12)", 
+                                "2. Curl concentrado (3x12)"
+                            ] 
+                        }
+                    ]
+                },
+                { 
+                    dia: "MARTES: TREN SUPERIOR",
+                    bloquesMusculares: [
+                        { 
+                            subtitulo: "PECHO", 
+                            ejercicios: [
+                                "1. Press con mancuerna (3x12)", 
+                                "2. Press inclinado con barra (3x12)"
+                            ]
+                        },
+                        { 
+                            subtitulo: "TRÍCEPS", 
+                            ejercicios: [
+                                "1. Extensiones en polea (3x12)", 
+                                "2. Patada de tricep dos lados (3x12)"
+                            ] 
+                        }
+                    ]
+                },
+                {
+                    dia: "MIERCOLES: TREN INFERIOR",
+                    bloquesMusculares: [
+                        { 
+                            subtitulo: "PIERNAS", 
+                            ejercicios: [
+                                "1. Extensión de cuádriceps en máquina (3x12)", 
+                                "2. Extensión de femoral en máquina (3x12)", 
+                                "3. Pantorrillas en máquina (3x12)"
+                            ] 
+                        }
+                    ]
+                },
+                { 
+                    dia: "JUEVES: TREN SUPERIOR",
+                    bloquesMusculares: [
+                        { 
+                            subtitulo: "ESPALDA", 
+                            ejercicios: [
+                                "1. Jalón al pecho (3x12)", 
+                                "2. Remo sentado (3x12)", 
+                                "3. Trapecio con mancuernas (3x12)", 
+                                "4. Pull over polea (3x12)"
+                            ] 
+                        }
+                    ]
+                },
+                { 
+                    dia: "VIERNES: TREN SUPERIOR",
+                    bloquesMusculares: [
+                        { 
+                            subtitulo: "HOMBROS", 
+                            ejercicios: [
+                                "1. Press militar con mancuerna (3x12)", 
+                                "2. flys (3x12)"
+                            ] 
+                        }
+                    ]
+                }
+            ];
+        }
+    }
+
+if (edadTipo === 'mayor' && somatotipo === 'normal' && genero === 'masculino') {
+        if (estado === 'critico') {
+            
+return [
+    {
+        dia: "LUNES: TREN SUPERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "BÍCEPS", 
+                ejercicios: ["1. Curl martillo (2x15)", "2. Curl concentrado (2x15)"] 
+            }
+        ]
+    },
+    { 
+        dia: "MARTES: TREN SUPERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "PECHO", 
+                ejercicios: ["1. Press con mancuerna (2x15)", "2. Press inclinado con barra (2x15)"]
+            },
+            {
+                subtitulo: "TRÍCEPS", 
+                ejercicios: ["1. Extensiones en polea (2x15)", "2. Patada de tríceps dos lados (2x15)"]
+            }
+        ]
+    },
+    {
+        dia: "MIÉRCOLES: TREN INFERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "PIERNAS", 
+                ejercicios: ["1. Extensión de cuádriceps en máquina (2x15)", "2. Extensión de femoral en máquina (2x15)", "3. Pantorrillas en máquina (2x15)", "4. Sentadilla peso corporal (2x15)"] 
+            }
+        ]
+    },
+    { 
+        dia: "JUEVES: TREN SUPERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ESPALDA", 
+                ejercicios: ["1. Jalón al pecho (2x15)", "2. Remo sentado (2x15)", "3. Trapecio con mancuernas (2x15)", "4. Pull over polea (2x15)"] 
+            }
+        ]
+    },
+    { 
+        dia: "VIERNES: TREN SUPERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "HOMBROS", 
+                ejercicios: ["1. Press militar con mancuerna (2x15)", "2. Elevaciones laterales (2x15)"] 
+            }
+        ]
+    }
+];
+            
+        } else if (estado === 'mediano') {
+return [
+    {
+        dia: "LUNES: TREN SUPERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "BÍCEPS", 
+                ejercicios: ["1. Curl martillo (3x12)", "2. Curl concentrado (3x12)"] 
+            }
+        ]
+    },
+    { 
+        dia: "MARTES: TREN SUPERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "PECHO", 
+                ejercicios: ["1. Press con mancuerna (3x12)", "2. Pecho bajo en polea (3x12)", "3. Press inclinado con barra (3x12)"]
+            },
+            {
+                subtitulo: "TRÍCEPS", 
+                ejercicios: ["1. Extensiones en polea (3x12)", "2. Patada de tríceps dos lados (3x12)"]
+            }
+        ]
+    },
+    {
+        dia: "MIÉRCOLES: TREN INFERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "PIERNAS", 
+                ejercicios: ["1. Extensión de cuádriceps en máquina (3x12)", "2. Extensión de femoral en máquina (3x12)", "3. Pantorrillas en máquina (3x12)", "4. Sentadilla peso corporal (3x12)"] 
+            }
+        ]
+    },
+    { 
+        dia: "JUEVES: TREN SUPERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ESPALDA", 
+                ejercicios: ["1. Jalón al pecho (3x12)", "2. Remo sentado (3x12)", "3. Trapecio con mancuernas (3x12)", "4. Pull over polea (3x12)"] 
+            }
+        ]
+    },
+    { 
+        dia: "VIERNES: TREN SUPERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "HOMBROS", 
+                ejercicios: ["1. Press militar con mancuerna (3x12)", "2. Flys (3x12)"] 
+            }
+        ]
+    }
+];
+        } else {
+            // Estado por defecto (ej. normal) para viejo + flaco
+           return [
+    {
+        dia: "LUNES: TREN SUPERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "BÍCEPS", 
+                ejercicios: ["1. Curl martillo (3x12)", "2. Curl concentrado (3x12)", "3. Curl concentrado (3x12)"] 
+            }
+        ]
+    },
+    { 
+        dia: "MARTES: TREN SUPERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "PECHO", 
+                ejercicios: ["1. Press con mancuerna (3x12)", "2. Press declinado con barra (3x12)", "3. Press inclinado con barra (3x12)"]
+            },
+            {
+                subtitulo: "TRÍCEPS", 
+                ejercicios: ["1. Extensiones en polea (3x12)", "2. Patada de tríceps dos lados (3x12)", "3. Extensiones verticales con mancuerna (3x12)"]
+            }
+        ]
+    },
+    {
+        dia: "MIÉRCOLES: TREN INFERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "PIERNAS", 
+                ejercicios: ["1. Extensión de cuádriceps en máquina (3x12)", "2. Extensión de femoral en máquina (3x12)", "3. Pantorrillas en máquina (3x12)", "4. Sentadilla libre (3x12)"] 
+            }
+        ]
+    },
+    { 
+        dia: "JUEVES: TREN SUPERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ESPALDA", 
+                ejercicios: ["1. Jalón al pecho (3x12)", "2. Remo sentado (3x12)", "3. Trapecio con mancuernas (3x12)", "4. Pull over polea (3x12)"] 
+            }
+        ]
+    },
+    { 
+        dia: "VIERNES: TREN SUPERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "HOMBROS", 
+                ejercicios: ["1. Press militar con mancuerna (3x12)", "2. Flys (3x12)", "3. Elevaciones laterales con mancuerna (3x12)"] 
+            }
+        ]
+    }
+];
+        }
+    }
+
+
+if (edadTipo === 'mayor' && somatotipo === 'gordo' && genero === 'masculino') {
+        if (estado === 'critico') {
+            
+return [
+    {
+        dia: "LUNES: CORE",
+        bloquesMusculares: [
+            { 
+                subtitulo: "CARDIO", 
+                ejercicios: [
+                    "1. Caminadora velocidad media (15 minutos)", 
+                    "2. Caminadora velocidad rápida (10 minutos)"
+                ]
+            },
+            { 
+                subtitulo: "Abdomen", 
+                ejercicios: [
+                    "1. Rueda abdominal (2x10)", 
+                    "2. Russian twist (2x15)", 
+                    "3. Elevación de piernas (2x15)"
+                ] 
+            }
+        ]
+    },
+    { 
+        dia: "MARTES: TREN INFERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "BÍCEPS", 
+                ejercicios: [
+                    "1. Curl martillo (2x12)", 
+                    "2. Curl en barra (2x12)"
+                ]
+            },
+            { 
+                subtitulo: "PIERNA", 
+                ejercicios: [
+                    "1. Sentadilla sumo (3x12)", 
+                    "2. Sentadilla peso corporal (3x12)", 
+                    "3. Abductor interno máquina (3x12)"
+                ] 
+            }
+        ]
+    },
+    {
+        dia: "MIÉRCOLES: TREN CORE",
+        bloquesMusculares: [
+            { 
+                subtitulo: "CARDIO", 
+                ejercicios: [
+                    "1. Caminadora velocidad media (15 minutos)", 
+                    "2. Caminadora velocidad rápida (10 minutos)"
+                ]
+            },
+            { 
+                subtitulo: "PECHO", 
+                ejercicios: [
+                    "1. Press banca (2x12)", 
+                    "2. Press inclinado con mancuernas (2x12)", 
+                    "3. Press declinado con mancuerna (2x12)"
+                ] 
+            }
+        ]
+    },
+    { 
+        dia: "JUEVES: TREN SUPERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ESPALDA", 
+                ejercicios: [
+                    "1. Jalón al pecho (2x12)", 
+                    "2. Remo sentado (2x12)", 
+                    "3. Trapecio con mancuernas (2x12)"
+                ] 
+            },
+            {
+                subtitulo: "TRÍCEPS", 
+                ejercicios: [
+                    "1. Extensiones en polea (2x12)", 
+                    "2. Patada de tríceps por cada lado (4x12)"
+                ] 
+            }
+        ]
+    },
+    { 
+        dia: "VIERNES: CORE",
+        bloquesMusculares: [
+            { 
+                subtitulo: "CARDIO", 
+                ejercicios: [
+                    "1. Caminadora velocidad media (15 minutos)", 
+                    "2. Caminadora velocidad rápida (10 minutos)"
+                ]
+            },
+            { 
+                subtitulo: "Abdomen", 
+                ejercicios: [
+                    "1. Rueda abdominal (2x10)", 
+                    "2. Russian twist (2x15)", 
+                    "3. Elevación de piernas (2x15)"
+                ]
+            },
+            { 
+                subtitulo: "HOMBROS", 
+                ejercicios: [
+                    "1. Elevaciones laterales con mancuerna (2x12)", 
+                    "2. Press militar con mancuernas (2x12)"
+                ] 
+            }
+        ]
+    }
+];
+            
+        } else if (estado === 'mediano') {
+return [
+    {
+        dia: "LUNES: CORE",
+        bloquesMusculares: [
+            { 
+                subtitulo: "CARDIO", 
+                ejercicios: [
+                    "1. Caminadora velocidad media (15 minutos)", 
+                    "2. Caminadora velocidad rápida (12 minutos)"
+                ]
+            },
+            { 
+                subtitulo: "Abdomen", 
+                ejercicios: [
+                    "1. Rueda abdominal (2x10)", 
+                    "2. Russian twist (2x15)", 
+                    "3. Elevación de piernas (2x15)"
+                ] 
+            }
+        ]
+    },
+    { 
+        dia: "MARTES: TREN INFERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "BÍCEPS", 
+                ejercicios: [
+                    "1. Curl martillo (2x12)", 
+                    "2. Curl en barra (2x12)"
+                ]
+            },
+            { 
+                subtitulo: "PIERNA", 
+                ejercicios: [
+                    "1. Sentadilla sumo (3x12)", 
+                    "2. Sentadilla peso corporal (3x12)", 
+                    "3. Abductor interno máquina (3x12)"
+                ] 
+            }
+        ]
+    },
+    {
+        dia: "MIÉRCOLES: TREN CORE",
+        bloquesMusculares: [
+            { 
+                subtitulo: "CARDIO", 
+                ejercicios: [
+                    "1. Caminadora velocidad media (15 minutos)", 
+                    "2. Caminadora velocidad rápida (12 minutos)"
+                ]
+            },
+            { 
+                subtitulo: "PECHO", 
+                ejercicios: [
+                    "1. Press banca (2x12)", 
+                    "2. Press inclinado con mancuernas (2x12)", 
+                    "3. Press declinado con mancuerna (2x12)"
+                ] 
+            }
+        ]
+    },
+    { 
+        dia: "JUEVES: TREN SUPERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ESPALDA", 
+                ejercicios: [
+                    "1. Jalón al pecho (2x12)", 
+                    "2. Remo sentado (2x12)", 
+                    "3. Trapecio con mancuernas (2x12)"
+                ] 
+            },
+            {
+                subtitulo: "TRÍCEPS", 
+                ejercicios: [
+                    "1. Extensiones en polea (2x12)", 
+                    "2. Patada de tríceps por cada lado (4x12)"
+                ] 
+            }
+        ]
+    },
+    { 
+        dia: "VIERNES: CORE",
+        bloquesMusculares: [
+            { 
+                subtitulo: "CARDIO", 
+                ejercicios: [
+                    "1. Caminadora velocidad media (15 minutos)", 
+                    "2. Caminadora velocidad rápida (12 minutos)"
+                ]
+            },
+            { 
+                subtitulo: "Abdomen", 
+                ejercicios: [
+                    "1. Rueda abdominal (2x10)", 
+                    "2. Russian twist (2x15)", 
+                    "3. Elevación de piernas (2x15)"
+                ]
+            },
+            { 
+                subtitulo: "HOMBROS", 
+                ejercicios: [
+                    "1. Elevaciones laterales con mancuerna (2x12)", 
+                    "2. Press militar con mancuernas (2x12)"
+                ] 
+            }
+        ]
+    }
+];
+        } else {
+            // Estado por defecto (ej. normal) para viejo + flaco
+           return [
+    {
+        dia: "LUNES: CORE",
+        bloquesMusculares: [
+            { 
+                subtitulo: "BÍCEPS", 
+                ejercicios: [
+                    "1. Curl martillo (4x15)", 
+                    "2. Curl en polea (4x15)", 
+                    "3. Curl concentrado (4x15)"
+                ]
+            },
+            { 
+                subtitulo: "PECHO", 
+                ejercicios: [
+                    "1. Press banca con mancuernas (4x12)", 
+                    "2. Aperturas en máquina (4x12)", 
+                    "3. Press inclinado con barra (4x12)"
+                ] 
+            }
+        ]
+    },
+    { 
+        dia: "MARTES: CORE",
+        bloquesMusculares: [
+            { 
+                subtitulo: "CARDIO", 
+                ejercicios: [
+                    "1. Caminadora velocidad media (10 minutos)", 
+                    "2. Caminadora velocidad rápida (15 minutos)"
+                ]
+            },
+            { 
+                subtitulo: "Abdomen", 
+                ejercicios: [
+                    "1. Rueda abdominal (3x12)", 
+                    "2. Russian twist (3x15)", 
+                    "3. Elevación de piernas (3x15)"
+                ] 
+            }
+        ]
+    },
+    {
+        dia: "MIÉRCOLES: TREN INFERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "HOMBROS", 
+                ejercicios: [
+                    "1. Elevaciones laterales con mancuerna (3x12)", 
+                    "2. Press militar con mancuernas (3x12)", 
+                    "3. Aperturas en máquina (3x12)"
+                ] 
+            },
+            { 
+                subtitulo: "PIERNAS 1", 
+                ejercicios: [
+                    "1. Sentadilla libre (3x12)", 
+                    "2. Extensión de cuádriceps en máquina (3x12)", 
+                    "3. Extensión de femoral en máquina (3x15)", 
+                    "4. Pantorrillas con mancuerna (3x12)", 
+                    "5. Abductor interior con máquina (3x12)"
+                ] 
+            }
+        ]
+    },
+    { 
+        dia: "JUEVES: CORE",
+        bloquesMusculares: [
+            { 
+                subtitulo: "CARDIO", 
+                ejercicios: [
+                    "1. Caminadora velocidad media (10 minutos)", 
+                    "2. Caminadora velocidad rápida (15 minutos)"
+                ]
+            },
+            { 
+                subtitulo: "Abdomen", 
+                ejercicios: [
+                    "1. Rueda abdominal (3x12)", 
+                    "2. Russian twist (3x15)", 
+                    "3. Elevación de piernas (3x15)"
+                ] 
+            }
+        ]
+    },
+    { 
+        dia: "VIERNES: TREN SUPERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ESPALDA", 
+                ejercicios: [
+                    "1. Jalón al pecho (3x12)", 
+                    "2. Remo sentado (3x12)", 
+                    "3. Pull over polea (3x12)", 
+                    "4. Trapecio con mancuernas (3x12)"
+                ] 
+            },
+            { 
+                subtitulo: "TRÍCEPS", 
+                ejercicios: [
+                    "1. Extensiones en polea (3x15)", 
+                    "2. Extensiones verticales con barra (3x15)", 
+                    "3. Patada de tríceps dos lados (3x15)"
+                ] 
+            }
+        ]
+    }
+];
+        }
+    }
+
+
+if (edadTipo === 'joven' && somatotipo === 'flaco'  && genero === 'femenino') {
+        if (estado === 'critico') {
+            
+
+ return [
+    {
+        dia: "DÍA 1 — TREN INFERIOR BÁSICO Y SEGURO",
+        bloquesMusculares: [
+            { 
+                subtitulo: "CUÁDRICEPS Y ADUCTORES", 
+                ejercicios: [
+                    "1. Sentadilla en máquina Smith o sentadilla libre asistida (2 series de aproximación muy ligeras de 12 reps + 3 series efectivas de 8 a 10 reps - Descanso 2 min | Movimiento estrictamente controlado y sin cargas pesadas)",
+                    "2. Extensión de cuádriceps en máquina (3 series de 10 a 12 reps - Descanso 90 seg | Ideal para proteger articulaciones)",
+                    "3. Aducción en máquina con peso mínimo (3 series de 12 reps - Descanso 60 seg | Control total de la fase excéntrica)"
+                ]
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 2 — TREN SUPERIOR Y ESTABILIDAD",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ESPALDA Y PECHO", 
+                ejercicios: [
+                    "1. Jalón abierto al pecho en polea (1 serie de aproximación liviana + 3 series efectivas de 10 reps - Descanso 90 seg)",
+                    "2. Remo sentado en polea baja con agarre neutro (3 series de 10 reps - Descanso 90 seg | Postura de espalda completamente protegida)"
+                ]
+            },
+            { 
+                subtitulo: "BRAZOS Y NÚCLEO", 
+                ejercicios: [
+                    "1. Extensión de tríceps en polea alta (3 series de 12 reps - Descanso 60 seg)",
+                    "2. Curl de bíceps con mancuernas sentado (3 series de 12 reps - Descanso 60 seg)",
+                    "3. Crunch abdominal corto en suelo (3 series de 10 reps con rango controlado)"
+                ]
+            }
+        ]
+    },
+    {
+        dia: "DÍA 3 — CADENA POSTERIOR PROTEGIDA",
+        bloquesMusculares: [
+            { 
+                subtitulo: "GLÚTEOS Y FEMORALES", 
+                ejercicios: [
+                    "1. Curl femoral acostado en máquina (1 serie de aproximación + 3 series efectivas de 10 a 12 reps - Descanso 90 seg)", 
+                    "2. Hip Thrust en máquina guiada con carga muy prudente (2 series de aproximación livianas + 3 series efectivas de 10 reps - Descanso 2 min | Evitar hiperlordosis o sobrecarga lumbar)", 
+                    "3. Abducción en máquina de forma suave (3 series de 12 a 15 reps - Descanso 60 seg)"
+                ] 
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 4 — TREN SUPERIOR LIGERO",
+        bloquesMusculares: [
+            { 
+                subtitulo: "HOMBROS Y ESPALDA ALTA", 
+                ejercicios: [
+                    "1. Elevaciones laterales con mancuernas muy livianas (3 series de 10 a 12 reps - Descanso 90 seg | Sin balanceos corporales)",
+                    "2. Pull face con soga en polea baja (3 series de 12 reps - Descanso 60 seg)",
+                    "3. Press militar liviano con mancuernas sentado (3 series de 8 a 10 reps - Descanso 2 min)"
+                ]
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 5 — INTEGRACIÓN Y BAJO IMPACTO",
+        bloquesMusculares: [
+            { 
+                subtitulo: "PIERNAS Y MOVILIDAD GENERAL", 
+                ejercicios: [
+                    "1. Prensa horizontal o inclinada con rango seguro y liviano (1 serie de aproximación + 3 series efectivas de 10 a 12 reps - Descanso 2 min)", 
+                    "2. Sentadilla Hack asistida con peso mínimo (3 series de 8 a 10 reps - Descanso 2 min | Priorizando la salud articular sobre la fatiga)", 
+                    "3. Pantorrillas sentada en máquina (3 series de 12 reps lentas)"
+                ] 
+            }
+        ]
+    }
+];}
+
+ else if (estado === 'mediano') {
+return [
+    {
+        dia: "DÍA 1 — TREN INFERIOR GUIADO",
+        bloquesMusculares: [
+            { 
+                subtitulo: "CUÁDRICEPS Y ADUCTOR", 
+                ejercicios: [
+                    "1. Sentadilla en Smith: Lentas y controladas (2 series de aproximación 15 reps peso bajo + 3 series efectivas de 10 reps controladas - Descanso 90 seg)",
+                    "2. Goblet Squat con mancuerna moderada (1 serie de aproximación 15 reps + 3 series de 12 reps profundas y sin prisa - Descanso 90 seg)",
+                    "3. Extensión de cuádriceps en máquina (3 series de 12 reps - Descanso 60 seg)",
+                    "4. Aducción en máquina (1 serie de aproximación 20 reps + 3 series de 12 reps con peso moderado y controlado - Descanso 60 seg)",
+                    "5. Pantorrillas en máquina sentada (3 series de 12 a 15 reps lentas)"
+                ]
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 2 — TREN SUPERIOR Y ABS",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ESPALDA Y PECHO", 
+                ejercicios: [
+                    "1. Jalón abierto al pecho en polea (1 serie de aproximación + 3 series efectivas de 12 reps - Descanso 60 seg)",
+                    "2. Remo sentado en polea baja (1 serie de aproximación + 3 series de 12 reps - Descanso 60 seg)"
+                ]
+            },
+            { 
+                subtitulo: "BRAZOS", 
+                ejercicios: [
+                    "1. Extensión de tríceps en polea (3 series de 12 reps - Descanso 60 seg)",
+                    "2. Curl de bíceps con mancuernas de pie o sentado (3 series de 12 reps - Descanso 60 seg)"
+                ]
+            },
+            { 
+                subtitulo: "ABDOMEN (3 vueltas)", 
+                ejercicios: [
+                    "1. Crunch abdominal clásico (12 reps)",
+                    "2. Plancha frontal estática corta (20 a 30 seg)"
+                ]
+            }
+        ]
+    },
+    {
+        dia: "DÍA 3 — GLÚTEO Y FEMORAL CONTROLADO",
+        bloquesMusculares: [
+            { 
+                subtitulo: "CADENA POSTERIOR", 
+                ejercicios: [
+                    "1. Curl femoral acostado en máquina (1 serie de aproximación + 3 series efectivas de 12 reps a ritmo constante - Descanso 60 seg)", 
+                    "2. Hip Thrust en máquina guiada (2 series de aproximación peso bajo + 3 series efectivas de 12 reps con pausa de 1 segundo arriba - Descanso 90 seg)", 
+                    "3. Zancadas estáticas o en Smith con rango corto y seguro (3 series de 10 reps por pierna - Descanso 90 seg)",
+                    "4. Abducción en máquina (3 series de 15 reps controlando la bajada - Descanso 60 seg)",
+                    "5. Pantorrillas en máquina (3 series de 15 reps)"
+                ] 
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 4 — TREN SUPERIOR Y ABS",
+        bloquesMusculares: [
+            { 
+                subtitulo: "HOMBROS Y ESPALDA ALTA", 
+                ejercicios: [
+                    "1. Elevaciones laterales con mancuernas livianas (1 serie de aproximación + 3 series efectivas de 12 a 15 reps - Descanso 60 seg)",
+                    "2. Pull face con soga en polea (1 serie de aproximación + 3 series de 12 reps - Descanso 60 seg)",
+                    "3. Press militar con mancuernas sentado (3 series de 10 reps - Descanso 90 seg)"
+                ]
+            },
+            { 
+                subtitulo: "ABDOMEN", 
+                ejercicios: [
+                    "1. Plancha clásica estática (3 series de 25 seg)"
+                ]
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 5 — TREN INFERIOR INTEGRAL",
+        bloquesMusculares: [
+            { 
+                subtitulo: "PIERNAS Y MOVILIDAD", 
+                ejercicios: [
+                    "1. Prensa horizontal o inclinada a 45° (1 serie aproximación + 3 series efectivas de 12 reps con peso moderado - Descanso 90 seg)", 
+                    "2. Sentadilla Hack en máquina guiada (3 series de 10 reps sin buscar fallo extremo - Descanso 90 seg)", 
+                    "3. Peso muerto rumano con mancuernas ligeras (1 serie aproximación + 3 series de 12 reps priorizando espalda neutra - Descanso 60 seg)",
+                    "4. Pantorrillas en máquina (3 series de 15 reps)"
+                ] 
+            }
+        ]
+    }
+];
+        } else {
+            // Estado por defecto (ej. normal) para viejo + flaco
+           return [
+    {
+        dia: "DÍA 1 — TREN INFERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "CUÁDRICEPS Y GLÚTEOS", 
+                ejercicios: [
+                    "1. Sentadilla en Smith: Lentas y controladas (2 series de aproximación 15 reps peso bajo + zancadas ida y vuelta sin mancuernas cortitas y bajitas 4 series efectivas de 8 a 10 reps - Descanso 1:30 seg)",
+                    "2. Goblet Squat + Extensión de cuádriceps (1x15 peso medio en ambos ejercicios, 3x12 peso medio controladas y profundas - 2 minutos de descanso)",
+                    "3. Sentadilla lateral (1x15 sin peso, 3x12 peso medio)",
+                    "4. Aducción en máquina (1x30 peso bajo, 1x20 peso medio, 3x12 peso alto)",
+                    "5. Pantorrillas en máquina (4x12 peso bajo)"
+                ]
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 2 — TREN SUPERIOR Y ABS",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ESPALDA Y PECHO", 
+                ejercicios: [
+                    "1. Jalón abierto para espalda + push ups en banco (1 serie de aproximación, 4 series efectivas de 12 reps en jalón y 12 reps en push ups - Descansos de 1 minuto)"
+                ]
+            },
+            { 
+                subtitulo: "ESPALDA Y BRAZOS", 
+                ejercicios: [
+                    "1. Pull over en soga + remo unilateral con mancuerna (1 serie de aproximación peso bajo, 4 series efectivas de 15 reps en cada uno, peso medio - Descansos de 1 minuto)"
+                ]
+            },
+            { 
+                subtitulo: "TRÍCEPS", 
+                ejercicios: [
+                    "1. Copa para tríceps + extensión de tríceps (1 serie de aprox 15 reps peso bajo, 4 series efectivas de 12 reps en cada uno, peso medio - Descansos de 1 minuto)"
+                ]
+            },
+            { 
+                subtitulo: "ABDOMEN (4 vueltas)", 
+                ejercicios: [
+                    "1. Crunch abdominal (12 reps)",
+                    "2. Plancha lateral (30 seg por lado)"
+                ]
+            }
+        ]
+    },
+    {
+        dia: "DÍA 3 — TREN INFERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "FEMORALES Y GLÚTEOS", 
+                ejercicios: [
+                    "1. Femoral acostado (2 series de aproximación 15 reps, 4 series efectivas de 12 reps en cada uno, peso alto - Descansos de 1 minuto)", 
+                    "2. Peso muerto rumano con barra (1 serie de aproximación 15 reps, 4 series efectivas de 12 repeticiones)", 
+                    "3. Búlgara con mancuerna (1 serie de aproximación 15 reps, 3 series de 10 efectivas + 10 parciales abajo, mancuerna peso medio - Descanso de 2 minutos)",
+                    "4. Hip Thrust en máquina (2 series de aproximación 15 reps peso bajo, 4 series efectivas 10 reps, peso alto - Descanso de 2 minutos)",
+                    "5. Abducción en máquina (4 series efectivas de 15 reps, cerrando en 3 seg - Descansos de 1 minuto) en biserie con pantorrilla sentado peso medio (4x12 lentas)"
+                ] 
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 4 — TREN SUPERIOR Y ABS",
+        bloquesMusculares: [
+            { 
+                subtitulo: "HOMBROS Y BRAZOS", 
+                ejercicios: [
+                    "1. Elevaciones laterales mancuernas peso bajo + elevación frontal con disco peso medio (1 serie de aproximación 20 reps, 4 series efectivas de 15 reps - Descansos de 1:30 minutos por cronómetro)",
+                    "2. Pull face con soga + extensión de tríceps (1 serie aproximación 15 reps, 4 series efectivas de 12 reps, peso medio - Descanso de 1:30 min)",
+                    "3. Remo con barra agarre prono + curl de bíceps con mancuerna (1 serie de aproximación 20 reps, 4 series efectivas de 15 reps en cada uno - Descansos de 1 minuto)"
+                ]
+            },
+            { 
+                subtitulo: "ABDOMEN", 
+                ejercicios: [
+                    "1. Plancha clásica + elevación de cadera"
+                ]
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 5 — TREN INFERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "PIERNAS Y GLÚTEOS", 
+                ejercicios: [
+                    "1. Prensa + sentadilla goblet squat (1 serie aproximación 15 reps peso medio, 4 series efectivas 12 reps peso medio en cada ejercicio - Descanso 2 minutos)", 
+                    "2. Zancadas avanzando con mancuerna (3x12 peso medio - 1:30 min de descanso)", 
+                    "3. Sentadilla hack profundas (1x15 peso bajo, 4x10 peso medio)",
+                    "4. Peso muerto rumano con mancuernas (1 serie de aproximación 15 reps, 4 series efectivas de 12 - Descansos de 1 min)",
+                    "5. Pantorrillas en máquina (4x12 peso bajo)"
+                ] 
+            }
+        ]
+    }
+];
+        }
+    }    
+
+if (edadTipo === 'joven' && somatotipo === 'normal'  && genero === 'femenino') {
+        if (estado === 'critico') {
+            
+
+ return [
+    {
+        dia: "DÍA 1 — GLÚTEO Y FEMORAL SUAVE",
+        bloquesMusculares: [
+            { 
+                subtitulo: "MOVIMIENTOS GUIADOS", 
+                ejercicios: [
+                    "1. Hip Thrust con peso muy ligero o barra liviana (3 x 12 reps - Descanso 90 s | Ritmo pausado)", 
+                    "2. Curl femoral sentado en máquina (3 x 12 reps - Descanso 60 s | Movimiento controlado)", 
+                    "3. Abducción en máquina (3 x 15 reps - Descanso 60 s)"
+                ]
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 2: TREN SUPERIOR Y ABS",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ESPALDA Y BRAZOS", 
+                ejercicios: [
+                    "1. Jalón al pecho en polea agarre abierto (3 x 12 reps - Descanso 60 s)",
+                    "2. Remo sentado en polea baja (3 x 12 reps - Descanso 60 s)",
+                    "3. Extensión de tríceps en polea (3 x 12 reps - Descanso 60 s)",
+                    "4. Curl de bíceps con mancuernas sentada (3 x 12 reps - Descanso 60 s)"
+                ]
+            },
+            { 
+                subtitulo: "ABDOMEN", 
+                ejercicios: [
+                    "1. Crunch abdominal clásico en suelo (3 x 12 reps)",
+                    "2. Plancha frontal estática corta (3 series de 15 a 20 seg)"
+                ]
+            }
+        ]
+    },
+    {
+        dia: "DÍA 3 — CUÁDRICEPS Y MOVILIDAD",
+        bloquesMusculares: [
+            { 
+                subtitulo: "PIERNAS BAJO IMPACTO", 
+                ejercicios: [
+                    "1. Prensa en máquina con carga leve (3 x 12 reps - Descanso 90 s)", 
+                    "2. Extensión de cuádriceps en máquina (3 x 12 reps - Descanso 60 s)", 
+                    "3. Aducción en máquina (3 x 15 reps - Descanso 60 s)",
+                    "4. Pantorrillas sentada (3 x 15 reps - Descanso 60 s)"
+                ] 
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 4: TREN SUPERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "HOMBROS Y ESPALDA ALTA", 
+                ejercicios: [
+                    "1. Elevaciones laterales con mancuernas muy livianas (3 x 12 reps - Descanso 60 s)",
+                    "2. Press militar con mancuernas sentada (3 x 10 reps - Descanso 90 s)",
+                    "3. Pulldown o jalón cerrado (3 x 12 reps - Descanso 60 s)"
+                ]
+            },
+            { 
+                subtitulo: "ABDOMEN", 
+                ejercicios: [
+                    "1. Elevaciones de rodillas acostada en camilla (3 x 10 reps)"
+                ]
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 5 — TONIFICACIÓN GENERAL SUAVE",
+        bloquesMusculares: [
+            { 
+                subtitulo: "GLÚTEOS Y CADERA", 
+                ejercicios: [
+                    "1. Hip Thrust en máquina guiada (3 x 12 reps - Descanso 90 s)", 
+                    "2. Patada de glúteo en polea baja con peso mínimo (3 x 12 c/pierna - Descanso 60 s)", 
+                    "3. Abducción con banda elástica sentada (3 x 15 reps - Descanso 60 s)"
+                ] 
+            }
+        ]
+    }
+];}
+
+ else if (estado === 'mediano') {
+return [
+    {
+        dia: "DÍA 1 — GLÚTEO + FEMORAL",
+        bloquesMusculares: [
+            { 
+                subtitulo: "GLÚTEOS Y FEMORALES", 
+                ejercicios: [
+                    "1. Hip Thrust (3 x 10-12 reps - Descanso 2 min | Controlado y sin ir al fallo absoluto)", 
+                    "2. Peso muerto rumano con mancuernas (3 x 10-12 reps - Descanso 2 min | Espalda neutra y rango cómodo)", 
+                    "3. Sentadilla en máquina o libre (3 x 12 reps - Descanso 90 s)",
+                    "4. Curl femoral sentado (3 x 12 reps - Descanso 60-90 seg)",
+                    "5. Abducción en máquina (3 x 15-20 reps - Descanso 60 s)",
+                    "6. Extensión 45° enfoque en glúteo (3 x 12 reps - Descanso 60 s)"
+                ]
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 2: TREN SUPERIOR Y ABS",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ESPALDA Y PECHO", 
+                ejercicios: [
+                    "1. Jalón al pecho en polea (3 x 12 reps - Descanso 1 min)",
+                    "2. Remo sentado con polea baja (3 x 12 reps - Descanso 1 min)",
+                    "3. Press de pecho en máquina o push ups inclinadas (3 x 10-12 reps - Descanso 1 min)"
+                ]
+            },
+            { 
+                subtitulo: "TRÍCEPS Y BÍCEPS", 
+                ejercicios: [
+                    "1. Extensión de tríceps en polea (3 x 12 reps - Descanso 1 min)",
+                    "2. Curl de bíceps con mancuernas (3 x 12 reps - Descanso 1 min)"
+                ]
+            },
+            { 
+                subtitulo: "ABDOMEN", 
+                ejercicios: [
+                    "1. Plancha frontal estática (3 series de 20-30 seg)",
+                    "2. Crunch abdominal clásico (3 x 12 reps)"
+                ]
+            }
+        ]
+    },
+    {
+        dia: "DÍA 3 — GLÚTEO + CUÁDRICEPS",
+        bloquesMusculares: [
+            { 
+                subtitulo: "PIERNAS Y GLÚTEOS", 
+                ejercicios: [
+                    "1. Prensa en máquina (3 x 10–12 reps - Descanso 2 min)", 
+                    "2. Hip Thrust en máquina (3 x 12 reps - Descanso 90 s - 2 min)", 
+                    "3. Zancadas estáticas o paso atrás con poco peso (3 x 10 c/pierna)", 
+                    "4. Extensión de cuádriceps en máquina (3 x 12–15 reps - Descanso 60-90 s)",
+                    "5. Aducción en máquina (3 x 15 reps - Descanso 60 s)",
+                    "6. Pantorrillas sentada (3 x 15 reps)"
+                ] 
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 4: TREN SUPERIOR Y ABS",
+        bloquesMusculares: [
+            { 
+                subtitulo: "HOMBROS Y BRAZOS", 
+                ejercicios: [
+                    "1. Elevaciones laterales con mancuernas (3 x 12-15 reps - Descanso 1 min)",
+                    "2. Press militar con mancuernas sentado (3 x 10-12 reps - Descanso 90 s)",
+                    "3. Remo al mentón o polea baja (3 x 12 reps)"
+                ]
+            },
+            { 
+                subtitulo: "ABDOMEN", 
+                ejercicios: [
+                    "1. Elevaciones de rodillas acostada (3 x 12 reps)",
+                    "2. Plancha lateral (3 series de 20 seg por lado)"
+                ]
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 5 — ESPECIALIZACIÓN GLÚTEOS",
+        bloquesMusculares: [
+            { 
+                subtitulo: "GLÚTEOS", 
+                ejercicios: [
+                    "1. Hip Thrust con peso moderado (3 x 12 reps - Descanso 90 s)", 
+                    "2. Patada de glúteo en polea baja (3 x 12-15 c/pierna - Descanso 60 s)", 
+                    "3. Extensión de cadera en 45° (3 x 12 reps)",
+                    "4. Abducción en máquina o con banda (3 x 20 reps - Ritmo controlado)"
+                ] 
+            }
+        ]
+    }
+];
+        } else {
+            // Estado por defecto (ej. normal) para viejo + flaco
+           return [
+    {
+        dia: "DÍA 1: GLÚTEO + FEMORAL",
+        bloquesMusculares: [
+            { 
+                subtitulo: "GLÚTEOS Y FEMORALES", 
+                ejercicios: [
+                    "1. Hip Thrust (1 serie de aproximación, 4 x 8-10 reps - RIR 1–2 | Descanso 2–3 min | Sube fuerte y controla la bajada)", 
+                    "2. Peso muerto rumano (1 serie de aproximación, 3 x 8-10 reps - RIR 1–2 | Descanso 2–3 min | Cadera atrás, espalda neutra)", 
+                    "3. Sentadilla búlgara en Smith (1 serie de aproximación, 3 x 10-12 c/pierna - RIR 1–2 | Descanso 90–120 s | Paso largo + ligera inclinación del torso)",
+                    "4. Curl femoral sentado (1 serie de aproximación, 3 x 10–12 - RIR 1 | Descanso 90 seg)",
+                    "5. Abducción (1 serie de aproximación, 3 x 20–25 - RIR 0–1 | Descanso 60–75 s | Controla el movimiento)",
+                    "6. Extensión 45° enfoque en glúteo (3 x 12–15 - RIR 1 | Descanso 90 s | Sube con la cadera, no con la espalda)"
+                ]
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 2: TREN SUPERIOR Y ABS",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ESPALDA Y PECHO", 
+                ejercicios: [
+                    "1. Jalón abierto para espalda + push ups en banco (1 serie de aproximación, 4 series efectivas de 12 reps en jalón y 12 reps en push ups | Descansos de 1 minuto)",
+                    "2. Pull over en soga + remo unilateral con mancuerna (1 serie de aproximación peso bajo, 4 series efectivas de 12 reps en cada uno, peso medio | Descansos de 1 minuto)"
+                ]
+            },
+            { 
+                subtitulo: "TRÍCEPS", 
+                ejercicios: [
+                    "1. Copa para tríceps + extensión de tríceps (1 serie de aprox 15 reps peso bajo, 4 series efectivas de 12 reps en cada uno, peso medio | Descansos de 1 minuto)"
+                ]
+            },
+            { 
+                subtitulo: "ABDOMEN", 
+                ejercicios: [
+                    "1. Plancha frontal con elevación de rodillas alternadas al pecho x 12 (4 series)",
+                    "2. Crunch abdominal 12 reps (4 series)",
+                    "3. Plancha lateral 30 seg por lado (4 series)"
+                ]
+            }
+        ]
+    },
+    {
+        dia: "DÍA 3: GLÚTEO + CUÁDRICEPS",
+        bloquesMusculares: [
+            { 
+                subtitulo: "PIERNAS Y GLÚTEOS", 
+                ejercicios: [
+                    "1. Hack Squat (1 serie de aproximación, 3 x 8–10 - RIR 1–2 | Descanso 2–3 min)", 
+                    "2. Hip Thrust en máquina (1 serie de aproximación, 3 x 10–12 - RIR 2 | Descanso 2 min)", 
+                    "3. Reverse Lunge / Zancada hacia atrás (3 x 10–12 c/pierna - RIR 1–2 | Paso largo + ligera inclinación del torso)", 
+                    "4. Prensa (1 serie de aproximación, 3 x 12–15 - RIR 1–2)",
+                    "5. Extensión de cuádriceps (1 serie aproximación, 3 x 12–15 - RIR 1)",
+                    "6. Aducción cerrando (1 serie de aproximación, 3 x 12-15 - RIR 1)",
+                    "7. Abducción en máquina (4 series efectivas de 15 reps, cerrando en 3 seg | Descansos de 1 minuto)",
+                    "8. Biserie con pantorrilla sentado peso medio (4 x 12 lentas)"
+                ] 
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 4: TREN SUPERIOR Y ABS",
+        bloquesMusculares: [
+            { 
+                subtitulo: "HOMBROS Y TRÍCEPS", 
+                ejercicios: [
+                    "1. Elevaciones laterales mancuernas peso bajo + elevación frontal con disco peso medio (1 serie de aproximación 20 reps, 4 series efectivas de 15 reps | Descansos de 1:30 minutos por cronómetro)",
+                    "2. Pull face con soga + extensión de tríceps (1 serie aproximación 15 reps, 4 series efectivas de 12 reps - peso medio - | Descanso de 1:30 min)"
+                ]
+            },
+            { 
+                subtitulo: "ESPALDA Y BÍCEPS", 
+                ejercicios: [
+                    "1. Remo con barra agarre prono + curl de bíceps con mancuerna (1 serie de aproximación 20 reps, 4 series efectivas de 15 reps en cada uno | Descansos de 1 minuto)"
+                ]
+            },
+            { 
+                subtitulo: "ABDOMEN", 
+                ejercicios: [
+                    "1. Plancha clásica + elevación de cadera"
+                ]
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 5: ESPECIALIZACIÓN GLÚTEOS",
+        bloquesMusculares: [
+            { 
+                subtitulo: "GLÚTEOS", 
+                ejercicios: [
+                    "1. Hip Thrust unilateral (1 serie aproximación, 3 x 10–12 por pierna - RIR 1–2 | Descanso 90–120 s | Pelvis estable, movimiento controlado y máxima contracción arriba)", 
+                    "2. Bulgarian (1 serie aproximación, 3 x 10–12 c/pierna - RIR 1–2)", 
+                    "3. Extensión 45° enfoque glúteo (1 serie aproximación, 3 x 10–15 - RIR 1)",
+                    "4. Abducción (1 serie aproximación, 3 x 12-15 - RIR 0–1)",
+                    "5. Kickback diagonal en polea (3 x 12–15 c/pierna - RIR 1 | Descanso 60–90 s | Tobillera en polea baja, lleva la pierna atrás y ligeramente hacia afuera, mantén la pelvis estable, aprieta el glúteo arriba y regresa controlando)",
+                    "6. Abducción unilateral en polea (2 x 15–20 c/lado - RIR 0–1)"
+                ] 
+            }
+        ]
+    }
+];
+        }
+    }
+    
+if (edadTipo === 'joven' && somatotipo === 'gordo'  && genero === 'femenino') {
+        if (estado === 'critico') {
+            
+
+return [
+    {
+        dia: "DÍA 1 — MOVILIDAD, BAJO IMPACTO Y CARDIO",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ACTIVACIÓN Y PROTECCIÓN ARTICULAR", 
+                ejercicios: [
+                    "1. Cat dog (2 series de 10 repeticiones muy lentas | Movilidad de columna sin forzar)",
+                    "2. Puente de glúteos en suelo sin peso (3 series de 10 reps | Movimiento corto enfocado en activar la zona lumbopélvica)",
+                    "3. Marcha estática muy suave o sentado en silla elevando rodillas alternas (2 series de 1 minuto)"
+                ]
+            },
+            { 
+                subtitulo: "FORTALECIMIENTO GUIADO SEGURO", 
+                ejercicios: [
+                    "1. Extensión de cuádriceps en máquina con carga mínima (3 series de 10 a 12 reps - Descanso 90 seg | Rango de movimiento controlado)",
+                    "2. Prensa horizontal con carga baja y sin bloquear rodillas (3 series de 10 reps - Descanso 90 seg)"
+                ]
+            },
+            { 
+                subtitulo: "BLOQUE CARDIOVASCULAR PRINCIPAL", 
+                ejercicios: [
+                    "1. Caminata en banda a velocidad muy baja y controlada (25 a 30 minutos continuos | Priorizando la seguridad cardíaca y articular)"
+                ]
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 2 — TREN SUPERIOR ADAPTADO + CARDIO",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ESPALDA Y PECHO EN MÁQUINAS", 
+                ejercicios: [
+                    "1. Jalón al pecho en polea con peso ligero (3 series de 10 reps - Descanso 90 seg)",
+                    "2. Remo sentado en máquina con agarre neutro y cómodo (3 series de 10 reps - Descanso 90 seg)",
+                    "3. Press de pecho en máquina sentado o inclinado asistido (3 series de 10 reps - Descanso 90 seg)"
+                ]
+            },
+            { 
+                subtitulo: "BLOQUE CARDIOVASCULAR PRINCIPAL", 
+                ejercicios: [
+                    "1. Bicicleta estática reclinada o elíptica a ritmo suave (30 minutos continuos sin fatiga extrema)"
+                ]
+            }
+        ]
+    },
+    {
+        dia: "DÍA 3 — CADENA POSTERIOR Y CORE PROTEGIDO + CARDIO",
+        bloquesMusculares: [
+            { 
+                subtitulo: "PIERNAS Y ESTABILIDAD", 
+                ejercicios: [
+                    "1. Sentadilla a cajón o silla alta con asistencia (3 series de 8 a 10 reps - Descanso 90 seg | Control absoluto al sentarse y levantarse)", 
+                    "2. Camilla de femoral acostado con peso mínimo (3 series de 10 reps - Descanso 60 seg)", 
+                    "3. Máquina de abducción y aducción con cargas muy ligeras (2 series de 12 reps cada una)"
+                ] 
+            },
+            { 
+                subtitulo: "BLOQUE CARDIOVASCULAR PRINCIPAL", 
+                ejercicios: [
+                    "1. Caminata constante en plano o pendiente mínima (25 a 30 minutos)"
+                ]
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 4 — SESIÓN CARDIOVASCULAR Y RECUPERACIÓN METABÓLICA",
+        bloquesMusculares: [
+            { 
+                subtitulo: "CARDIO CONTINUO DE BAJO IMPACTO", 
+                ejercicios: [
+                    "1. Bicicleta estática reclinada o elíptica (35 a 40 minutos a frecuencia cardíaca controlada de quema de grasa)",
+                    "2. Caminata suave de enfriamiento (10 minutos)"
+                ]
+            },
+            { 
+                subtitulo: "MOVILIDAD Y RESPIRACIÓN", 
+                ejercicios: [
+                    "1. Ejercicios de respiración diafragmática y estiramientos muy suaves de descarga (10 minutos)"
+                ]
+            }
+        ]
+    }
+];}
+
+ else if (estado === 'mediano') {
+return [
+                {
+                    dia: "DÍA 1 — TREN INFERIOR SEGURO + CARDIO",
+                    bloquesMusculares: [
+                        { 
+                            subtitulo: "ACTIVACIÓN Y ESTABILIDAD", 
+                            ejercicios: [
+                                "1. Cat dog (10 repeticiones lentas)",
+                                "2. Dead bug (2x8 cada lado)",
+                                "3. Marcha en puente alternando cada pie (2x6 por lado)"
+                            ]
+                        },
+                        { 
+                            subtitulo: "PIERNAS Y GLÚTEOS DE BAJO IMPACTO", 
+                            ejercicios: [
+                                "1. Hip thrust con peso muy moderado y controlado (1x15 reps liviano, 3x10 series efectivas - Descanso 90 seg)", 
+                                "2. Prensa horizontal con pies abiertos y rango seguro (1x15 peso bajo, 3x12 peso medio - Descanso 90 seg)", 
+                                "3. Camilla de femoral (1x15 peso bajo, 3x12 peso medio extendiendo lento)",
+                                "4. Máquina de abducción con torso reclinado (3x12 peso medio)"
+                            ]
+                        },
+                        { 
+                            subtitulo: "BLOQUE CARDIOVASCULAR PRINCIPAL", 
+                            ejercicios: [
+                                "1. Elíptica o caminata en banda inclinada a ritmo constante (25 a 30 minutos de cardio continuo de bajo impacto)"
+                            ]
+                        }
+                    ]
+                },
+                { 
+                    dia: "DÍA 2 — TREN SUPERIOR CONTROLADO + CARDIO",
+                    bloquesMusculares: [
+                        { 
+                            subtitulo: "ESPALDA Y HOMBRO (RITMO MODERADO)", 
+                            ejercicios: [
+                                "1. Jalón al pecho en polea (1 serie de aproximación + 3 series de 10 a 12 reps - Descanso 60 seg)",
+                                "2. Remo sentado en máquina (3 series de 10 a 12 reps - Descanso 60 seg)",
+                                "3. Elevaciones laterales con mancuernas ligeras (3 series de 12 reps - Descanso 60 seg)",
+                                "4. Extensión de tríceps en polea (3 series de 12 reps - Descanso 60 seg)"
+                            ]
+                        },
+                        { 
+                            subtitulo: "BLOQUE CARDIOVASCULAR PRINCIPAL", 
+                            ejercicios: [
+                                "1. Bicicleta estática de resistencia suave a moderada (25 a 30 minutos continuos)"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    dia: "DÍA 3 — CUÁDRICEPS Y CADENA POSTERIOR SUAVE + CARDIO",
+                    bloquesMusculares: [
+                        { 
+                            subtitulo: "PIERNAS Y ADUCCIÓN", 
+                            ejercicios: [
+                                "1. Sentadilla a cajón o silla con control estricto (3 series de 10 reps sin prisa - Descanso 90 seg)", 
+                                "2. Extensión de cuádriceps en máquina (1x15 peso bajo, 3x12 peso medio lentas y controladas - Descanso 60 seg)", 
+                                "3. Peso muerto rumano con mancuernas muy ligeras o barra sola (1x12 aproximación, 3x10 efectivas cuidando la espalda - Descanso 90 seg)",
+                                "4. Máquina de aducción + pantorrillas sentada (3 series de 12 reps)"
+                            ] 
+                        },
+                        { 
+                            subtitulo: "BLOQUE CARDIOVASCULAR PRINCIPAL", 
+                            ejercicios: [
+                                "1. Caminata en banda a paso firme o elíptica (25 minutos continuos)"
+                            ]
+                        }
+                    ]
+                },
+                { 
+                    dia: "DÍA 4 — SESIÓN ESPECIALIZADA DE CARDIO Y QUEMA CALÓRICA",
+                    bloquesMusculares: [
+                        { 
+                            subtitulo: "CARDIO CONTINUO EXTENDIDO", 
+                            ejercicios: [
+                                "1. Elíptica o caminata en banda (35 a 40 minutos a una frecuencia cardíaca moderada y estable)",
+                                "2. Bicicleta estática de baja resistencia (15 minutos para relajar las articulaciones)"
+                            ]
+                        },
+                        { 
+                            subtitulo: "CORE Y MOVILIDAD", 
+                            ejercicios: [
+                                "1. Plancha frontal estática adaptada (3 series de 20 a 30 segundos)",
+                                "2. Estiramientos globales y movilidad articular (10 minutos)"
+                            ]
+                        }
+                    ]
+                }
+            ];
+
+        } else {
+            // Estado por defecto (ej. normal) para viejo + flaco
+return [
+    {
+        dia: "DÍA 1 — GLÚTEOS & PIERNAS + CARDIO",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ACTIVACIÓN Y ESTABILIDAD", 
+                ejercicios: [
+                    "1. Cat dog (10 repeticiones)",
+                    "2. Dead bug (2x10 cada lado)",
+                    "3. Marcha en puente alternando cada pie (2x8 por lado)"
+                ]
+            },
+            { 
+                subtitulo: "PIERNAS Y GLÚTEOS", 
+                ejercicios: [
+                    "1. Hip thrust + peso muerto rumano con mancuernas (Postura de pelvis neutra al realizar el peso muerto rumano | 1x15 reps peso liviano, 1x12 reps peso medio de aproximación, 3x10 series efectivas)", 
+                    "2. Sentadilla búlgara con enfoque en glúteos (Torso inclinado hacia el frente llevando la cadera hacia atrás | 1x12 aproximación, 3x10 efectivas bajando lento, profundo y controlado)", 
+                    "3. Prensa pies abiertos (1x20 peso bajo, 3x15 peso medio)",
+                    "4. Camilla de femoral (1x15 peso bajo, 3x12 peso medio extendiendo lento y controlado)",
+                    "5. Máquina de abducción con torso reclinado hacia atrás (1x30 peso bajo, 3x15 peso medio)"
+                ]
+            },
+            { 
+                subtitulo: "CARDIO FINISHER DE BAJO IMPACTO", 
+                ejercicios: [
+                    "1. Caminata en banda estática a paso firme o elíptica (15 a 20 minutos con frecuencia cardíaca moderada para favorecer la quema de grasa sin sobrecargar articulaciones)"
+                ]
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 2 — TREN SUPERIOR (EN TRISERIE) + CARDIO",
+        bloquesMusculares: [
+            { 
+                subtitulo: "TRISERIE 1 (ESPALDA + HOMBRO + BÍCEPS - 4 RONDAS)", 
+                ejercicios: [
+                    "1. Jalón al pecho en polea (12 repeticiones)",
+                    "2. Elevaciones laterales con mancuernas (15 repeticiones)",
+                    "3. Curl de bíceps con barra Z (12 repeticiones | Descanso de 60-90 segundos al finalizar la triserie)"
+                ]
+            },
+            { 
+                subtitulo: "TRISERIE 2 (ESPALDA + HOMBRO POSTERIOR + TRÍCEPS - 4 RONDAS)", 
+                ejercicios: [
+                    "1. Remo sentado en máquina (12 repeticiones)",
+                    "2. Face Pull en polea (15 repeticiones)",
+                    "3. Extensión de tríceps con cuerda (12-15 repeticiones | Descanso de 60-90 segundos al finalizar la triserie)"
+                ]
+            },
+            { 
+                subtitulo: "TRISERIE 3 (ESPALDA + HOMBRO + BÍCEPS - 3 RONDAS)", 
+                ejercicios: [
+                    "1. Remo con mancuerna a una mano (10-12 repeticiones por brazo)",
+                    "2. Press militar con mancuernas (10-12 repeticiones)",
+                    "3. Curl martillo con mancuernas (12 repeticiones | Descanso de 60-90 segundos al finalizar la triserie)"
+                ]
+            },
+            { 
+                subtitulo: "TRISERIE 4 (HOMBRO + TRÍCEPS + CORE - 3 RONDAS)", 
+                ejercicios: [
+                    "1. Pájaros para deltoide posterior (15 repeticiones)",
+                    "2. Extensión de tríceps por encima de la cabeza con mancuerna (12 repeticiones)",
+                    "3. Plancha (40-60 segundos | Descanso de 60 segundos al finalizar)"
+                ]
+            },
+            { 
+                subtitulo: "CARDIO FINISHER", 
+                ejercicios: [
+                    "1. Bicicleta estática de resistencia suave a moderada (15 minutos para complementar el gasto calórico)"
+                ]
+            }
+        ]
+    },
+    {
+        dia: "DÍA 3 — PIERNA Y CADENA POSTERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "CUÁDRICEPS Y GLÚTEOS", 
+                ejercicios: [
+                    "1. Sentadilla hack + zancadas con mancuernas (1x15, 3x12 peso medio bajando en 3 seg y subiendo en 1 seg. Las zancadas a 12 pasos por recorrido)", 
+                    "2. Extensión de cuádriceps (1x20 peso bajo, 1x15 peso medio bajo, 3x12 peso medio alto lentas y controladas)", 
+                    "3. Peso muerto sumo con barra (1x15 barra sola, 1x12 peso medio bajo, 3x10 peso medio alto)",
+                    "4. Máquina de aducción + pantorrillas en máquina (1x20 peso bajo, 4x12 peso medio)"
+                ] 
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 4 — SESIÓN CARDIOVASCULAR Y RECUPERACIÓN ACTIVA",
+        bloquesMusculares: [
+            { 
+                subtitulo: "CARDIO DE BAJO IMPACTO", 
+                ejercicios: [
+                    "1. Elíptica o caminata continua a ritmo constante (30 a 40 minutos con control de frecuencia cardíaca para promover la oxidación de grasas sin impacto articular)",
+                    "2. Bicicleta estática suave (15 minutos para estimular el flujo sanguíneo y la recuperación muscular de las piernas)"
+                ]
+            },
+            { 
+                subtitulo: "ESTIRAMIENTOS Y MOVILIDAD", 
+                ejercicios: [
+                    "1. Movilidad articular general de cadera, rodillas y columna (10 minutos)",
+                    "2. Estiramientos estáticos suaves de tren inferior y superior (10 minutos)"
+                ]
+            }
+        ]
+    }
+];
+        }
+    }
+
+    if (edadTipo === 'mayor' && somatotipo === 'flaco'  && genero === 'femenino') {
+        if (estado === 'critico') {
+            
+
+return [
+    {
+        dia: "DÍA 1 — MOVILIDAD ARTICULAR Y ACTIVACIÓN SUAVE",
+        bloquesMusculares: [
+            { 
+                subtitulo: "PREPARACIÓN Y CALENTAMIENTO", 
+                ejercicios: [
+                    "1. Movilidad articular suave de hombros, caderas y tobillos (2 series de 10 repeticiones lentas y sin carga)",
+                    "2. Gatos y vacas (Cat-Cow) en colchoneta (2 series de 8 repeticiones | Movimiento de columna muy controlado y sin dolor)"
+                ]
+            },
+            { 
+                subtitulo: "FUERZA BÁSICA DE SOSTENIMIENTO", 
+                ejercicios: [
+                    "1. Puente de glúteos en suelo sin peso (3 series de 10 reps - Descanso 90 seg | Mantener 2 segundos arriba para activar sin fatiga extrema)",
+                    "2. Sentarse y levantarse de una silla firme con apoyo de manos si es necesario (3 series de 8 reps - Descanso 90 seg | Ideal para preservar masa en piernas de forma segura)"
+                ]
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 2 — TREN SUPERIOR PROTEGIDO Y POSTURAL",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ESTABILIDAD Y SALUD ESCAPULAR", 
+                ejercicios: [
+                    "1. Jalón o tracción muy ligera con banda elástica anclada al frente (3 series de 10 reps - Descanso 90 seg | Ayuda a mantener la postura sin estresar las articulaciones)",
+                    "2. Press de pecho en máquina guiada o con banda elástica con carga mínima (3 series de 8 a 10 reps - Descanso 90 seg)"
+                ]
+            },
+            { 
+                subtitulo: "TONIFICACIÓN DE BRAZOS", 
+                ejercicios: [
+                    "1. Flexión y extensión de codos sentada con mancuernas muy livianas o sin peso (3 series de 10 reps - Descanso 60 seg)"
+                ]
+            }
+        ]
+    },
+    {
+        dia: "DÍA 3 — CADENA POSTERIOR Y EQUILIBRIO",
+        bloquesMusculares: [
+            { 
+                subtitulo: "FORTALECIMIENTO DE CADERA Y PIERNAS", 
+                ejercicios: [
+                    "1. Extensión de rodilla sentada en una silla (3 series de 10 reps por pierna - Descanso 60 seg | Mantiene activo el cuádriceps de forma segura)", 
+                    "2. Patada de glúteo muy suave hacia atrás de pie apoyada de una pared o silla (3 series de 8 reps por pierna - Descanso 60 seg)", 
+                    "3. Elevaciones de talones de pie con apoyo estable (3 series de 10 reps - Descanso 60 seg)"
+                ] 
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 4 — DESCARGA, ESTIRAMIENTOS Y BIENESTAR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ESTIRAMIENTOS SUAVES Y RESPIRACIÓN", 
+                ejercicios: [
+                    "1. Estiramiento pasivo de piernas y brazos en posición cómoda (3 series de 20 segundos por zona)",
+                    "2. Respiraciones profundas diafragmáticas para relajar la musculatura y estimular la oxigenación (3 series de 10 respiraciones lentas)"
+                ]
+            }
+        ]
+    }
+];}
+
+ else if (estado === 'mediano') {
+return [
+    {
+        dia: "DÍA 1 — MOVILIDAD Y FUERZA SUAVE DE TREN INFERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "CALENTAMIENTO Y ESTABILIDAD", 
+                ejercicios: [
+                    "1. Giros suaves de tobillo y muñeca (2 series de 10 repeticiones)",
+                    "2. Marcha muy lenta en el mismo lugar apoyada de una silla (2 series de 30 segundos)"
+                ]
+            },
+            { 
+                subtitulo: "FORTALECIMIENTO DE PIERNAS", 
+                ejercicios: [
+                    "1. Sentarse y levantarse de una silla firme sin usar las manos si es posible (3 series de 8 a 10 reps - Descanso 90 seg | Control absoluto y sin prisa)",
+                    "2. Extensión de rodilla sentada en una silla (3 series de 10 reps por pierna - Descanso 60 seg | Ayuda a mantener el cuádriceps activo)",
+                    "3. Elevaciones de talones de pie apoyada en la pared (3 series de 10 a 12 reps - Descanso 60 seg)"
+                ]
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 2 — TREN SUPERIOR Y POSTURA CÓMODA",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ESPALDA Y BRAZOS CON LIGA O POLEA LIVIANA", 
+                ejercicios: [
+                    "1. Tirón suave de banda elástica anclada al frente o jalón muy ligero en polea (3 series de 10 reps - Descanso 90 seg | Ideal para mantener la espalda erguida)",
+                    "2. Press de pecho sentado con banda elástica detrás de la espalda o máquina suave (3 series de 8 a 10 reps - Descanso 90 seg)",
+                    "3. Flexión de codos con mancuernas de peso mínimo o botellas de agua sentada (3 series de 10 reps - Descanso 60 seg)"
+                ]
+            }
+        ]
+    },
+    {
+        dia: "DÍA 3 — EQUILIBRIO Y CADENA POSTERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ESTABILIDAD Y GLÚTEOS SEGUROS", 
+                ejercicios: [
+                    "1. Puente de glúteos acostada en la cama o camilla firme (3 series de 8 a 10 reps - Descanso 90 seg | Movimiento muy corto y sin forzar la espalda)", 
+                    "2. Patada de pierna hacia atrás de pie apoyada del respaldo de una silla (3 series de 8 reps por pierna - Descanso 60 seg)", 
+                    "3. Aperturas laterales de pierna de pie con apoyo (3 series de 8 reps por lado - Descanso 60 seg | Excelente para la cadera)"
+                ] 
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 4 — MOVILIDAD GLOBAL Y RELAJACIÓN MUSCULAR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ESTIRAMIENTOS Y SALUD ARTICULAR", 
+                ejercicios: [
+                    "1. Estiramiento suave de brazos cruzados al pecho (3 series de 20 segundos por lado)",
+                    "2. Inclinaciones laterales de cuello muy suaves y lentas (3 series de 5 repeticiones por lado)",
+                    "3. Respiraciones profundas combinadas con elevación suave de hombros (3 series de 10 respiraciones)"
+                ]
+            }
+        ]
+    }
+];
+
+        } else {
+            // Estado por defecto (ej. normal) para viejo + flaco
+return [
+    {
+        dia: "DÍA 1 — TREN INFERIOR (ESTABILIDAD Y FUERZA)",
+        bloquesMusculares: [
+            { 
+                subtitulo: "MOVILIDAD Y ACTIVACIÓN", 
+                ejercicios: [
+                    "1. Puente de glúteos en suelo sin peso (2 series de 12 reps con pausa de 2 segundos arriba)",
+                    "2. Sentadilla a cajón o silla con control estricto (1 serie de aproximación 12 reps, 3 series efectivas de 8 a 10 reps - Descanso 2 min | Carga moderada para estimular masa sin sobrecargar articulaciones)"
+                ]
+            },
+            { 
+                subtitulo: "CADENA POSTERIOR Y AISLAMIENTO", 
+                ejercicios: [
+                    "1. Peso muerto rumano con mancuernas ligeras y rango seguro (1 serie de aproximación, 3 series de 10 reps - Descanso 90 seg | Espalda completamente neutra)",
+                    "2. Extensión de cuádriceps en máquina (3 series de 10 a 12 reps - Descanso 60 seg)",
+                    "3. Pantorrillas sentada en máquina (3 series de 12 reps lentas)"
+                ]
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 2 — TREN SUPERIOR (HIPERTROFIA Y SALUD ARTICULAR)",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ESPALDA Y PECHO", 
+                ejercicios: [
+                    "1. Jalón al pecho en polea con agarre cómodo (1 serie de aproximación, 3 series efectivas de 10 reps - Descanso 90 seg)",
+                    "2. Remo sentado en polea baja con agarre neutro (3 series de 10 reps - Descanso 90 seg | Excelente para densidad de espalda)",
+                    "3. Press de pecho en máquina sentado (3 series de 10 reps - Descanso 90 seg)"
+                ]
+            },
+            { 
+                subtitulo: "BRAZOS Y NÚCLEO", 
+                ejercicios: [
+                    "1. Extensión de tríceps en polea alta (3 series de 10 a 12 reps - Descanso 60 seg)",
+                    "2. Curl de bíceps con mancuernas sentado (3 series de 10 a 12 reps - Descanso 60 seg)",
+                    "3. Plancha frontal estática corta (3 series de 20 a 30 segundos para proteger la zona lumbar)"
+                ]
+            }
+        ]
+    },
+    {
+        dia: "DÍA 3 — TREN INFERIOR (ENFOQUE GLÚTEOS Y FEMORAL)",
+        bloquesMusculares: [
+            { 
+                subtitulo: "CADENA POSTERIOR Y GLÚTEOS", 
+                ejercicios: [
+                    "1. Hip Thrust en máquina guiada con carga moderada (1 serie de aproximación, 3 series efectivas de 10 reps - Descanso 2 min | Máxima contracción sin arquear la espalda)", 
+                    "2. Curl femoral acostado en máquina (1 serie de aproximación, 3 series de 10 a 12 reps - Descanso 90 seg | Movimiento controlado)", 
+                    "3. Zancadas estáticas o paso atrás con poco peso y rango corto (3 series de 8 reps por pierna - Descanso 90 seg)"
+                ] 
+            },
+            { 
+                subtitulo: "AISLAMIENTO Y CADERA", 
+                ejercicios: [
+                    "1. Máquina de abducción sentada (3 series de 12 reps con control de la bajada - Descanso 60 seg)"
+                ]
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 4 — TREN SUPERIOR (HOMBROS Y TONIFICACIÓN)",
+        bloquesMusculares: [
+            { 
+                subtitulo: "HOMBROS Y ESPALDA ALTA", 
+                ejercicios: [
+                    "1. Elevaciones laterales con mancuernas livianas (1 serie de aproximación, 3 series de 10 a 12 reps - Descanso 90 seg | Sin balanceos para proteger hombros)",
+                    "2. Pull face con soga en polea baja (3 series de 12 reps - Descanso 60 seg | Clave para postura y salud escapular)",
+                    "3. Press militar con mancuernas sentado (3 series de 8 a 10 reps - Descanso 2 min | Carga controlada para preservar masa muscular)"
+                ]
+            },
+            { 
+                subtitulo: "ESTABILIDAD", 
+                ejercicios: [
+                    "1. Elevaciones de rodillas acostada en camilla o suelo (3 series de 10 reps)"
+                ]
+            }
+        ]
+    }
+];
+        }
+    }
+
+
+    if (edadTipo === 'mayor' && somatotipo === 'normal'  && genero === 'femenino') {
+        if (estado === 'critico') {
+            
+
+return [
+    {
+        dia: "DÍA 1 — MOVILIDAD Y FUERZA FUNCIONAL BÁSICA",
+        bloquesMusculares: [
+            { 
+                subtitulo: "CALENTAMIENTO ARTICULAR SUAVE", 
+                ejercicios: [
+                    "1. Giros muy lentos de muñecas y tobillos (2 series de 10 reps)",
+                    "2. Rotaciones suaves de hombros hacia atrás (2 series de 8 reps)"
+                ]
+            },
+            { 
+                subtitulo: "FORTALECIMIENTO ESENCIAL", 
+                ejercicios: [
+                    "1. Sentarse y levantarse de una silla firme con apoyo de brazos si es necesario (3 series de 8 reps - Descanso 90 seg | Control total del movimiento)",
+                    "2. Extensión de rodilla sentada en silla (3 series de 8 reps por pierna - Descanso 60 seg)"
+                ]
+            },
+            { 
+                subtitulo: "CARDIO DE BAJO IMPACTO", 
+                ejercicios: [
+                    "1. Caminata muy pausada en espacio plano o estática (10 minutos continuos)"
+                ]
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 2 — TREN SUPERIOR POSTURAL Y SEGURO",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ESPALDA Y SOPORTE", 
+                ejercicios: [
+                    "1. Tracción suave con banda elástica anclada al frente (3 series de 8 a 10 reps - Descanso 90 seg | Ideal para mantener la espalda erguida)",
+                    "2. Press de pecho sentado con banda elástica ligera o máquina asistida (3 series de 8 reps - Descanso 90 seg)"
+                ]
+            },
+            { 
+                subtitulo: "BRAZOS Y CIRCULACIÓN", 
+                ejercicios: [
+                    "1. Flexión y extensión de codos sentada con mancuernas muy livianas o sin peso (3 series de 10 reps - Descanso 60 seg)"
+                ]
+            },
+            { 
+                subtitulo: "CARDIO SUAVE", 
+                ejercicios: [
+                    "1. Bicicleta estática reclinada a resistencia mínima (10 minutos)"
+                ]
+            }
+        ]
+    },
+    {
+        dia: "DÍA 3 — CADENA POSTERIOR Y EQUILIBRIO",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ESTABILIDAD Y CADERA", 
+                ejercicios: [
+                    "1. Puente de glúteos corto en camilla o cama firme (3 series de 8 reps - Descanso 90 seg | Sin forzar la zona lumbar)", 
+                    "2. Elevaciones de talones de pie con apoyo firme en la pared (3 series de 10 reps - Descanso 60 seg)", 
+                    "3. Aperturas laterales de pierna de pie con apoyo (3 series de 6 a 8 reps por lado - Descanso 60 seg)"
+                ] 
+            },
+            { 
+                subtitulo: "CARDIO DE BAJO IMPACTO", 
+                ejercicios: [
+                    "1. Caminata corta a ritmo muy cómodo (10 minutos)"
+                ]
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 4 — RECUPERACIÓN, ESTIRAMIENTOS Y BIENESTAR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ESTIRAMIENTOS PASIVOS", 
+                ejercicios: [
+                    "1. Estiramiento suave de brazos y piernas en posición cómoda (3 series de 20 segundos por zona)",
+                    "2. Inclinaciones laterales de cuello muy lentas y controladas (3 series de 5 reps por lado)"
+                ]
+            },
+            { 
+                subtitulo: "RESPIRACIÓN Y RELAJACIÓN", 
+                ejercicios: [
+                    "1. Respiraciones profundas diafragmáticas para favorecer la oxigenación y el descanso muscular (3 series de 10 respiraciones)"
+                ]
+            }
+        ]
+    }
+];}
+
+ else if (estado === 'mediano') {
+return [
+    {
+        dia: "DÍA 1 — TREN INFERIOR CONTROLADO",
+        bloquesMusculares: [
+            { 
+                subtitulo: "MOVILIDAD Y ACTIVACIÓN", 
+                ejercicios: [
+                    "1. Movilidad articular suave de cadera y tobillos (2 series de 10 reps)",
+                    "2. Caminata pausada en el sitio (2 minutos)"
+                ]
+            },
+            { 
+                subtitulo: "PIERNAS Y ESTABILIDAD", 
+                ejercicios: [
+                    "1. Sentadilla a cajón o silla con control estricto (3 series de 10 reps - Descanso 90 seg | Sin rebotes)",
+                    "2. Zancadas cortas hacia atrás con apoyo seguro en pared (3 series de 6 a 8 reps por pierna - Descanso 90 seg)",
+                    "3. Elevaciones de talones de pie con apoyo estable (3 series de 12 reps - Descanso 60 seg)"
+                ]
+            },
+            { 
+                subtitulo: "CARDIO SUAVE", 
+                ejercicios: [
+                    "1. Caminata en banda a ritmo moderado y constante (12 a 15 minutos)"
+                ]
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 2 — TREN SUPERIOR Y POSTURA",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ESPALDA Y PECHO GUIADO", 
+                ejercicios: [
+                    "1. Jalón al pecho en polea con carga moderada (3 series de 10 reps - Descanso 90 seg)",
+                    "2. Press de pecho en máquina sentado (3 series de 10 reps - Descanso 90 seg)",
+                    "3. Remo sentado en polea baja con agarre neutro (3 series de 10 reps - Descanso 60 seg)"
+                ]
+            },
+            { 
+                subtitulo: "BRAZOS Y NÚCLEO", 
+                ejercicios: [
+                    "1. Curl de bíceps con mancuernas sentado (3 series de 10 reps - Descanso 60 seg)",
+                    "2. Extensión de tríceps en polea alta (3 series de 10 reps - Descanso 60 seg)",
+                    "3. Plancha frontal estática corta (3 series de 20 segundos)"
+                ]
+            },
+            { 
+                subtitulo: "CARDIO SUAVE", 
+                ejercicios: [
+                    "1. Bicicleta estática de resistencia suave (15 minutos)"
+                ]
+            }
+        ]
+    },
+    {
+        dia: "DÍA 3 — CADENA POSTERIOR SEGURA",
+        bloquesMusculares: [
+            { 
+                subtitulo: "GLÚTEOS Y FEMORALES", 
+                ejercicios: [
+                    "1. Hip Thrust en máquina guiada con peso moderado (3 series de 10 reps - Descanso 90 seg | Movimiento controlado sin forzar)", 
+                    "2. Peso muerto rumano con mancuernas muy ligeras (3 series de 10 reps cuidando la espalda - Descanso 90 seg)", 
+                    "3. Curl femoral acostado en máquina (3 series de 10 reps - Descanso 60 seg)"
+                ] 
+            },
+            { 
+                subtitulo: "CARDIO SUAVE", 
+                ejercicios: [
+                    "1. Elíptica de bajo impacto a ritmo constante (15 minutos)"
+                ]
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 4 — HOMBROS Y CARDIO CONTINUO",
+        bloquesMusculares: [
+            { 
+                subtitulo: "HOMBROS Y MOVILIDAD ESCAPULAR", 
+                ejercicios: [
+                    "1. Press militar con mancuernas sentado (3 series de 8 a 10 reps - Descanso 90 seg)",
+                    "2. Elevaciones laterales con mancuernas livianas (3 series de 10 reps - Descanso 60 seg)",
+                    "3. Pull face con soga en polea baja (3 series de 10 reps - Descanso 60 seg)"
+                ]
+            },
+            { 
+                subtitulo: "BLOQUE CARDIOVASCULAR PRINCIPAL", 
+                ejercicios: [
+                    "1. Caminata continua o bicicleta estática (20 a 25 minutos a ritmo cómodo)"
+                ]
+            }
+        ]
+    }
+];
+
+        } else {
+            // Estado por defecto (ej. normal) para viejo + flaco
+return [
+    {
+        dia: "DÍA 1 — FUERZA DINÁMICA Y TREN INFERIOR",
+        bloquesMusculares: [
+            { 
+                subtitulo: "CALENTAMIENTO Y MOVILIDAD", 
+                ejercicios: [
+                    "1. Rotaciones articulares completas de cadera y rodillas (2 series de 12 reps)",
+                    "2. Caminata ligera en el sitio con elevación moderada de rodillas (2 minutos)"
+                ]
+            },
+            { 
+                subtitulo: "FUERZA Y LIGERA EXPLOSIVIDAD", 
+                ejercicios: [
+                    "1. Sentadilla libre o a cajón con ritmo constante y controlado (3 series de 10 a 12 reps - Descanso 90 seg)",
+                    "2. Zancadas cortas hacia atrás con apoyo seguro (3 series de 8 reps por pierna - Descanso 90 seg)",
+                    "3. Elevaciones de talones de pie con velocidad controlada (3 series de 15 reps - Descanso 60 seg)"
+                ]
+            },
+            { 
+                subtitulo: "BLOQUE CARDIOVASCULAR", 
+                ejercicios: [
+                    "1. Intervalos de caminata rápida y lenta en cinta o espacio abierto (15 minutos)"
+                ]
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 2 — TREN SUPERIOR Y RESISTENCIA",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ESPALDA Y PECHO", 
+                ejercicios: [
+                    "1. Jalón al pecho en polea con buena intensidad (3 series de 12 reps - Descanso 90 seg)",
+                    "2. Press de pecho en máquina o con mancuernas moderadas (3 series de 10 reps - Descanso 90 seg)",
+                    "3. Remo con mancuerna a una mano apoyada en banco (3 series de 10 reps por lado - Descanso 60 seg)"
+                ]
+            },
+            { 
+                subtitulo: "BRAZOS Y NÚCLEO", 
+                ejercicios: [
+                    "1. Curl de bíceps con mancuernas (3 series de 12 reps - Descanso 60 seg)",
+                    "2. Extensión de tríceps en polea (3 series de 12 reps - Descanso 60 seg)",
+                    "3. Plancha frontal estática con buena tensión (3 series de 25 a 30 segundos)"
+                ]
+            },
+            { 
+                subtitulo: "BLOQUE CARDIOVASCULAR", 
+                ejercicios: [
+                    "1. Bicicleta estática a ritmo moderado-constante (15 a 20 minutos)"
+                ]
+            }
+        ]
+    },
+    {
+        dia: "DÍA 3 — CADENA POSTERIOR Y POTENCIA MODERADA",
+        bloquesMusculares: [
+            { 
+                subtitulo: "GLÚTEOS Y FEMORALES", 
+                ejercicios: [
+                    "1. Hip Thrust con barra o mancuerna de peso moderado (3 series de 10 a 12 reps - Descanso 90 seg)", 
+                    "2. Peso muerto rumano con mancuernas (3 series de 10 reps con técnica sólida - Descanso 90 seg)", 
+                    "3. Curl femoral acostado en máquina (3 series de 12 reps - Descanso 60 seg)"
+                ] 
+            },
+            { 
+                subtitulo: "CARDIO FINISHER", 
+                ejercicios: [
+                    "1. Elíptica o caminata con ligera inclinación (20 minutos continuos)"
+                ]
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 4 — INTEGRACIÓN, HOMBROS Y CARDIO",
+        bloquesMusculares: [
+            { 
+                subtitulo: "HOMBROS Y COORDINACIÓN", 
+                ejercicios: [
+                    "1. Press militar con mancuernas sentada (3 series de 10 reps - Descanso 90 seg)",
+                    "2. Elevaciones laterales con mancuernas (3 series de 12 reps - Descanso 60 seg)",
+                    "3. Pull face con soga (3 series de 12 reps - Descanso 60 seg)"
+                ]
+            },
+            { 
+                subtitulo: "BLOQUE CARDIOVASCULAR EXTENDIDO", 
+                ejercicios: [
+                    "1. Sesión continua de bicicleta o caminata firme (25 a 30 minutos)"
+                ]
+            }
+        ]
+    }
+];
+        }
+    }
+
+    if (edadTipo === 'mayor' && somatotipo === 'gordo'  && genero === 'femenino') {
+        if (estado === 'critico') {
+            
+
+return [
+    {
+        dia: "DÍA 1 — MOVILIDAD ARTICULAR Y CARDIO SUAVE",
+        bloquesMusculares: [
+            { 
+                subtitulo: "CALENTAMIENTO Y DESCOMPRESIÓN", 
+                ejercicios: [
+                    "1. Giros muy lentos y suaves de tobillos, muñecas y hombros (2 series de 10 reps)",
+                    "2. Movilidad de cuello y respiración profunda sentado (2 series de 1 minuto)"
+                ]
+            },
+            { 
+                subtitulo: "BLOQUE CARDIOVASCULAR PRINCIPAL", 
+                ejercicios: [
+                    "1. Bicicleta estática reclinada a resistencia nula o mínima (20 a 25 minutos continuos | Ritmo sumamente pausado para proteger el sistema cardiovascular y las articulaciones)"
+                ]
+            },
+            { 
+                subtitulo: "ESTIRAMIENTOS Y DESCARGA", 
+                ejercicios: [
+                    "1. Estiramientos pasivos muy suaves de brazos y piernas sentado (3 series de 20 segundos)"
+                ]
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 2 — CICLO CARDIOVASCULAR Y ACTIVACIÓN MÍNIMA",
+        bloquesMusculares: [
+            { 
+                subtitulo: "BLOQUE CARDIOVASCULAR PRINCIPAL", 
+                ejercicios: [
+                    "1. Bicicleta estática reclinada o elíptica de bajo impacto (25 a 30 minutos | Priorizando la quema calórica segura y el cuidado de rodillas y columna)",
+                    "2. Marcha muy lenta y corta en plano con apoyo estable (5 minutos)"
+                ]
+            },
+            { 
+                subtitulo: "ESTIRAMIENTOS Y BIENESTAR", 
+                ejercicios: [
+                    "1. Estiramiento suave de espalda baja y piernas en posición cómoda (3 series de 20 segundos)"
+                ]
+            }
+        ]
+    },
+    {
+        dia: "DÍA 3 — CARDIO CONTINUO Y RECUPERACIÓN PROFUNDA",
+        bloquesMusculares: [
+            { 
+                subtitulo: "BLOQUE CARDIOVASCULAR PRINCIPAL", 
+                ejercicios: [
+                    "1. Bicicleta estática reclinada a ritmo constante y seguro (25 minutos)"
+                ] 
+            },
+            { 
+                subtitulo: "ESTIRAMIENTOS Y RELAJACIÓN", 
+                ejercicios: [
+                    "1. Sesión completa de estiramientos pasivos globales para descargar la musculatura (3 series de 20 a 30 segundos por zona)",
+                    "2. Ejercicios de respiración diafragmática profunda para reducir el estrés cardiovascular y relajar el cuerpo (3 series de 10 respiraciones)"
+                ]
+            }
+        ]
+    }
+];}
+
+ else if (estado === 'mediano') {
+return [
+                {
+                    dia: "DÍA 1 — MOVILIDAD Y FUERZA SUAVE DE TREN INFERIOR",
+                    bloquesMusculares: [
+                        { 
+                            subtitulo: "CALENTAMIENTO Y MOVILIDAD", 
+                            ejercicios: [
+                                "1. Movilidad articular suave de tobillos, rodillas y caderas (2 series de 10 reps)",
+                                "2. Marcha muy pausada en el mismo lugar apoyada de una silla (2 series de 30 segundos)"
+                            ]
+                        },
+                        { 
+                            subtitulo: "FORTALECIMIENTO DE PIERNAS", 
+                            ejercicios: [
+                                "1. Sentarse y levantarse de una silla firme con control absoluto (3 series de 8 reps - Descanso 90 seg | Sin prisa ni rebotes)",
+                                "2. Extensión de rodilla sentada en una silla (3 series de 10 reps por pierna - Descanso 60 seg | Mantiene activo el cuádriceps)",
+                                "3. Elevaciones de talones de pie con apoyo estable en la pared (3 series de 10 reps - Descanso 60 seg)"
+                            ]
+                        }
+                    ]
+                },
+                { 
+                    dia: "DÍA 2 — TREN SUPERIOR Y POSTURA CÓMODA",
+                    bloquesMusculares: [
+                        { 
+                            subtitulo: "ESPALDA Y BRAZOS CON BANDA O POLEA LIVIANA", 
+                            ejercicios: [
+                                "1. Tracción suave con banda elástica anclada al frente o jalón muy ligero en polea (3 series de 10 reps - Descanso 90 seg | Para mantener la espalda erguida)",
+                                "2. Press de pecho en máquina o banda elástica con carga mínima (3 series de 8 a 10 reps - Descanso 90 seg)",
+                                "3. Flexión y extensión de codos sentada con mancuernas de peso mínimo o sin peso (3 series de 10 reps - Descanso 60 seg)"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    dia: "DÍA 3 — EQUILIBRIO, CADENA POSTERIOR Y ESTIRAMIENTOS",
+                    bloquesMusculares: [
+                        { 
+                            subtitulo: "ESTABILIDAD Y GLÚTEOS SEGUROS", 
+                            ejercicios: [
+                                "1. Puente de glúteos corto acostada en una camilla o cama firme (3 series de 8 a 10 reps - Descanso 90 seg | Movimiento muy corto sin forzar la espalda)", 
+                                "2. Patada de pierna hacia atrás de pie apoyada del respaldo de una silla (3 series de 8 reps por pierna - Descanso 60 seg)", 
+                                "3. Aperturas laterales de pierna de pie con apoyo seguro (3 series de 8 reps por lado - Descanso 60 seg)"
+                            ] 
+                        },
+                        { 
+                            subtitulo: "DESCARGA Y BIENESTAR", 
+                            ejercicios: [
+                                "1. Estiramientos pasivos suaves de brazos y piernas (3 series de 20 segundos por zona)",
+                                "2. Respiraciones profundas para relajar la musculatura (3 series de 10 respiraciones lentas)"
+                            ]
+                        }
+                    ]
+                }
+            ];
+
+
+        } else {
+            // Estado por defecto (ej. normal) para viejo + flaco
+return [
+    {
+        dia: "DÍA 1 — MOVILIDAD, FUERZA CORPORAL Y CARDIO",
+        bloquesMusculares: [
+            { 
+                subtitulo: "ACTIVACIÓN Y MOVILIDAD", 
+                ejercicios: [
+                    "1. Giros suaves de tobillos, rodillas y muñecas (2 series de 10 reps)",
+                    "2. Marcha estática sentada elevando rodillas de forma alterna (2 series de 1 minuto)"
+                ]
+            },
+            { 
+                subtitulo: "FUERZA DE PESO CORPORAL SEGURO", 
+                ejercicios: [
+                    "1. Sentarse y levantarse de una silla firme con apoyo de brazos (3 series de 8 a 10 reps - Descanso 90 seg | Control absoluto del descenso)",
+                    "2. Puente de glúteos corto en suelo o camilla sin peso adicional (3 series de 10 reps - Descanso 60 seg)"
+                ]
+            },
+            { 
+                subtitulo: "BLOQUE CARDIOVASCULAR PRINCIPAL", 
+                ejercicios: [
+                    "1. Bicicleta estática reclinada a ritmo suave y constante (20 a 25 minutos | Ideal para proteger las articulaciones y favorecer el gasto calórico)"
+                ]
+            }
+        ]
+    },
+    { 
+        dia: "DÍA 2 — TREN SUPERIOR Y CARDIO EXTENDIDO",
+        bloquesMusculares: [
+            { 
+                subtitulo: "TREN SUPERIOR ADAPTADO", 
+                ejercicios: [
+                    "1. Tracción suave con banda elástica anclada al frente o jalón muy ligero en polea (3 series de 10 reps - Descanso 90 seg)",
+                    "2. Press de pecho en máquina sentado con carga mínima y segura (3 series de 8 a 10 reps - Descanso 90 seg)",
+                    "3. Flexión y extensión de codos sentada con mancuernas muy livianas (3 series de 10 reps - Descanso 60 seg)"
+                ]
+            },
+            { 
+                subtitulo: "BLOQUE CARDIOVASCULAR PRINCIPAL", 
+                ejercicios: [
+                    "1. Bicicleta estática o caminata en banda a velocidad baja y controlada (25 minutos continuos)"
+                ]
+            }
+        ]
+    },
+    {
+        dia: "DÍA 3 — CARDIO INTENSIVO, BICICLETA Y ESTIRAMIENTOS",
+        bloquesMusculares: [
+            { 
+                subtitulo: "BLOQUE CARDIOVASCULAR PRINCIPAL", 
+                ejercicios: [
+                    "1. Bicicleta estática reclinada o elíptica de bajo impacto (30 a 35 minutos a frecuencia cardíaca controlada)"
+                ] 
+            },
+            { 
+                subtitulo: "ESTIRAMIENTOS Y DESCARGA", 
+                ejercicios: [
+                    "1. Estiramientos pasivos globales de piernas y espalda en posición cómoda (3 series de 20 segundos por zona)",
+                    "2. Ejercicios de respiración diafragmática profunda para relajar el sistema cardiovascular (3 series de 10 respiraciones)"
+                ]
+            }
+        ]
+    }
+];
+        }
+    }
+
+    return [];
+}
+            
+        
     </script>
 </body>
-
 </html>
