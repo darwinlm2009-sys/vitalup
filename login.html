@@ -136,6 +136,59 @@ body::after {
     width: 100%;
 }
 .link-muted:hover { color: #2dd4bf; }
+/* 📱 AJUSTE DEL FORMULARIO PARA CELULAR */
+@media (max-width: 640px) {
+
+    .glass {
+        width: calc(100% - 24px) !important;
+        max-width: 500px !important;
+        padding: 28px 22px !important;
+        margin-left: 12px !important;
+        margin-right: 12px !important;
+        border-radius: 22px !important;
+    }
+
+    /* Logo un poco más visible */
+    .glass > div:first-child {
+        width: 190px !important;
+        height: 50px !important;
+        margin-bottom: 18px !important;
+    }
+
+    /* Texto de bienvenida */
+    #subtitulo {
+        font-size: 13px !important;
+        margin-bottom: 28px !important;
+        line-height: 1.5 !important;
+    }
+
+    /* Etiquetas */
+    .glass label {
+        font-size: 12px !important;
+    }
+
+    /* Campos */
+    .glass .input {
+        font-size: 15px !important;
+        padding: 15px !important;
+        min-height: 50px !important;
+    }
+
+    /* Botones */
+    .glass .btn-main,
+    .glass .btn-secondary {
+        font-size: 13px !important;
+        padding-top: 15px !important;
+        padding-bottom: 15px !important;
+        min-height: 50px !important;
+    }
+
+    /* Recuperar contraseña */
+    .link-teal,
+    .link-muted {
+        font-size: 12px !important;
+    }
+}
 </style>
 
 </head>
