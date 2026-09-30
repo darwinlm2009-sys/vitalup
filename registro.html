@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Registro - Vital Up</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
@@ -104,6 +105,71 @@ body::after {
     from { opacity: 0; transform: translateY(15px); }
     to { opacity: 1; transform: translateY(0); }
 }
+html {
+    width: 100%;
+    min-height: 100%;
+}
+
+body {
+    width: 100%;
+    min-height: 100svh;
+    box-sizing: border-box;
+}
+
+.glass {
+    box-sizing: border-box;
+    width: 420px;
+    max-width: calc(100vw - 32px);
+}
+
+@media (max-width: 640px) {
+
+    body {
+        min-height: 100svh;
+        padding: 16px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .glass {
+        width: 100% !important;
+        max-width: 420px !important;
+        padding: 30px 22px !important;
+        margin: 0 !important;
+        border-radius: 20px !important;
+    }
+
+    .glass .input {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        min-height: 50px !important;
+        height: 50px !important;
+        padding: 13px 14px !important;
+        font-size: 14px !important;
+    }
+
+    .glass .btn-main,
+    .glass .btn-secondary {
+        width: 100% !important;
+        min-height: 50px !important;
+        padding-top: 14px !important;
+        padding-bottom: 14px !important;
+        font-size: 12px !important;
+        border-radius: 10px !important;
+    }
+}
+
+@media (max-width: 380px) {
+
+    body {
+        padding: 12px;
+    }
+
+    .glass {
+        padding: 24px 18px !important;
+    }
+}
+
 </style>
 
 </head>
@@ -111,7 +177,7 @@ body::after {
 <body class="flex items-center justify-center relative">
     
 <!-- CARD -->
-<div class="glass p-10 w-[420px] fade-in text-white z-10 mx-4">
+<div class="glass fade-in text-white z-10">
 
     <!-- Logo Corporativo SVG Reemplazando texto plano -->
     <div class="w-48 h-12 mx-auto mb-4 flex items-center justify-center cursor-pointer" onclick="window.location.href='index.html'">
